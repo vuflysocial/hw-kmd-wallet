@@ -38,6 +38,12 @@ class Account extends React.Component {
     });
   }
 
+  setSendToMaxAmount(balance) {
+    this.setState({
+      amount: humanReadableSatoshis(balance - TX_FEE) > 0 ? humanReadableSatoshis(balance - TX_FEE) : humanReadableSatoshis(balance - Math.floor(TX_FEE / 2)),
+    });
+  }
+
   handleRewardClaim = txid => {
     this.setState({
       isClaimed: true,
@@ -140,6 +146,9 @@ class Account extends React.Component {
                     placeholder="Enter an amount"
                     autoComplete="off"
                     required />
+                  <button className="button is-light send-max" onClick={() => this.setSendToMaxAmount(balance)}>
+                    Max
+                  </button>
                 </div>
                 <div style={{'margin': '30px 0 20px 0'}}>
                   Send to <input
