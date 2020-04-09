@@ -5,12 +5,11 @@ import ledger from './lib/ledger';
 import blockchain from './lib/blockchain';
 import getAddress from './lib/get-address';
 import checkPublicAddress from './lib/validate-address';
+import transactionBuilder from './lib/transaction-builder';
+import {toSats, fromSats} from './lib/math';
 import updateActionState from './lib/update-action-state';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
-import {TX_FEE, coin, KOMODO} from './constants';
-
-import {transactionBuilder} from './lib/utils';
-import {toSats, fromSats} from './lib/utils';
+import {TX_FEE, KOMODO} from './constants';
 
 class SendCoinButton extends React.Component {
   state = this.initialState;
@@ -87,6 +86,7 @@ class SendCoinButton extends React.Component {
   validate() {
     const amount = Number(this.props.amount);
     const balance = this.props.balance;
+    const {coin} = this.props;
     let error;
 
     if (humanReadableSatoshis(balance + TX_FEE) > balance) {
@@ -124,6 +124,7 @@ class SendCoinButton extends React.Component {
   sendCoin = async () => {
     console.warn('send coin clicked');
     const isUserInputValid = this.validate();
+    const {coin} = this.props;
     
     this.setState(prevState => ({
       ...this.initialState,
@@ -194,13 +195,14 @@ class SendCoinButton extends React.Component {
         const filteredUtxos = this.filterUtxos(txData.inputs, formattedUtxos);
 
         this.setState({
-          ...this.initialState,
           isClaimingRewards: true,
           skipBroadcast: false,
           amount: txData.value,
           sendTo: txData.outputAddress,
           changeTo: txData.changeAddress,
           change: txData.change,
+          skipBroadcast: this.state.skipBroadcast,
+          skipBroadcastClicked: false,
         });
 
         const rawtx = await ledger.createTransaction(
@@ -243,7 +245,7 @@ class SendCoinButton extends React.Component {
 
           this.props.handleRewardClaim(txid);
           this.setState({
-            success: <React.Fragment>Transaction ID: <TxidLink txid={txid}/></React.Fragment>
+            success: <React.Fragment>Transaction ID: <TxidLink txid={txid} coin={coin} /></React.Fragment>
           });
           setTimeout(() => {
             this.props.syncData();
@@ -266,6 +268,7 @@ class SendCoinButton extends React.Component {
     const isClaimableAmount = (this.props.account.claimableAmount > 0);
     const userOutput = this.getOutputs();
     const isNoBalace = Number(this.props.balance) <= 0;
+    const {coin} = this.props;
 
     console.warn('this.props', this.props);
 
