@@ -87,7 +87,15 @@ const getAddressUtxos = async addresses => {
   return await Promise.all(utxos.map(async utxo => {
     const addressInfo = addresses.find(a => a.address === utxo.address);
 
-    const [{rawtx}, {locktime, vin, vout, version}] = await Promise.all([
+    const [
+      {rawtx},
+      {
+        locktime,
+        vin,
+        vout,
+        version
+      }
+    ] = await Promise.all([
       blockchain.getRawTransaction(utxo.txid),
       blockchain.getTransaction(utxo.txid)
     ]);
@@ -105,7 +113,17 @@ const getAddressUtxos = async addresses => {
   }));
 };
 
-export const getAddressHistory = async (addresses) => {
+const getAddressHistory = async addresses => {
+  const history = await blockchain.getHistory(addresses.map(a => a.address));
+
+  return {
+    addresses: addresses,
+    allTxs: history.items,
+    historyParsed: parseHistory(history.items, addresses.map(a => a.address)),
+  };
+};
+
+export const getAddressHistoryOld = async (addresses) => {
   let addressCacheTemp = {};
   let allTxs = [];
   let addressHistory = [];
@@ -118,7 +136,8 @@ export const getAddressHistory = async (addresses) => {
     
     console.warn('addressHistoryRes', addressHistoryRes);
 
-    if (addressHistoryRes && addressHistoryRes.txs) {
+    if (addressHistoryRes &&
+        addressHistoryRes.txs) {
       addressCacheTemp[addressItem.address] = addressHistoryRes.txs;
   
       for (let i = 0; i < addressHistoryRes.txs.length; i++) {

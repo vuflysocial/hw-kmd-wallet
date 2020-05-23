@@ -4,7 +4,7 @@ import ledger from './lib/ledger';
 import accountDiscovery from './lib/account-discovery';
 import blockchain from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
-import {TX_FEE} from './constants';
+import {TX_FEE, FAUCET_URL} from './constants';
 import ActionListModal from './ActionListModal';
 import getAddress from './lib/get-address';
 
@@ -78,7 +78,22 @@ class ReceiveCoinButton extends React.Component {
             <span style={{
               'padding': '10px 0',
               'display': 'block'
-            }}>This your new {this.props.coin} deposit address <strong>{unusedAddress}</strong></span>
+            }}>
+              This your new {this.props.coin} deposit address <strong>{unusedAddress}</strong>
+            {FAUCET_URL[this.props.coin] &&
+              <span style={{
+                'padding': '15px 0 0',
+                'display': 'block'
+              }}>
+                <strong>
+                  <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`${FAUCET_URL[this.props.coin]}${unusedAddress}`}>Get funds from a faucet</a>
+                </strong>
+              </span>
+            }
+            </span>
           </React.Fragment>
       });
     } catch (error) {
@@ -89,11 +104,18 @@ class ReceiveCoinButton extends React.Component {
   };
 
   render() {
-    const {isExtractingNewAddress, actions, error, success} = this.state;
+    const {
+      isExtractingNewAddress,
+      actions,
+      error,
+      success
+    } = this.state;
 
     return (
       <React.Fragment>
-        <button className="button is-primary receive-btn" onClick={this.getNewAddress}>
+        <button
+          className="button is-primary receive-btn"
+          onClick={this.getNewAddress}>
           {this.props.children}
         </button>
         <ActionListModal
@@ -110,7 +132,6 @@ class ReceiveCoinButton extends React.Component {
       </React.Fragment>
     );
   }
-
 }
 
 export default ReceiveCoinButton;
