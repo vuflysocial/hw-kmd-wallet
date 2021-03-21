@@ -1,23 +1,26 @@
-import ledger from './ledger';
+import hw from './hw';
 import blockchain from './blockchain';
 import getAddress from './get-address';
 import bitcoin from 'bitcoinjs-lib';
 import parseHistory from './history-parser';
+import asyncForEach from './async';
 
 let pubKeysCache = {};
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
-
 const walkDerivationPath = async node => {
-  const addressConcurrency = 10;
-  const gapLimit = 20;
   const addresses = [];
+  let addressConcurrency = 10;
+  let gapLimit = 20;
   let consecutiveUnusedAddresses = 0;
   let addressIndex = 0;
+
+  if (window.location.href.indexOf('extgap=s') > -1) gapLimit = 30;
+  if (window.location.href.indexOf('extgap=m') > -1) gapLimit = 40;
+  if (window.location.href.indexOf('extgap=l') > -1) gapLimit = 50;
+  if (window.location.href.indexOf('extgap=xl') > -1) gapLimit = 100;
+
+  if (window.location.href.indexOf('timeout=s') > -1) addressConcurrency = 2;
+  if (window.location.href.indexOf('timeout=m') > -1) addressConcurrency = 5;
 
   while (consecutiveUnusedAddresses < gapLimit) {
     const addressApiRequests = [];
@@ -43,9 +46,9 @@ const walkDerivationPath = async node => {
   return addresses.slice(0, addresses.length - consecutiveUnusedAddresses);
 };
 
-const getAccountAddresses = async account => {
+const getAccountAddresses = async (account, vendor) => {
   const derivationPath = `44'/141'/${account}'`;
-  const xpub = pubKeysCache[derivationPath] || await ledger.getXpub(derivationPath);
+  const xpub = pubKeysCache[derivationPath] || await hw[vendor].getXpub(derivationPath);
   const node = bitcoin.bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
   const internalNode = node.derive(1);
@@ -93,7 +96,9 @@ const getAddressUtxos = async addresses => {
         locktime,
         vin,
         vout,
-        version
+        version,
+        nVersionGroupId,
+        nExpiryHeight,
       }
     ] = await Promise.all([
       blockchain.getRawTransaction(utxo.txid),
@@ -108,7 +113,9 @@ const getAddressUtxos = async addresses => {
       rawtx,
       inputs: vin,
       outputs: vout,
-      version
+      version,
+      nVersionGroupId,
+      nExpiryHeight,
     };
   }));
 };
@@ -123,7 +130,7 @@ const getAddressHistory = async addresses => {
   };
 };
 
-export const getAddressHistoryOld = async (addresses) => {
+export const getAddressHistoryOld = async addresses => {
   let addressCacheTemp = {};
   let allTxs = [];
   let addressHistory = [];
@@ -175,12 +182,12 @@ export const getAddressHistoryOld = async (addresses) => {
   };
 };
 
-const accountDiscovery = async () => {
+const accountDiscovery = async vendor => {
   const accounts = [];
-
   let accountIndex = 0;
+
   while (true) {
-    const account = await getAccountAddresses(accountIndex);
+    const account = await getAccountAddresses(accountIndex, vendor);
 
     if (account.addresses.length === 0) {
       account.utxos = [];
@@ -202,7 +209,13 @@ const accountDiscovery = async () => {
     accountIndex++;
   }
 
+  console.warn('accounts', accounts);
+
   return accounts;
+};
+
+export const clearPubkeysCache = () => {
+  pubKeysCache = {};
 };
 
 export default accountDiscovery;

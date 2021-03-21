@@ -1,6 +1,9 @@
 import React from 'react';
-import Boolean from './Boolean';
-import explorerLink from './lib/explorer-link';
+import explorerLink from './lib/coins';
+import {
+  isElectron,
+  shell,
+} from './Electron';
 
 const headings = [
   'Type',
@@ -25,7 +28,9 @@ const Transactions = ({transactions, coin}) => {
       </tfoot>
       <tbody>
         {transactions.map(tx => (
-          <tr key={tx.txid} className="utxo">
+          <tr
+            key={tx.txid}
+            className="utxo">
             <td className="cap--first">
               {Number(tx.height) === -1 || Number(tx.height) === 0 || Number(tx.confirmations) === 0 ? 'pending' : tx.type}
             </td>
@@ -35,9 +40,16 @@ const Transactions = ({transactions, coin}) => {
               {Number(tx.height) === -1 || Number(tx.height) === 0 ? '' : tx.date}
             </td>
             <td className="wb--all">
-              <a
-                target="_blank"
-                href={`${explorerLink[coin]}tx/${tx.txid}`}>{tx.txid}</a>
+            {isElectron &&
+                <a
+                  href="#"
+                  onClick={() => shell.openExternal(`${explorerLink[coin].explorer}tx/${tx.txid}`)}>{tx.txid}</a>
+              }
+              {!isElectron &&
+                <a
+                  target="_blank"
+                  href={`${explorerLink[coin].explorer}tx/${tx.txid}`}>{tx.txid}</a>
+              }
             </td>
           </tr>
         ))}

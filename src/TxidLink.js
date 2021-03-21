@@ -1,11 +1,19 @@
 import React from 'react';
-import explorerLink from './lib/explorer-link';
+import explorerLink from './lib/coins';
+import {
+  isElectron,
+  shell,
+} from './Electron';
 
-const TxidLink = ({txid, coin}) => (
+const TxidLink = ({txid, coin}) => !isElectron ? (
   <a
     target="_blank"
     rel="noopener noreferrer"
-    href={`${explorerLink[coin]}tx/${txid}`}>{txid}</a>
+    href={`${explorerLink[coin].explorer}tx/${txid}`}>{txid}</a>
+) : (
+  <a
+    href="#"
+    onClick={() => shell.openExternal(`${explorerLink[coin].explorer}tx/${txid}`)}>{txid}</a>
 );
 
 export default TxidLink;

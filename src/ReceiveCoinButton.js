@@ -1,21 +1,22 @@
 import React from 'react';
-import getKomodoRewards from './lib/get-komodo-rewards';
-import ledger from './lib/ledger';
-import accountDiscovery from './lib/account-discovery';
-import blockchain from './lib/blockchain';
+import hw from './lib/hw';
 import updateActionState from './lib/update-action-state';
-import {TX_FEE, FAUCET_URL} from './constants';
+import {
+  TX_FEE,
+  FAUCET_URL,
+  VENDOR,
+} from './constants';
 import ActionListModal from './ActionListModal';
 import getAddress from './lib/get-address';
+import {
+  isElectron,
+  shell,
+} from './Electron';
 
 class ReceiveCoinButton extends React.Component {
   state = this.initialState;
 
   get initialState() {
-    if (this.props.vendor) {
-      ledger.setVendor(this.props.vendor);
-    }
-
     return {
       isExtractingNewAddress: false,
       error: false,
@@ -52,9 +53,9 @@ class ReceiveCoinButton extends React.Component {
     try {
       currentAction = 'connect';
       updateActionState(this, currentAction, 'loading');
-      const ledgerIsAvailable = await ledger.isAvailable();
-      if (!ledgerIsAvailable) {
-        throw new Error((this.props.vendor === 'ledger' ? 'Ledger' : 'Trezor') + ' device is unavailable!');
+      const hwIsAvailable = await hw[this.props.vendor].isAvailable();
+      if (!hwIsAvailable) {
+        throw new Error(`${VENDOR[this.props.vendor]} device is unavailable!`);
       }
       updateActionState(this, currentAction, true);
 
@@ -66,9 +67,9 @@ class ReceiveCoinButton extends React.Component {
       const unusedAddress = this.getUnusedAddress();
       const derivationPath = `44'/141'/${accountIndex}'/0/${this.getUnusedAddressIndex()}`;
       const verify = true;
-      const ledgerUnusedAddress = this.props.address.length ? this.props.address : await ledger.getAddress(derivationPath, verify);
-      if (ledgerUnusedAddress !== unusedAddress) {
-        throw new Error((this.props.vendor === 'ledger' ? 'Ledger' : 'Trezor') + ` derived address "${ledgerUnusedAddress}" doesn't match browser derived address "${unusedAddress}"`);
+      const hwUnusedAddress = this.props.address.length ? this.props.address : await hw[this.props.vendor].getAddress(derivationPath, verify);
+      if (hwUnusedAddress !== unusedAddress) {
+        throw new Error(`${VENDOR[this.props.vendor]} derived address "${hwUnusedAddress}" doesn't match browser derived address "${unusedAddress}"`);
       }
       updateActionState(this, currentAction, true);
 
@@ -86,10 +87,17 @@ class ReceiveCoinButton extends React.Component {
                 'display': 'block'
               }}>
                 <strong>
-                  <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`${FAUCET_URL[this.props.coin]}${unusedAddress}`}>Get funds from a faucet</a>
+                  {!isElectron &&
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={`${FAUCET_URL[this.props.coin]}${unusedAddress}`}>Get funds from a faucet</a>
+                  }
+                  {isElectron &&
+                    <a
+                      href="#"
+                      onClick={() => shell.openExternal(`${FAUCET_URL[this.props.coin]}${unusedAddress}`)}>Get funds from a faucet</a>
+                  }
                 </strong>
               </span>
             }
@@ -126,7 +134,7 @@ class ReceiveCoinButton extends React.Component {
           handleClose={this.resetState}
           show={isExtractingNewAddress}>
           <p>
-            Exporting a public key from your {this.props.vendor === 'ledger' ? 'Ledger' : 'Trezor'} device. Please approve public key export request on your device.
+            Exporting a public key from your {VENDOR[this.props.vendor]} device. Please approve public key export request on your device.
           </p>
         </ActionListModal>
       </React.Fragment>

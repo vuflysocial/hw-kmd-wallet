@@ -1,20 +1,16 @@
 import React from 'react';
 import getKomodoRewards from './lib/get-komodo-rewards';
-import ledger from './lib/ledger';
+import hw from './lib/hw';
 import accountDiscovery from './lib/account-discovery';
 import blockchain from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
-import {TX_FEE} from './constants';
+import {TX_FEE, VENDOR} from './constants';
 import ActionListModal from './ActionListModal';
 
 class CheckBalanceButton extends React.Component {
   state = this.initialState;
 
   get initialState() {
-    if (this.props.vendor) {
-      ledger.setVendor(this.props.vendor);
-    }
-
     return {
       isCheckingRewards: false,
       error: false,
@@ -38,7 +34,7 @@ class CheckBalanceButton extends React.Component {
   calculateRewardData = ({accounts, tiptime}) => accounts.map(account => {
     account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
     account.rewards = account.utxos.reduce((rewards, utxo) => rewards + getKomodoRewards({tiptime, ...utxo}), 0);
-    account.claimableAmount = account.rewards - TX_FEE;
+    account.claimableAmount = account.rewards - TX_FEE * 2;
 
     return account;
   });
@@ -58,18 +54,20 @@ class CheckBalanceButton extends React.Component {
     try {
       currentAction = 'connect';
       updateActionState(this, currentAction, 'loading');
-      const ledgerIsAvailable = await ledger.isAvailable();
-      if (!ledgerIsAvailable) {
-        throw new Error((this.props.vendor === 'ledger' ? 'Ledger' : 'Trezor') + ' device is unavailable!');
+      const hwIsAvailable = await hw[this.props.vendor].isAvailable();
+      if (!hwIsAvailable) {
+        throw new Error(`${VENDOR[this.props.vendor]} device is unavailable!`);
       }
       updateActionState(this, currentAction, true);
 
       currentAction = 'approve';
       updateActionState(this, currentAction, 'loading');
       let [accounts, tiptime] = await Promise.all([
-        accountDiscovery(),
+        accountDiscovery(this.props.vendor),
         blockchain.getTipTime()
       ]);
+
+      tiptime = this.props.checkTipTime(tiptime);
 
       accounts = this.calculateRewardData({accounts, tiptime});
       if (accounts.length === 0) {
@@ -93,7 +91,8 @@ class CheckBalanceButton extends React.Component {
   render() {
     const {
       isCheckingRewards,
-      actions, error
+      actions,
+      error,
     } = this.state;
 
     return (
@@ -110,7 +109,7 @@ class CheckBalanceButton extends React.Component {
           handleClose={this.resetState}
           show={isCheckingRewards}>
           <p>
-            Exporting public keys from your {this.props.vendor === 'ledger' ? 'Ledger' : 'Trezor'} device, scanning the blockchain for funds, and calculating any claimable rewards. Please approve any public key export requests on your device.
+            Exporting public keys from your {VENDOR[this.props.vendor]} device, scanning the blockchain for funds, and calculating any claimable rewards. Please approve any public key export requests on your device.
           </p>
         </ActionListModal>
       </React.Fragment>
