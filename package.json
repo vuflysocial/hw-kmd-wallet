@@ -49,6 +49,8 @@
     "react-app-rewire-scss": "^1.0.2",
     "react-device-detect": "^1.11.14",
     "react-dom": "^16.6.3",
+    "react-qr-reader": "^2.1.0",
+    "qrcode.react": "^0.7.1",
     "satoshi-bitcoin": "^1.0.4",
     "scientific-to-decimal": "^1.1.1",
     "trezor-connect": "^8.1.7",
