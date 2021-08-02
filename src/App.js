@@ -88,16 +88,13 @@ class App extends React.Component {
       document.getElementById('body').className = getLocalStorageVar('settings').theme;
     }
 
-    if (isElectron && appData.blockchainAPI === 'spv') {
-      blockchain[blockchainAPI].setCoin(this.state.coin);
-    }
-
-    if (!isElectron || (isElectron && appData.blockchainAPI === 'insight')) this.checkExplorerEndpoints();
-
     if (isElectron && appData.blockchainAPI === 'spv'/*&& isElectron.blockchainAPI*/) {
+      blockchain[blockchainAPI].setCoin(this.state.coin);
       setBlockchainAPI('spv');
     }
 
+    if (!isElectron || (isElectron && appData.blockchainAPI === 'insight')) this.checkExplorerEndpoints();
+    
     if (isElectron && appData.isNspv) {
       ipcRenderer.on('nspvRecheck', (event, arg) => {
         console.warn('nspvRecheck arg', arg);
