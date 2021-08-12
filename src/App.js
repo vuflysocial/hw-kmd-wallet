@@ -29,18 +29,15 @@ import {
   TX_FEE,
   VENDOR,
 } from './constants';
-import {
-  setExplorerUrl,
-  getInfo,
-} from './lib/blockchain';
 import accountDiscovery from './lib/account-discovery';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
 import apiEndpoints from './lib/coins';
 import getKomodoRewards from './lib/get-komodo-rewards';
-import {osName} from 'react-device-detect';
+//import {osName} from 'react-device-detect';
 import {
   isElectron,
   appData,
+  ipcRenderer,
 } from './Electron';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
@@ -168,7 +165,7 @@ class App extends React.Component {
   }
 
   checkExplorerEndpoints = async () => {
-    const getInfoRes =  await Promise.all(apiEndpoints[this.state.coin].map((value, index) => {
+    const getInfoRes =  await Promise.all(apiEndpoints[this.state.coin].api.map((value, index) => {
       return blockchain[blockchainAPI].getInfo(value);
     }));
     let isExplorerEndpointSet = false;

@@ -14,6 +14,7 @@ import TrezorUtxoLib from '@trezor/utxo-lib';
 
 let pubKeysCache = {};
 let isFirstRun = {};
+let gapLimit = 20;
 let config = {
   discoveryGapLimit: 20,
   discoveryAddressConcurrency: 10,
@@ -25,16 +26,10 @@ export const setConfigVar = (name, val) => {
   console.warn('setConfigVar', config);
 };
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
-
 const walkDerivationPath = async node => {
   const addresses = [];
-  let addressConcurrency = config.discoveryGapLimit;
-  let consecutiveUnusedAddresses = config.discoveryAddressConcurrency;
+  let addressConcurrency = config.discoveryAddressConcurrency;
+  let consecutiveUnusedAddresses = 0;
   let addressIndex = 0;
 
   if (window.location.href.indexOf('extgap=s') > -1) gapLimit = 30;
@@ -261,7 +256,9 @@ const accountDiscovery = async (vendor, coin) => {
 
     while (true) {
       const account = await getAccountAddresses(accountIndex, vendor);
-
+      
+      console.warn('accountDiscovery accountIndex', accountIndex);
+      
       if (account.addresses.length === 0) {
         account.utxos = [];
         account.history = {
@@ -271,7 +268,7 @@ const accountDiscovery = async (vendor, coin) => {
         }; 
         account.accountIndex = accountIndex;
         accounts.push(account);
-        if (airDropCoins.indexOf(coin) === -1 || accountIndex === 4) return accounts;
+        if (airDropCoins.indexOf(coin) === -1 && accountIndex === 2) return accounts;
       } else {
         account.utxos = await getAddressUtxos(account.addresses);
         account.history = await getAddressHistory(account.addresses); 
