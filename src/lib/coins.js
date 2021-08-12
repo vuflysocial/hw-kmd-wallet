@@ -165,6 +165,10 @@ const coins = {
       'https://gleec.xyz/insight-api-komodo/',
     ],
   },
+  TOKEL: {
+    explorer: 'https://tokel.explorer.dexstats.info/',
+    api: ['https://tokel.explorer.dexstats.info/insight-api-komodo/'],
+  },
   // DP: '',
   // SHARK: '',
   // EQL: '',
