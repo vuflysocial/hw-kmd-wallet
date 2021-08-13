@@ -167,7 +167,10 @@ const coins = {
   },
   TOKEL: {
     explorer: 'https://tokel.explorer.dexstats.info/',
-    api: ['https://tokel.explorer.dexstats.info/insight-api-komodo/'],
+    api: [
+      'https://tokel.explorer.dexstats.info/insight-api-komodo/',
+      'https://explorer.komodoplatform.com:10000/tokel/api/',
+    ],
   },
   // DP: '',
   // SHARK: '',
