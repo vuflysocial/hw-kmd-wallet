@@ -250,6 +250,7 @@ const accountDiscovery = async (vendor, coin) => {
     if (airDropCoins.indexOf(coin) > -1 &&
         window.location.href.indexOf('extgap=') === -1) {
       gapLimit = 50;
+      console.warn(`airdrop coin ${coin}, set gap limit to`, gapLimit);
     } else {
       gapLimit = 20;
     }
@@ -257,7 +258,7 @@ const accountDiscovery = async (vendor, coin) => {
     while (true) {
       const account = await getAccountAddresses(accountIndex, vendor);
       
-      console.warn('accountDiscovery accountIndex', accountIndex);
+      console.warn('accountDiscovery accountIndex', accountIndex, ', addrlen ', account.addresses.length);
       
       if (account.addresses.length === 0) {
         account.utxos = [];
@@ -268,7 +269,8 @@ const accountDiscovery = async (vendor, coin) => {
         }; 
         account.accountIndex = accountIndex;
         accounts.push(account);
-        if (airDropCoins.indexOf(coin) === -1 && accountIndex === 2) return accounts;
+        if (airDropCoins.indexOf(coin) === -1 && accountIndex >= 2) break;
+        else if (airDropCoins.indexOf(coin) > -1 && accountIndex >= 3) break;
       } else {
         account.utxos = await getAddressUtxos(account.addresses);
         account.history = await getAddressHistory(account.addresses); 
