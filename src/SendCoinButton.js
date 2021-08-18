@@ -20,6 +20,7 @@ import {
   isElectron,
   appData,
 } from './Electron';
+import {getLocalStorageVar} from './lib/localstorage-util';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 
@@ -30,7 +31,7 @@ class SendCoinButton extends React.Component {
     this.setSkipBroadcast = this.setSkipBroadcast.bind(this);
 
     return {
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1,
+      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
       isClaimingRewards: false,
       error: false,
       success: false,

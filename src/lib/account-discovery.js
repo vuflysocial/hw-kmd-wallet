@@ -14,7 +14,6 @@ import TrezorUtxoLib from '@trezor/utxo-lib';
 
 let pubKeysCache = {};
 let isFirstRun = {};
-let gapLimit = 20;
 let config = {
   discoveryGapLimit: 20,
   discoveryAddressConcurrency: 10,
@@ -29,6 +28,7 @@ export const setConfigVar = (name, val) => {
 const walkDerivationPath = async node => {
   const addresses = [];
   let addressConcurrency = config.discoveryAddressConcurrency;
+  let gapLimit = config.discoveryGapLimit;
   let consecutiveUnusedAddresses = 0;
   let addressIndex = 0;
 
@@ -41,6 +41,7 @@ const walkDerivationPath = async node => {
   if (window.location.href.indexOf('timeout=m') > -1) addressConcurrency = 5;
 
   if (gapLimit > 20) addressConcurrency = 5;
+  if (gapLimit > 50) addressConcurrency = 3;
 
   if (isElectron && appData.isNspv) {
     console.warn('blockchainAPI', blockchainAPI);
@@ -48,6 +49,8 @@ const walkDerivationPath = async node => {
     gapLimit = 5;
     console.warn('walkDerivationPath gapLimit', gapLimit);
   }
+
+  console.warn(`walkDerivationPath gapLimit = ${gapLimit}`);
 
   while (consecutiveUnusedAddresses < gapLimit) {
     const addressApiRequests = [];
@@ -247,19 +250,17 @@ const accountDiscovery = async (vendor, coin) => {
     ipcRenderer.send('nspvRunRecheck', {coin, isFirstRun: !isFirstRun.hasOwnProperty(coin)});
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
-    if (airDropCoins.indexOf(coin) > -1 &&
+    /*if (airDropCoins.indexOf(coin) > -1 &&
         window.location.href.indexOf('extgap=') === -1) {
       gapLimit = 50;
       console.warn(`airdrop coin ${coin}, set gap limit to`, gapLimit);
     } else {
       gapLimit = 20;
-    }
+    }*/
 
     while (true) {
       const account = await getAccountAddresses(accountIndex, vendor);
-      
-      console.warn('accountDiscovery accountIndex', accountIndex, ', addrlen ', account.addresses.length);
-      
+            
       if (account.addresses.length === 0) {
         account.utxos = [];
         account.history = {
