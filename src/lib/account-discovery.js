@@ -9,7 +9,6 @@ import {
   appData,
   ipcRenderer,
 } from '../Electron';
-import {airDropCoins} from './coins';
 import TrezorUtxoLib from '@trezor/utxo-lib';
 
 let pubKeysCache = {};
@@ -251,14 +250,6 @@ const accountDiscovery = async (vendor, coin) => {
     ipcRenderer.send('nspvRunRecheck', {coin, isFirstRun: !isFirstRun.hasOwnProperty(coin)});
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
-    /*if (airDropCoins.indexOf(coin) > -1 &&
-        window.location.href.indexOf('extgap=') === -1) {
-      gapLimit = 50;
-      console.warn(`airdrop coin ${coin}, set gap limit to`, gapLimit);
-    } else {
-      gapLimit = 20;
-    }*/
-
     while (true) {
       const account = await getAccountAddresses(accountIndex, vendor);
       console.warn('accountDiscovery accountIndex', accountIndex);
@@ -272,8 +263,7 @@ const accountDiscovery = async (vendor, coin) => {
         }; 
         account.accountIndex = accountIndex;
         accounts.push(account);
-        if (airDropCoins.indexOf(coin) === -1 && accountIndex >= 2) break;
-        else if (airDropCoins.indexOf(coin) > -1 && accountIndex >= 3) break;
+        if (config.accountIndex === 0 && accountIndex >= 2) break;
       } else {
         account.utxos = await getAddressUtxos(account.addresses);
         account.history = await getAddressHistory(account.addresses); 

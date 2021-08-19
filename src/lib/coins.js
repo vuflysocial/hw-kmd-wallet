@@ -190,9 +190,4 @@ const coins = {
   */
 };
 
-export const airDropCoins = [
-  'WSB',
-  'VOTE2021',
-];
-
 export default sortObject(coins);
