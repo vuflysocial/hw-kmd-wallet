@@ -319,6 +319,18 @@ class App extends React.Component {
         }
 
         <Footer>
+          {!isElectron &&
+            <div className="download-desktop-block">
+              <a
+                href="https://github.com/pbca26/hw-kmd-wallet/releases"
+                target="_blank">
+                <button
+                  className="button is-light">
+                  <i className="fa fa-download"></i>Download for desktop
+                </button>
+              </a>
+            </div>
+          }
           <p>
             <strong>{this.state.coin === voteCoin ? 'Hardware wallet KMD Notary Elections' : 'KMD hardware wallet'}</strong> by <a target="_blank" rel="noopener noreferrer" href="https://github.com/atomiclabs">Atomic Labs</a> and <a target="_blank" rel="noopener noreferrer" href="https://github.com/komodoplatform">Komodo Platform</a>.
           </p>
