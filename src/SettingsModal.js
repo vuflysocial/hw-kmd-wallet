@@ -8,6 +8,7 @@ import {
 import {SETTINGS} from './constants';
 import apiEndpoints from './lib/coins';
 import {setConfigVar} from './lib/account-discovery';
+import {isElectron} from './Electron';
 
 class SettingsModal extends React.Component {
   state = this.initialState;
@@ -100,20 +101,22 @@ class SettingsModal extends React.Component {
                   className={'item light' + (this.state.theme === 'tlight' ? ' active' : '')}></div>
               </div>
             </li>
-            <li>
-              <span className="slider-text">Always check firmware version</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  name="fwCheck"
-                  value={this.state.fwCheck}
-                  checked={this.state.fwCheck}
-                  readOnly />
-                <span
-                  className="slider round"
-                  onClick={this.setFwCheck}></span>
-              </label>
-            </li>
+            {!isElectron &&
+              <li>
+                <span className="slider-text">Always check firmware version</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    name="fwCheck"
+                    value={this.state.fwCheck}
+                    checked={this.state.fwCheck}
+                    readOnly />
+                  <span
+                    className="slider round"
+                    onClick={this.setFwCheck}></span>
+                </label>
+              </li>
+            }
             <li>
               <span className="slider-text">Enable debug controls (display xpub, raw tx hex)</span>
               <label className="switch">
