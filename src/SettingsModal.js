@@ -22,6 +22,7 @@ class SettingsModal extends React.Component {
       theme: getLocalStorageVar('settings').theme,
       discoveryGapLimit: getLocalStorageVar('settings').discoveryGapLimit,
       discoveryAddressConcurrency: getLocalStorageVar('settings').discoveryAddressConcurrency,
+      accountIndex: getLocalStorageVar('settings').accountIndex,
       explorerEndpoint: 'default',
       fwCheck: getLocalStorageVar('settings').fwCheck,
       enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
@@ -155,6 +156,22 @@ class SettingsModal extends React.Component {
                     key={`discovery-address-concurrency-${item}`}
                     value={item}>
                     {SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY[item]}
+                  </option>
+                ))}
+              </select>
+            </li>
+            <li>
+              Account index
+              <select
+                name="accountIndex"
+                className="explorer-selector"
+                value={this.state.accountIndex}
+                onChange={(event) => this.setDiscoveryConfigVar(event, 'accountIndex')}>
+                {Object.keys(SETTINGS.ACCOUNT_INDEX).map((item, index) => (
+                  <option
+                    key={`discovery-account-index-${item}`}
+                    value={item}>
+                    {SETTINGS.ACCOUNT_INDEX[item]}
                   </option>
                 ))}
               </select>

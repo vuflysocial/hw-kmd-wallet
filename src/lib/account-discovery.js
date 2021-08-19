@@ -17,6 +17,7 @@ let isFirstRun = {};
 let config = {
   discoveryGapLimit: 20,
   discoveryAddressConcurrency: 10,
+  accountIndex: 0,
 };
 
 export const setConfigVar = (name, val) => {
@@ -222,7 +223,7 @@ export const getAddressHistoryOld = async addresses => {
 
 const accountDiscovery = async (vendor, coin) => {
   const accounts = [];
-  let accountIndex = 0;
+  let accountIndex = config.accountIndex > 0 ? config.accountIndex - 1 : 0;
 
   if (isElectron && appData.isNspv) {
     console.warn('accountDiscovery accountIndex', accountIndex);
@@ -260,7 +261,8 @@ const accountDiscovery = async (vendor, coin) => {
 
     while (true) {
       const account = await getAccountAddresses(accountIndex, vendor);
-            
+      console.warn('accountDiscovery accountIndex', accountIndex);
+      
       if (account.addresses.length === 0) {
         account.utxos = [];
         account.history = {
@@ -278,6 +280,8 @@ const accountDiscovery = async (vendor, coin) => {
         account.accountIndex = accountIndex;
         accounts.push(account);
       }
+
+      if (config.accountIndex > 0) break;
 
       accountIndex++;
     }

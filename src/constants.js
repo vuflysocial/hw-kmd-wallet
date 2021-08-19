@@ -75,4 +75,13 @@ export const SETTINGS = {
     5: 5,
     10: '10 (default)',
   },
+  ACCOUNT_INDEX: {
+    0: 'default',
+    1: 1,
+    2: 2,
+    3: 3,
+    4: 4,
+    5: 5,
+    6: 6,
+  },
 };
