@@ -31,10 +31,13 @@
   "dependencies": {
     "@ledgerhq/hw-app-btc": "^5.16.0",
     "@ledgerhq/hw-transport-node-hid-noevents": "^5.51.1",
+    "async": "^2.6.2",
     "babel-polyfill": "^6.26.0",
     "bitgo-utxo-lib": "git+https://github.com/pbca26/bitgo-utxo-lib",
     "create-hash": "git://github.com/pbca26/createHash#electron-v4",
     "fix-path": "^2.1.0",
+    "fs-extra": "^7.0.0",
+    "request": "^2.88.0",
     "tx-decoder": "git+https://github.com/pbca26/tx-decoder"
   }
 }
