@@ -34,7 +34,7 @@ import accountDiscovery from './lib/account-discovery';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
 import apiEndpoints from './lib/coins';
 import getKomodoRewards from './lib/get-komodo-rewards';
-//import {osName} from 'react-device-detect';
+import {isMobile} from 'react-device-detect';
 import {
   isElectron,
   appData,
@@ -77,6 +77,17 @@ class App extends React.Component {
       console.warn('run recheck');
       ipcRenderer.send('nspvRunRecheck', {coin: 'rick'});
     }, 2000);*/
+
+    // limit mobile support to ledger webusb only
+    if (isMobile) {
+      hw.ledger.setLedgerFWVersion('webusb');
+
+      this.setState({
+        vendor: 'ledger',
+        ledgerDeviceType: 's',
+        ledgerFWVersion: 'webusb',
+      });
+    }
 
     initSettings();
     hw.trezor.init();
@@ -210,6 +221,19 @@ class App extends React.Component {
     this.setState(this.initialState);
     // TODO: auto-close connection after idle time
     hw.ledger.resetTransport();
+
+    // limit mobile support to ledger webusb only
+    if (isMobile) {
+      setTimeout(() => {
+        hw.ledger.setLedgerFWVersion('webusb');
+
+        this.setState({
+          vendor: 'ledger',
+          ledgerDeviceType: 's',
+          ledgerFWVersion: 'webusb',
+        });
+      }, 50);
+    }
   }
 
   syncData = async () => {
@@ -495,7 +519,8 @@ class App extends React.Component {
                   src={`${this.state.vendor}-logo.png`}
                   alt={VENDOR[this.state.vendor]} />
                 <div className="trezor-webusb-container"></div>
-                {this.state.vendor === 'ledger' &&
+                {!isMobile &&
+                 this.state.vendor === 'ledger' &&
                  !isElectron &&
                   <div className="ledger-device-selector">
                     <div className="ledger-device-selector-buttons">
