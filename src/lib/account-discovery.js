@@ -76,9 +76,9 @@ const walkDerivationPath = async node => {
   return addresses.slice(0, addresses.length - consecutiveUnusedAddresses);
 };
 
-const getAccountAddresses = async (account, vendor) => {
+const getAccountAddresses = async (account, vendor, _xpub) => {
   const derivationPath = `44'/141'/${account}'`;
-  const xpub = pubKeysCache[derivationPath] || await hw[vendor].getXpub(derivationPath);
+  const xpub = _xpub || pubKeysCache[derivationPath] || await hw[vendor].getXpub(derivationPath);
   const node = bitcoin.bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
   const internalNode = node.derive(1);
@@ -220,10 +220,11 @@ export const getAddressHistoryOld = async addresses => {
   };
 };
 
-const accountDiscovery = async (vendor, coin) => {
+const accountDiscovery = async (vendor, coin, _accounts) => {
   const accounts = [];
   let accountIndex = config.accountIndex > 0 ? config.accountIndex - 1 : 0;
-
+  
+  // TODO
   if (isElectron && appData.isNspv) {
     console.warn('accountDiscovery accountIndex', accountIndex);
     const account = await getAccountAddresses(accountIndex, vendor);
@@ -251,29 +252,35 @@ const accountDiscovery = async (vendor, coin) => {
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
     while (true) {
-      const account = await getAccountAddresses(accountIndex, vendor);
-      console.warn('accountDiscovery accountIndex', accountIndex);
-      
-      if (account.addresses.length === 0) {
-        account.utxos = [];
-        account.history = {
-          addresses: [],
-          allTxs: [],
-          historyParsed: [],
-        }; 
-        account.accountIndex = accountIndex;
-        accounts.push(account);
-        if (config.accountIndex === 0 && accountIndex >= 2) break;
+      if (!_accounts || (_accounts && _accounts[accountIndex])) {
+        if (_accounts && _accounts[accountIndex]) console.warn(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
+        //const account = await getAccountAddresses(accountIndex, vendor);
+        const account = await getAccountAddresses(accountIndex, vendor, _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null);
+        console.warn('accountDiscovery accountIndex', accountIndex);
+        
+        if (account.addresses.length === 0) {
+          account.utxos = [];
+          account.history = {
+            addresses: [],
+            allTxs: [],
+            historyParsed: [],
+          }; 
+          account.accountIndex = accountIndex;
+          accounts.push(account);
+          if (config.accountIndex === 0 && accountIndex >= 2) break;
+        } else {
+          account.utxos = await getAddressUtxos(account.addresses);
+          account.history = await getAddressHistory(account.addresses); 
+          account.accountIndex = accountIndex;
+          accounts.push(account);
+        }
+
+        if (config.accountIndex > 0) break;
+
+        accountIndex++;
       } else {
-        account.utxos = await getAddressUtxos(account.addresses);
-        account.history = await getAddressHistory(account.addresses); 
-        account.accountIndex = accountIndex;
-        accounts.push(account);
+        return accounts;
       }
-
-      if (config.accountIndex > 0) break;
-
-      accountIndex++;
     }
   }
 
