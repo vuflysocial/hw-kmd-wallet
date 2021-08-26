@@ -289,6 +289,17 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
   return accounts;
 };
 
+export const getAccountNode = (xpub) => {
+  const node = bitcoin.bip32.fromBase58(xpub);
+  const externalNode = node.derive(0);
+  const internalNode = node.derive(1);
+
+  return {
+    externalNode,
+    internalNode,
+  };
+};
+
 export const clearPubkeysCache = () => {
   pubKeysCache = {};
 };
