@@ -399,7 +399,7 @@ class SendCoinButton extends React.Component {
           {this.props.coin === 'KMD' &&
            this.props.vendor === 'trezor' &&
            (isClaimingRewards || this.state.rewards > 0) &&
-            <p>There will be an additional message on the latest firmware versions <strong>"Warning! Locktime is set but will have no effect. Continue?"</strong>. You need to approve it in order to claim interest.</p>
+            <p>There will be an additional message on the latest firmware versions <strong>"Warning! Locktime is set but will have no effect. Continue?"</strong>. You need to approve it in order to claim rewards.</p>
           }
           {this.state.isDebug &&
             <label
