@@ -36,7 +36,7 @@ const ActionListModal = ({
                 <span className="left-icon icon has-text-grey">
                   <i className={icon}></i>
                 </span>
-                  {description}
+                {description}
                 <div className="right-icon">
                   {typeof state === 'boolean' ? (
                     <Boolean value={state} />
