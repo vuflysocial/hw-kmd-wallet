@@ -35,3 +35,41 @@
     color: #fff !important;
   }
 }
+
+.Modal {
+  .modal-content {
+    * {
+      color: #121958 !important;
+    }
+    .card,
+    .card-header-title {
+      background: #fff !important;
+    }
+    .card-header {
+      border-bottom: solid 1px rgba(0,0,0,0.2) !important;
+    }
+  }
+}
+
+.ActionListModal.Receive-modal .Modal {
+  text-align: left;
+
+  .panel-heading, .panel-tabs, .panel-block, .panel-block.is-active {
+    border-bottom: 1px solid #dbdbdb;
+    border-left: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+  }
+
+  .panel .panel-block:first-child {
+    border-top: 1px solid #dbdbdb;
+  }
+
+  .table {
+    margin: 25px 0 35px 0;
+  }
+
+  .button {
+    margin: 0 auto;
+    display: block;
+  }
+}
