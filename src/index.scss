@@ -66,3 +66,14 @@ html {
     }
   }
 }
+
+.button.is-primary {
+  background: #093ec3e0 !important;
+  color: #fff !important;
+}
+
+.modal-action-block {
+  &.center {
+    text-align: center;
+  }
+}
