@@ -78,11 +78,9 @@ class SettingsModal extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <span className="explorer-selector-block">
-          <i
-            className="fa fa-cog"
-            onClick={this.triggerModal}></i>
-        </span>
+        <li onClick={this.triggerModal}>
+          <i className="fa fa-cogs"></i>
+        </li>
         <Modal
           title="Settings"
           show={this.state.isClosed === false}
@@ -198,6 +196,12 @@ class SettingsModal extends React.Component {
               </li>
             }
           </ul>
+          <div className="modal-action-block right">
+            <button
+              className="button is-primary">
+              OK
+            </button>
+          </div>
         </Modal>
       </React.Fragment>
     );
