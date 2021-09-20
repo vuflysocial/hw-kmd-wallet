@@ -51,7 +51,8 @@
   }
 }
 
-.ActionListModal.Receive-modal .Modal {
+.ActionListModal.Receive-modal .Modal,
+.ActionListModal.Scan-balances-modal .Modal {
   text-align: left;
 
   .panel-heading, .panel-tabs, .panel-block, .panel-block.is-active {
@@ -137,6 +138,59 @@
 
       tbody tr:last-child td {
         border-bottom: none !important;
+      }
+    }
+  }
+}
+
+.recent-operations-block {
+  display: block;
+
+  h4 {
+    font-size: 18px;
+  }
+
+  .recent-operations {
+    border-radius: 6px;
+    background: #fff;
+    padding: 20px 20px 0 20px;
+    margin-top: 10px;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.15);
+
+    .item {
+      height: 60px;
+
+      .item-right-pane {
+        float: right;
+
+        .amount {
+          color: #13D0A7;
+          font-weight: 500;
+          font-size: 18px;
+          position: relative;
+          top: 6px;
+        }
+      }
+      .item-left-pane {
+        float: left;
+
+        .date {
+          color: #a9a9a9;
+          position: absolute;
+          margin-top: 17px;
+          font-size: 13px;
+          margin-left: 10px;
+        }
+        .direction {
+          margin-left: 10px;
+          position: absolute;
+          margin-top: -3px;
+          text-transform: capitalize;
+        }
+        img {
+          width: 30px;
+          height: 30px;
+        }
       }
     }
   }
