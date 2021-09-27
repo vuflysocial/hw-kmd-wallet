@@ -102,7 +102,7 @@ class CheckAllBalancesButton extends React.Component {
         }
 
         console.warn(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
-        setExplorerUrl(coins[coin].api[apiEndPointIndex]);
+        blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
         isExplorerEndpointSet = true;
     
         this.setState({
