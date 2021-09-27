@@ -29,7 +29,7 @@ class SelectCoinModal extends React.Component {
     const allAvailableCoins = Object.keys(apiEndpoints);
     let coinsList = [];
 
-    for (let i =0; i < allAvailableCoins.length; i++) {
+    for (let i = 0; i < allAvailableCoins.length; i++) {
       if (Object.keys(this.props.coins).indexOf(allAvailableCoins[i]) === -1) coinsList.push(allAvailableCoins[i]);
     }
 
