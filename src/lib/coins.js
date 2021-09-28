@@ -100,10 +100,6 @@ const coins = {
     explorer: 'https://mcl.explorer.dexstats.info/',
     api: ['https://mcl.explorer.dexstats.info/insight-api-komodo/'],
   },
-  RFOX: {
-    explorer: 'https://rfox.explorer.dexstats.info/',
-    api: ['https://rfox.explorer.dexstats.info/insight-api-komodo/'],
-  },
   LABS: {
     explorer: 'https://labs.explorer.dexstats.info/',
     api: ['https://labs.explorer.dexstats.info/insight-api-komodo/'],
