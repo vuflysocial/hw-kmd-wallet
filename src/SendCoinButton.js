@@ -23,7 +23,7 @@ import {
   isElectron,
   appData,
 } from './Electron';
-import {getLocalStorageVar} from './localstorage-util';
+import {getLocalStorageVar} from './lib/localstorage-util';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 

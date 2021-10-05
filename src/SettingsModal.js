@@ -76,6 +76,7 @@ class SettingsModal extends React.Component {
   }
 
   render() {
+    console.warn(this.props.coin)
     return (
       <React.Fragment>
         <li onClick={this.triggerModal}>
