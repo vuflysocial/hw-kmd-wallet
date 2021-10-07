@@ -481,6 +481,8 @@ class SendCoinButton extends React.Component {
   }
 
   render() {
+    console.warn('send coin button', this.props);
+
     const {isClaimingRewards} = this.state;
     const isNoBalace = this.props.isClaimRewardsOnly ? Number(this.props.balance) <= 0 : Number(this.props.accounts[this.state.accountIndex].balance || 0) <= 0;
     let {coin, isClaimRewardsOnly, balance} = this.props;
@@ -578,8 +580,8 @@ class SendCoinButton extends React.Component {
                 </div>
               </div>
             }
-            {(!this.props.isClaimRewardsOnly && this.props.accounts[this.state.accountIndex] && this.props.accounts[this.state.accountIndex].length > 0) &&
-             (this.props.isClaimRewardsOnly && this.props.account.addresses && this.props.account.addresses.length > 0) &&
+            {((!this.props.isClaimRewardsOnly && this.props.accounts[this.state.accountIndex] && this.props.accounts[this.state.accountIndex].length > 0) ||
+             (this.props.isClaimRewardsOnly && this.props.account.addresses && this.props.account.addresses.length > 0)) &&
               <div style={this.state.address ? {'padding': '10px 20px 20px 20px'} : {'padding': '10px 20px 30px 20px'}}>
                 Send change to
                 <select
