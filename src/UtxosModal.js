@@ -3,7 +3,7 @@ import Modal from './Modal';
 import getKomodoRewards from './lib/get-komodo-rewards';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
 import humanRewardEndDate from './lib/human-reward-end-date';
-import blockchain from './lib/blockchain';
+import blockchain, {blockchainAPI} from './lib/blockchain';
 import Boolean from './Boolean';
 import './UtxosModal.scss';
 
@@ -34,7 +34,7 @@ class UtxosModal extends React.Component {
       isClosed: false
     });
 
-    const tiptime = await blockchain.getTipTime();
+    const tiptime = await blockchain[blockchainAPI].getTipTime();
     this.setState({
       isClosed: false,
       tiptime,
