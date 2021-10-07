@@ -380,7 +380,7 @@ class SendCoinButton extends React.Component {
           updateActionState(this, currentAction, 'loading');
           
           const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
-            return getInfo(value);
+            return blockchain[blockchainAPI].getInfo(value);
           }));
           let longestBlockHeight = 0;
           let apiEndPointIndex = 0;
@@ -399,7 +399,7 @@ class SendCoinButton extends React.Component {
           }
   
           console.warn(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
-          setExplorerUrl(coins[coin].api[apiEndPointIndex]);
+          blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
 
           const {txid} = await blockchain[blockchainAPI].broadcast(rawtx);
           if (!txid || txid.length !== 64) {
