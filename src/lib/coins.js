@@ -154,6 +154,10 @@ const coins = {
     explorer: 'https://soulja.explorer.dexstats.info/',
     api: ['https://soulja.explorer.dexstats.info/insight-api-komodo/'],
   },
+  DP: {
+    explorer: 'https://dp.explorer.dexstats.info/',
+    api: ['https://dp.explorer.dexstats.info/insight-api-komodo/'],
+  },
   GLEEC: {
     explorer: 'https://gleec.xyz/',
     api: [
@@ -168,12 +172,14 @@ const coins = {
       'https://explorer.komodoplatform.com:10000/tokel/api/',
     ],
   },
-  // DP: '',
+  TKLTEST: {
+    explorer: 'https://tkltest.explorer.dexstats.info/',
+    api: [
+      'https://tkltest.explorer.dexstats.info/insight-api-komodo/',
+      'https://explorer.komodoplatform.com:10000/tkltest/api/',
+    ],
+  },
   // SHARK: '',
-  // EQL: '',
-  // PIZZA: '',
-  // BEER: '',
-  // DSEC: '',
   /* coins below need special handling due to no overwinter support
   ZILLA: {
     explorer: 'https://zilla.explorer.dexstats.info/',
