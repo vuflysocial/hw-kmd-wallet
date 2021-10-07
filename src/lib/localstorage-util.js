@@ -1,11 +1,61 @@
+import {createAdapter} from 'iocane';
+
+const rootVar = 'hw-wallet';
+let localStorageCache = {};
+let pw;
+
+if (!localStorage.getItem(rootVar)) {
+  localStorage.setItem(rootVar, '');
+}
+
+export const resetLocalStorage = () => {
+  pw = null;
+
+  localStorage.setItem(rootVar, '');
+};
+
+export const setLocalStoragePW = (_pw) => {
+  pw = _pw;
+
+  console.warn('localStorage pw set to: ', pw);
+};
+
+export const decodeStoredData = () => {
+  return new Promise((resolve, reject) => {
+    if (localStorage.getItem(rootVar).length) {
+      createAdapter()
+      .decrypt(localStorage.getItem(rootVar), pw)
+      .catch((err) => {
+        resolve(false);
+      })
+      .then(decryptedString => {
+        console.warn('decryptedString', decryptedString);
+        
+        localStorageCache = JSON.parse(decryptedString);
+        resolve(true);
+      });
+    } else {
+      resolve(false);
+    }
+  });
+};
+
+export const encodeStoredData = (str) => {
+  createAdapter()
+  .encrypt(str, pw)
+  .catch((err) => {
+    console.warn('encodeStoredData error', err);
+  })
+  .then(encryptedString => {
+    localStorage.setItem(rootVar, encryptedString);
+  });
+};
+
 export const setLocalStorageVar = (name, json) => {
-  console.warn(localStorage.getItem(name));
-  console.warn(typeof localStorage.getItem(name));
-
   let _var = {};
-
+  
   try {
-    _var = JSON.parse(localStorage.getItem(name)) || {};
+    _var = localStorageCache[name] || {};
   } catch (e) {
     console.warn(e);
   }
@@ -16,17 +66,11 @@ export const setLocalStorageVar = (name, json) => {
 
   console.warn('_var', _var);
 
-  localStorage.setItem(name, JSON.stringify(_var));
+  localStorageCache[name] = json;
+
+  encodeStoredData(JSON.stringify(localStorageCache));
 }
 
 export const getLocalStorageVar = (name) => {
-  const _var = localStorage.getItem(name);
-
-  if (_var) {
-    const _json = JSON.parse(_var);
-
-    return _json;
-  } else {
-    return null;
-  }
+  return localStorageCache[name] ? localStorageCache[name] : {};
 }
