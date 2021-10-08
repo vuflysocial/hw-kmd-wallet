@@ -10,6 +10,8 @@ import apiEndpoints from './lib/coins';
 import {setConfigVar} from './lib/account-discovery';
 import {isElectron} from './Electron';
 
+// TODO: individual settings for each coin
+
 class SettingsModal extends React.Component {
   state = this.initialState;
   
@@ -199,6 +201,7 @@ class SettingsModal extends React.Component {
           </ul>
           <div className="modal-action-block right">
             <button
+              onClick={this.triggerModal}
               className="button is-primary">
               OK
             </button>

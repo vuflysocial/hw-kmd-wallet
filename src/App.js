@@ -48,6 +48,7 @@ import DashboardOperations from './DashboardOperations';
 import DashboardPrices from './DashboardPrices';
 import HWFirmwareRequirements from './HWFirmwareRequirementsModal';
 import Sidebar from './Sidebar';
+import LoginModal from './LoginModal';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 const MAX_TIP_TIME_DIFF = 3600 * 24;
@@ -61,6 +62,7 @@ class App extends React.Component {
     this.setActiveAccount = this.setActiveAccount.bind(this);
     this.removeCoin = this.removeCoin.bind(this);
     this.isCoinData = this.isCoinData.bind(this);
+    this.closeLoginModal = this.closeLoginModal.bind(this);
 
     return {
       accounts: [],
@@ -73,10 +75,39 @@ class App extends React.Component {
       coin: 'KMD',
       activeCoin: null,
       activeAccount: null,
+      loginModalClosed: false,
+      coins: {},
+      lastOperations: [],
+      theme: 'tdark',
+      //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
+      //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
+      //theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
+    };
+  }
+
+  closeLoginModal(pw) {
+    this.setState({
+      loginModalClosed: true,
+    });
+
+    initSettings();
+
+    if (!getLocalStorageVar('settings')) {
+      setLocalStorageVar('settings', {theme: 'tdark'});
+      document.getElementById('body').className = 'tdark';
+    } else {
+      document.getElementById('body').className = getLocalStorageVar('settings').theme;
+    }
+
+    this.setState({
       coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
-    };
+    });
+
+    setTimeout(() => {
+      this.syncData();
+    });
   }
 
   removeCoin(coin) {
@@ -145,7 +176,7 @@ class App extends React.Component {
 
   componentWillMount() {
     document.title = `Komodo Hardware Wallet (v${version})`;
-    if (isElectron && !appData.isNspv) {
+    if (!isElectron || (isElectron && !appData.isNspv)) {
       setInterval(() => {
         if (!this.state.syncInProgress) {
           console.warn('auto sync called');
@@ -170,15 +201,7 @@ class App extends React.Component {
       });
     }
 
-    initSettings();
     hw.trezor.init();
-
-    if (!getLocalStorageVar('settings')) {
-      setLocalStorageVar('settings', {theme: 'tdark'});
-      document.getElementById('body').className = 'tdark';
-    } else {
-      document.getElementById('body').className = getLocalStorageVar('settings').theme;
-    }
 
     if (isElectron && appData.blockchainAPI === 'spv'/*&& isElectron.blockchainAPI*/) {
       blockchain[blockchainAPI].setCoin(this.state.coin);
@@ -238,7 +261,7 @@ class App extends React.Component {
       'ledgerDeviceType': type,
     });
 
-    if (type === 'x') hw.ledger.setLedgerFWVersion('webusb');
+    hw.ledger.setLedgerFWVersion('webusb');
   }
 
   updateLedgerFWVersion = (e) => {
@@ -356,7 +379,7 @@ class App extends React.Component {
         }
 
         console.warn(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
-        setExplorerUrl(coins[coin].api[apiEndPointIndex]);
+        blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
         isExplorerEndpointSet = true;
     
         this.setState({
@@ -493,6 +516,9 @@ class App extends React.Component {
   vendorSelectorRender() {
     return (
       <div className={`App isPristine${!isElectron && window.location.href.indexOf('disable-mobile') === -1 ? ' Responsive' : ''}`}>
+        <LoginModal
+          closeLoginModal={this.closeLoginModal}
+          isClosed={this.state.loginModalClosed} />
         <Header>
           <div className="navbar-brand">
             <div className="navbar-item">
@@ -519,7 +545,8 @@ class App extends React.Component {
           activeAccount={this.state.activeAccount}
           setActiveCoin={this.setActiveCoin}
           setActiveAccount={this.setActiveAccount}
-          vendor={this.state.vendor} />
+          vendor={this.state.vendor}
+          loginModalClosed={this.state.loginModalClosed} />
         <section className="main">
           <React.Fragment>
             <div className="container content text-center">
@@ -591,11 +618,8 @@ class App extends React.Component {
             vendor={this.state.vendor}
             accounts={this.state.activeCoin ? this.state.coins[this.state.activeCoin].accounts : []}
             syncData={this.syncData}
-            handleRewardClaim={this.handleRewardClaim} />
-
-          {testCoins.indexOf(this.state.coin) === -1 &&
-            <BetaWarning />
-          }
+            handleRewardClaim={this.handleRewardClaim}
+            loginModalClosed={this.state.loginModalClosed} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />
@@ -647,7 +671,7 @@ class App extends React.Component {
                   src={`${this.state.vendor}-logo.png`}
                   alt={VENDOR[this.state.vendor]} />
                 <div className="trezor-webusb-container"></div>
-                {!isMobile &&
+                {/*!isMobile &&
                  this.state.vendor === 'ledger' &&
                  !isElectron &&
                   <div className="ledger-device-selector">
@@ -684,7 +708,7 @@ class App extends React.Component {
                       </div>
                     }
                   </div>
-                }
+                  */}
               </React.Fragment>
             ) : (
               <React.Fragment>

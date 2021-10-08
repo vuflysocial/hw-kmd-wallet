@@ -92,6 +92,9 @@
     * {
       color: #121958 !important;
     }
+    .login-error {
+      color: red !important;
+    }
     .card,
     .card-header-title {
       background: #fff !important;
@@ -163,6 +166,7 @@
 
   h4 {
     font-size: 18px;
+    color: #121958 !important;
   }
 
   .recent-operations {
@@ -217,6 +221,7 @@
 
   h4 {
     font-size: 18px;
+    color: #121958 !important;
   }
 
   .assets-price {
@@ -626,4 +631,8 @@ select:-moz-focusring {
 
 .button.is-primary.btn-back {
   margin-bottom: 30px !important;
+}
+
+.left {
+  text-align: left;
 }

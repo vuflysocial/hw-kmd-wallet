@@ -69,8 +69,8 @@ export const setLocalStorageVar = (name, json) => {
   localStorageCache[name] = json;
 
   encodeStoredData(JSON.stringify(localStorageCache));
-}
+};
 
 export const getLocalStorageVar = (name) => {
   return localStorageCache[name] ? localStorageCache[name] : {};
-}
+};

@@ -14,6 +14,8 @@ import {
   appData,
 } from './Electron';
 
+// TODO: add a way to remove/add accounts
+
 class Account extends React.Component {
   state = this.initialState;
 
@@ -174,6 +176,7 @@ const Accounts = ({
             syncData={syncData}
             coin={coin}
             tiptime={tiptime}
+            isClaimRewardsOnly={true}
             claimableAmount={coins[activeCoin].accounts[activeAccount].claimableAmount} />
         }
         <UtxosModal

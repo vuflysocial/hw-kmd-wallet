@@ -1,3 +1,5 @@
+// TODO: pull prices from CG or similar
+
 import React from 'react';
 const assets = [{
   coin: 'VRSC',
