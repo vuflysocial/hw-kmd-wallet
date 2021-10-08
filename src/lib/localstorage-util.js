@@ -31,7 +31,7 @@ export const decodeStoredData = () => {
       .then(decryptedString => {
         console.warn('decryptedString', decryptedString);
         
-        localStorageCache = JSON.parse(decryptedString);
+        localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
         resolve(true);
       });
     } else {
