@@ -62,6 +62,7 @@ class LoginModal extends React.Component {
   reset() {
     this.setState({
       password: null,
+      error: false,
     });
 
     resetLocalStorage();
