@@ -18,7 +18,7 @@ class LoginModal extends React.Component {
     
     return {
       isClosed: false,
-      password: null,
+      password: '',
       error: false,
     };
   }
@@ -40,7 +40,7 @@ class LoginModal extends React.Component {
       this.props.closeLoginModal(this.state.password);
       
       this.setState({
-        password: null,
+        password: '',
       });
     } else {
       decodeStoredData().then((res) => {
@@ -48,7 +48,7 @@ class LoginModal extends React.Component {
           this.props.closeLoginModal(this.state.password);
           
           this.setState({
-            password: null,
+            password: '',
           });
         } else {
           this.setState({
@@ -61,7 +61,7 @@ class LoginModal extends React.Component {
 
   reset() {
     this.setState({
-      password: null,
+      password: '',
       error: false,
     });
 
@@ -98,6 +98,7 @@ class LoginModal extends React.Component {
           <div className="modal-action-block left">
             <button
               className="button is-primary"
+              disabled={!this.state.password}
               onClick={this.close}>
               OK
             </button>
