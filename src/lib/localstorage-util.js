@@ -52,23 +52,26 @@ export const encodeStoredData = (str) => {
 };
 
 export const setLocalStorageVar = (name, json) => {
-  let _var = {};
-  
-  try {
-    _var = localStorageCache[name] || {};
-  } catch (e) {
-    console.warn(e);
-  }
+  return new Promise((resolve, reject) => {
+    let _var = {};
+    
+    try {
+      _var = localStorageCache[name] || {};
+    } catch (e) {
+      console.warn(e);
+    }
 
-  for (let key in json) {
-    _var[key] = json[key];
-  }
+    for (let key in json) {
+      _var[key] = json[key];
+    }
 
-  console.warn('_var', _var);
+    console.warn('_var', _var);
 
-  localStorageCache[name] = json;
+    localStorageCache[name] = json;
 
-  encodeStoredData(JSON.stringify(localStorageCache));
+    encodeStoredData(JSON.stringify(localStorageCache));
+    resolve(true);
+  });
 };
 
 export const getLocalStorageVar = (name) => {
