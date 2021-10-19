@@ -24,9 +24,9 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^5.0.13",
-    "electron-builder": "22.6.1",
-    "electron-rebuild": "^1.8.4",
-    "electron-devtools-installer": "^2.2.4"
+    "electron-builder": "22.13.1",
+    "electron-rebuild": "^3.2.3",
+    "electron-devtools-installer": "^3.2.0"
   },
   "dependencies": {
     "@ledgerhq/hw-app-btc": "^5.16.0",

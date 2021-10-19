@@ -17,7 +17,7 @@ export const resetLocalStorage = () => {
 export const setLocalStoragePW = (_pw) => {
   pw = _pw;
 
-  console.warn('localStorage pw set to: ', pw);
+  //console.warn('localStorage pw set to: ', pw);
 };
 
 export const decodeStoredData = () => {
@@ -29,7 +29,7 @@ export const decodeStoredData = () => {
         resolve(false);
       })
       .then(decryptedString => {
-        console.warn('decryptedString', decryptedString);
+        //console.warn('decryptedString', decryptedString);
         
         localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
         resolve(true);
@@ -65,7 +65,7 @@ export const setLocalStorageVar = (name, json) => {
       _var[key] = json[key];
     }
 
-    console.warn('_var', _var);
+    //console.warn('_var', _var);
 
     localStorageCache[name] = json;
 
