@@ -9,7 +9,7 @@ on:
 
 jobs:
   linux-run-tests:
-    name: Linux Build
+    name: Unit tests
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
