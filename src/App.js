@@ -4,7 +4,6 @@ import {hot} from 'react-hot-loader';
 import {isEqual} from 'lodash';
 import Header from './Header';
 import BetaWarning from './BetaWarning';
-import CheckBalanceButton from './CheckBalanceButton';
 import CheckAllBalancesButton from './CheckAllBalancesButton';
 import Accounts from './Accounts';
 import WarnU2fCompatibility from './WarnU2fCompatibility';
