@@ -43,7 +43,7 @@ const getTransactionsHistory = (accounts, activeAccount) => {
           txid,
           confirmations,
           timestamp,
-          accountIndex: i,
+          accountIndex: accounts[i].accountIndex,
         });
       }
     }
