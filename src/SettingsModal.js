@@ -41,12 +41,12 @@ class SettingsModal extends React.Component {
     setConfigVar(e.target.name, Number(e.target.value));
   }
 
-  setVendor() {
+  setVendor(e) {
     this.setState({
       [e.target.name]: e.target.value,
     });
 
-    this.props.setVendor(e);
+    this.props.setVendor(e.target.value);
   }
 
   setFwCheck() {
@@ -100,7 +100,7 @@ class SettingsModal extends React.Component {
           isCloseable={true}
           className="settings-modal">
           <ul>
-            <li>
+            {/*<li>
               <div className="theme-selector">
                 Theme
                 <div
@@ -110,7 +110,7 @@ class SettingsModal extends React.Component {
                   onClick={() => this.setTheme('tlight')}
                   className={'item light' + (this.state.theme === 'tlight' ? ' active' : '')}></div>
               </div>
-            </li>
+            </li>*/}
             {!isElectron &&
               <li>
                 <span className="slider-text">Always check firmware version</span>
@@ -133,7 +133,7 @@ class SettingsModal extends React.Component {
                 name="vendor"
                 className="explorer-selector minimal"
                 value={this.state.vendor}
-                onChange={(event) => this.setVendor(event, 'vendor')}>
+                onChange={(event) => this.setVendor(event)}>
                 {Object.keys(VENDOR).map((item, index) => (
                   <option
                     key={`vendor-${item}`}

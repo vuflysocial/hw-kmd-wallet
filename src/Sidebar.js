@@ -50,7 +50,8 @@ class Sidebar extends React.Component {
           }
           {this.props.loginModalClosed &&
             <SettingsModal
-              coin={this.props.activeCoin || 'KMD'}/>
+              coin={this.props.activeCoin || 'KMD'}
+              setVendor={this.props.setVendor} />
           }
           <li>
             <a href="https://github.com/pbca26/hw-kmd-wallet/issues/new"><i className="fa fa-life-ring"></i></a>
