@@ -7,6 +7,7 @@ import {setConfigVar} from './account-discovery';
 export const defaultSettings = {
   theme: 'tdark',
   fwCheck: false,
+  vendor: '',
   enableDebugTools: false,
   discoveryGapLimit: 20,
   discoveryAddressConcurrency: 10,

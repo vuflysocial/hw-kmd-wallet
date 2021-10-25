@@ -5,7 +5,7 @@ import {
   getLocalStorageVar,
   setLocalStorageVar,
 } from './lib/localstorage-util';
-import {SETTINGS} from './constants';
+import {SETTINGS, VENDOR} from './constants';
 import apiEndpoints from './lib/coins';
 import {setConfigVar} from './lib/account-discovery';
 import {isElectron} from './Electron';
@@ -29,6 +29,7 @@ class SettingsModal extends React.Component {
       explorerEndpoint: 'default',
       fwCheck: getLocalStorageVar('settings').fwCheck,
       enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
+      vendor: getLocalStorageVar('settings').vendor,
     };
   }
 
@@ -38,6 +39,14 @@ class SettingsModal extends React.Component {
     });
 
     setConfigVar(e.target.name, Number(e.target.value));
+  }
+
+  setVendor() {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+
+    this.props.setVendor(e);
   }
 
   setFwCheck() {
@@ -118,6 +127,22 @@ class SettingsModal extends React.Component {
                 </label>
               </li>
             }
+            <li>
+              Vendor
+              <select
+                name="vendor"
+                className="explorer-selector"
+                value={this.state.vendor}
+                onChange={(event) => this.setVendor(event, 'vendor')}>
+                {Object.keys(VENDOR).map((item, index) => (
+                  <option
+                    key={`vendor-${item}`}
+                    value={item}>
+                    {VENDOR[item]}
+                  </option>
+                ))}
+              </select>
+            </li>
             <li>
               <span className="slider-text">Enable debug controls (display xpub, raw tx hex)</span>
               <label className="switch">

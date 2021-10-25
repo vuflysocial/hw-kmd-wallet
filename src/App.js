@@ -102,6 +102,7 @@ class App extends React.Component {
       coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
+      vendor: getLocalStorageVar('settings') && getLocalStorageVar('settings').vendor ? getLocalStorageVar('settings').vendor : null,
     });
 
     setTimeout(() => {
@@ -502,6 +503,8 @@ class App extends React.Component {
         ledgerFWVersion: 'webusb',
       });
     }
+
+    setLocalStorageVar('settings', {vendor});
   }
 
   setTheme(name) {
@@ -545,7 +548,8 @@ class App extends React.Component {
           setActiveCoin={this.setActiveCoin}
           setActiveAccount={this.setActiveAccount}
           vendor={this.state.vendor}
-          loginModalClosed={this.state.loginModalClosed} />
+          loginModalClosed={this.state.loginModalClosed}
+          setVendor={this.state.setVendor} />
         <section className="main">
           <React.Fragment>
             <div className="container content text-center">
