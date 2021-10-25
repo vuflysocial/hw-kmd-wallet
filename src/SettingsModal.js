@@ -131,7 +131,7 @@ class SettingsModal extends React.Component {
               Vendor
               <select
                 name="vendor"
-                className="explorer-selector"
+                className="explorer-selector minimal"
                 value={this.state.vendor}
                 onChange={(event) => this.setVendor(event, 'vendor')}>
                 {Object.keys(VENDOR).map((item, index) => (
@@ -161,7 +161,7 @@ class SettingsModal extends React.Component {
               Address discovery gap limit
               <select
                 name="discoveryGapLimit"
-                className="explorer-selector"
+                className="explorer-selector minimal"
                 value={this.state.discoveryGapLimit}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
                 {Object.keys(SETTINGS.DISCOVERY_GAP_LIMIT).map((item, index) => (
@@ -177,7 +177,7 @@ class SettingsModal extends React.Component {
               Address discovery concurrency limit
               <select
                 name="discoveryAddressConcurrency"
-                className="explorer-selector"
+                className="explorer-selector minimal"
                 value={this.state.discoveryAddressConcurrency}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryAddressConcurrency')}>
                 {Object.keys(SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY).map((item, index) => (
@@ -193,7 +193,7 @@ class SettingsModal extends React.Component {
               Account index
               <select
                 name="accountIndex"
-                className="explorer-selector"
+                className="explorer-selector minimal"
                 value={this.state.accountIndex}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'accountIndex')}>
                 {Object.keys(SETTINGS.ACCOUNT_INDEX).map((item, index) => (
@@ -209,7 +209,7 @@ class SettingsModal extends React.Component {
               <li>
                 Explorer API end point
                 <select
-                  className="explorer-selector"
+                  className="explorer-selector minimal"
                   name="explorerEndpoint"
                   value={this.state.explorerEndpoint}
                   onChange={(event) => this.setExplorerEndpoint(event)}>

@@ -1,7 +1,13 @@
 .settings-modal {
   ul {
-    li {
+    list-style: none !important;
+
+    li,
+    li:hover {
       margin-bottom: 20px;
+      border: none;
+      text-align: left;
+      cursor: default;
     }
   }
 
