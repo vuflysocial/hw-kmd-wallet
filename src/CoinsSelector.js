@@ -10,6 +10,17 @@ class CoinsSelector extends React.Component {
     };
   };
 
+  checkKMDRewards() {
+    const accounts = this.props.coins.KMD.accounts;
+    let isRewardsOverdueCounter = 0;
+    
+    for (let i = 0; i < accounts.length; i++) {
+      if (accounts[i].isRewardsOverdue) isRewardsOverdueCounter++;
+    }
+
+    return isRewardsOverdueCounter;
+  }
+
   render() {
     console.warn('selectoinmodal props', this.props);
 
@@ -23,6 +34,14 @@ class CoinsSelector extends React.Component {
               key={`coins-${coinTicker}`}
               onClick={() => this.props.setActiveCoin(coinTicker)}>
               <img src={`coins/${coinTicker}.png`} />
+              {coinTicker === 'KMD' &&
+               this.checkKMDRewards() > 0 &&
+               <div
+                className="kmd-rewards-main-overdue-badge"
+                title={`${this.checkKMDRewards() > 0 && this.checkKMDRewards() < 2 ? 'Rewards claim overdue!' : this.checkKMDRewards() + ' accounts have rewards claim overdue!'}`}>
+                <i>{this.checkKMDRewards()}</i>
+               </div>
+              }
             </div>
           ))}
           <SelectCoinModal

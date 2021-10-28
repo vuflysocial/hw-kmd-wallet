@@ -48,6 +48,7 @@ import DashboardPrices from './DashboardPrices';
 import HWFirmwareRequirements from './HWFirmwareRequirementsModal';
 import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
+import getRewardEndDate from './lib/get-reward-end-date';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 const MAX_TIP_TIME_DIFF = 3600 * 24;
@@ -403,6 +404,26 @@ class App extends React.Component {
           for (let i = 0; i < accounts.length; i++) {
             balanceSum += accounts[i].balance;
             rewardsSum += accounts[i].rewards; 
+          }
+
+          if (coin === 'KMD') {
+            console.warn('check if any KMD rewards are overdue');
+
+            for (let i = 0; i < accounts.length; i++) {
+              //console.warn(accounts[i].utxos);
+              for (let j = 0; j < accounts[i].utxos.length; j++) {
+                const rewardEndDate = getRewardEndDate({locktime: accounts[i].utxos[j].locktime, height: 7777776});
+
+                console.warn('rewardEndDate', rewardEndDate, ' vs ', Date.now());
+
+                if (Date.now() > rewardEndDate) {
+                  console.warn('account', i, 'rewards overdue');
+                  accounts[i].isRewardsOverdue = true;
+                } else {
+                  accounts[i].isRewardsOverdue = false;
+                }
+              }
+            }
           }
 
           balances.push({

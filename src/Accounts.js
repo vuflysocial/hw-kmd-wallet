@@ -106,6 +106,13 @@ class Account extends React.Component {
         {coin === 'KMD' &&
           <td>
             <span className="rewards">{balance > 0 && claimableAmount > 0 ? humanReadableSatoshis(claimableAmount) : ''}</span>
+            {account.isRewardsOverdue &&
+              <span
+               className="kmd-rewards-account-overdue-badge"
+               title="Rewards claim overdue!">
+               <i>!</i>
+              </span>
+            }
           </td>
         }
       </tr>
