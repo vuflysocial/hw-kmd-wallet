@@ -164,11 +164,11 @@ class SettingsModal extends React.Component {
                 className="explorer-selector minimal"
                 value={this.state.discoveryGapLimit}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
-                {Object.keys(SETTINGS.DISCOVERY_GAP_LIMIT).map((item, index) => (
+                {Array.from({length: SETTINGS.DISCOVERY_GAP_LIMIT / 5}, (_, i) => i + 1).map((item, index) => (
                   <option
-                    key={`discovery-gap-limit-${item}`}
-                    value={item}>
-                    {SETTINGS.DISCOVERY_GAP_LIMIT[item]}
+                    key={`discovery-account-index-${index}`}
+                    value={(index + 1) * 5}>
+                    {index === 3 ? (index + 1) * 5 + ' (default)' : (index + 1) * 5}
                   </option>
                 ))}
               </select>
@@ -183,7 +183,7 @@ class SettingsModal extends React.Component {
                 {Object.keys(SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY).map((item, index) => (
                   <option
                     key={`discovery-address-concurrency-${item}`}
-                    value={item}>
+                    value={index}>
                     {SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY[item]}
                   </option>
                 ))}
@@ -196,11 +196,11 @@ class SettingsModal extends React.Component {
                 className="explorer-selector minimal"
                 value={this.state.accountIndex}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'accountIndex')}>
-                {Object.keys(SETTINGS.ACCOUNT_INDEX).map((item, index) => (
+                {[...Array(SETTINGS.ACCOUNT_INDEX_LIMIT).keys()].map((item, index) => (
                   <option
                     key={`discovery-account-index-${item}`}
-                    value={item}>
-                    {SETTINGS.ACCOUNT_INDEX[item]}
+                    value={index}>
+                    {index === 0 ? index + ' (default)' : index}
                   </option>
                 ))}
               </select>
