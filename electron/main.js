@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 require('babel-polyfill');
+require('@electron/remote/main').initialize();
 const TransportNodeHid = require('@ledgerhq/hw-transport-node-hid-noevents').default;
 const AppBtc = require('@ledgerhq/hw-app-btc').default;
 
@@ -28,8 +29,12 @@ function createWindow() {
     webPreferences: {
       nativeWindowOpen: true, // <-- important for trezor
       nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
     },
   });
+
+  require("@electron/remote/main").enable(mainWindow.webContents);
 
   require(path.join(__dirname, 'menu'));
 

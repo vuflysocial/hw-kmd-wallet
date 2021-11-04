@@ -6,7 +6,8 @@ export let shell;
 try {
   window.require('electron');
   isElectron = true;
-  appData = window.require('electron').remote.getGlobal('app');
+  appData = window.require('@electron/remote').getGlobal('app');
+  console.warn('appData', appData);
   ipcRenderer = window.require('electron').ipcRenderer;
   shell = window.require('electron').shell;
   console.warn('run app in electron mode');
