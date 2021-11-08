@@ -63,6 +63,7 @@ class App extends React.Component {
     this.removeCoin = this.removeCoin.bind(this);
     this.isCoinData = this.isCoinData.bind(this);
     this.closeLoginModal = this.closeLoginModal.bind(this);
+    this.enableAccount = this.enableAccount.bind(this);
 
     return {
       accounts: [],
@@ -348,6 +349,24 @@ class App extends React.Component {
 
     return account;
   });
+
+  enableAccount(accountIndex) {
+    let coins = JSON.parse(JSON.stringify(this.state.coins));
+
+    if (!coins[this.state.activeCoin].accounts[accountIndex].hasOwnProperty('enabled')) coins[this.state.activeCoin].accounts[accountIndex].enabled = true;
+
+    coins[this.state.activeCoin].accounts[accountIndex].enabled = !coins[this.state.activeCoin].accounts[accountIndex].enabled;
+
+    this.setState({
+      coins,
+    });
+
+    setLocalStorageVar('coins', coins);
+
+    setTimeout(() => {
+      console.warn('enableAccount', this.state.coins);
+    }, 100);
+  }
 
   syncData = async (_coin) => {
     if (!this.state.isFirstRun || this.isCoinData()) {
@@ -745,7 +764,8 @@ class App extends React.Component {
                     {...this.state}
                     setActiveAccount={this.setActiveAccount}
                     syncData={this.syncData}
-                    removeCoin={this.removeCoin} />
+                    removeCoin={this.removeCoin}
+                    enableAccount={this.enableAccount} />
                 }
               </React.Fragment>
             )}

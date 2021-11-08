@@ -237,11 +237,13 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
         historyParsed: [],
       }; 
       account.accountIndex = accountIndex;
+      account.enabled = true;
       accounts.push(account);
     } else {
       account.utxos = await getAddressUtxos(account.addresses);
       account.history = await getAddressHistory(account.addresses); 
       account.accountIndex = accountIndex;
+      account.enabled = true;
     }
 
     console.warn('nspv account discovery done');
@@ -252,7 +254,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
     while (true) {
-      if (!_accounts || (_accounts && _accounts[accountIndex])) {
+      if (!_accounts || (_accounts && _accounts[accountIndex] && _accounts[accountIndex].enabled)) {
         if (_accounts && _accounts[accountIndex]) console.warn(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
         //const account = await getAccountAddresses(accountIndex, vendor);
         const account = await getAccountAddresses(accountIndex, vendor, _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null);
@@ -266,12 +268,14 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
             historyParsed: [],
           }; 
           account.accountIndex = accountIndex;
+          account.enabled = _accounts && _accounts[accountIndex] ? _accounts[accountIndex].enabled : true;
           accounts.push(account);
           if (config.accountIndex === 0 && accountIndex >= 2) break;
         } else {
           account.utxos = await getAddressUtxos(account.addresses);
           account.history = await getAddressHistory(account.addresses); 
           account.accountIndex = accountIndex;
+          account.enabled = _accounts && _accounts[accountIndex] ? _accounts[accountIndex].enabled : true;
           accounts.push(account);
         }
 

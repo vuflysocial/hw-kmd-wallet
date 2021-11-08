@@ -7,7 +7,7 @@ import {
 } from './Electron';
 
 const headings = {
-    many: [
+  many: [
     'Direction',
     'Account',
     'Amount',

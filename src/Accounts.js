@@ -130,6 +130,7 @@ const Accounts = ({
   setActiveAccount,
   activeAccount,
   removeCoin,
+  enableAccount,
 }) => (
   <div className="container content">
     <div className="accounts-block">
@@ -140,7 +141,9 @@ const Accounts = ({
         <CoinSettingsModal
           activeCoin={activeCoin}
           removeCoin={removeCoin}
-          syncData={syncData} />
+          syncData={syncData}
+          enableAccount={enableAccount}
+          accounts={coins[activeCoin].accounts} />
       }
       <div className="accounts">
         <table>
@@ -154,7 +157,7 @@ const Accounts = ({
             </tr>
           </thead>
           <tbody>
-            {coins[activeCoin].accounts.map((account) => (
+            {coins[activeCoin].accounts.filter((acc) => acc.enabled).map((account) => (
               <Account
                 key={account.accountIndex}
                 account={account}
@@ -173,6 +176,7 @@ const Accounts = ({
     {activeCoin === 'KMD' &&
      activeAccount !== null &&
      coins[activeCoin].accounts[activeAccount].balance > 0 &&
+     coins[activeCoin].accounts[activeAccount].enabled &&
       <div className="text-center">
         {coins[activeCoin].accounts[activeAccount].claimableAmount > 0 &&
           <ClaimRewardsButton
@@ -192,7 +196,7 @@ const Accounts = ({
       </div>
     }
     <Transactions
-      accounts={coins[activeCoin].accounts}
+      accounts={coins[activeCoin].accounts.filter((acc) => acc.enabled)}
       activeAccount={activeAccount}
       coin={activeCoin}
       />

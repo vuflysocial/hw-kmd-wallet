@@ -36,6 +36,28 @@ class CoinSettingsModal extends React.Component {
     this.close();
   }
 
+  renderAccountList() {
+    return (
+      <div className="coin-settings-accounts-block">
+        <h4>Accounts</h4>
+        <div className="coin-settings-accounts">
+          {this.props.accounts.map((item, index) => (
+            <div
+              className="item"
+              key={`coin-settings-accounts-${index}`}>
+              <span className="item-label">Account {item.accountIndex + 1}</span>
+              <button
+                className="button"
+                onClick={() => this.props.enableAccount(item.accountIndex)}>
+                <i className={`fa fa-${item.enabled ? 'eye' : 'eye-slash'}`}></i>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -60,6 +82,7 @@ class CoinSettingsModal extends React.Component {
             onClick={this.deleteCoin}>
             Remove {this.props.activeCoin} <i className="fa fa-trash"></i>
           </button>
+          {this.renderAccountList()}
         </Modal>
       </React.Fragment>
     );
