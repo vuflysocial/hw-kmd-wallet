@@ -304,6 +304,19 @@ export const getAccountNode = (xpub) => {
   };
 };
 
+export const getAccountXpub = async (account, vendor) => {
+  const derivationPath = `44'/141'/${account}'`;
+  const xpub = await hw[vendor].getXpub(derivationPath);
+
+  if (!pubKeysCache[derivationPath]) {
+    pubKeysCache[derivationPath] = xpub;
+  }
+
+  console.warn('getAccountXpub ' + derivationPath, xpub);
+
+  return xpub;
+};
+
 export const clearPubkeysCache = () => {
   pubKeysCache = {};
 };

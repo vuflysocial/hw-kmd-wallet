@@ -64,6 +64,7 @@ class App extends React.Component {
     this.isCoinData = this.isCoinData.bind(this);
     this.closeLoginModal = this.closeLoginModal.bind(this);
     this.enableAccount = this.enableAccount.bind(this);
+    this.addAccount = this.addAccount.bind(this);
 
     return {
       accounts: [],
@@ -365,6 +366,34 @@ class App extends React.Component {
 
     setTimeout(() => {
       console.warn('enableAccount', this.state.coins);
+    }, 100);
+  }
+
+  addAccount(accountIndex, xpub) {
+    let coins = JSON.parse(JSON.stringify(this.state.coins));
+    coins[this.state.activeCoin].accounts[accountIndex] = {
+      xpub,
+      balance: 0,
+      rewards: 0,
+      claimableAmount: 0,
+      enabled: true,
+      accountIndex,
+      utxos: [],
+      history: {
+        addresses: [],
+        allTxs: [],
+        historyParsed: [],
+      },
+    };
+
+    this.setState({
+      coins,
+    });
+
+    setLocalStorageVar('coins', coins);
+
+    setTimeout(() => {
+      console.warn('addAccount', this.state.coins);
     }, 100);
   }
 
@@ -765,7 +794,8 @@ class App extends React.Component {
                     setActiveAccount={this.setActiveAccount}
                     syncData={this.syncData}
                     removeCoin={this.removeCoin}
-                    enableAccount={this.enableAccount} />
+                    enableAccount={this.enableAccount}
+                    addAccount={this.addAccount} />
                 }
               </React.Fragment>
             )}

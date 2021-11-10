@@ -501,7 +501,8 @@
   }
 }
 
-.coin-actions-modal-trigger {
+.coin-actions-modal-trigger,
+.coin-add-account-modal-trigger {
   position: absolute;
   right: 20px;
   margin-top: -35px;
@@ -523,6 +524,15 @@
     position: relative;
     top: 2px;
     left: 5px;
+  }
+}
+
+.coin-add-account-modal-trigger {
+  right: 55px;
+  margin-top: 2px;
+
+  i {
+    left: 6px;
   }
 }
 

@@ -262,7 +262,7 @@ class CheckAllBalancesButton extends React.Component {
             </p>
           }
           {!this.state.isInProgress &&
-            this.state.balances.length &&
+            this.state.balances.length > 0 &&
             <button
               className="button is-primary"
               onClick={this.confirm}>
