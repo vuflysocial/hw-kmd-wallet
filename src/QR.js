@@ -24,7 +24,7 @@ class QRModal extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.mounted = true;
   }
 

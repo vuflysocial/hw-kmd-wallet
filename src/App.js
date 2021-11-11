@@ -178,7 +178,7 @@ class App extends React.Component {
     return false;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     document.title = `Komodo Hardware Wallet (v${version})`;
     if (!isElectron || (isElectron && !appData.isNspv)) {
       setInterval(() => {
