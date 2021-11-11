@@ -4,6 +4,7 @@ import updateActionState from './lib/update-action-state';
 import {
   FAUCET_URL,
   VENDOR,
+  SETTINGS,
 } from './constants';
 import ActionListModal from './ActionListModal';
 import getAddress from './lib/get-address';
@@ -193,7 +194,7 @@ class ReceiveCoinButton extends React.Component {
                   name="accountIndex"
                   value={this.state.accountIndex}
                   onChange={(event) => this.updateAccountIndex(event)}>
-                  {[0, 1, 2, 3, 4, 5].map((account, index) => (
+                  {[...Array(SETTINGS.ACCOUNT_INDEX_LIMIT).keys()].map((account, index) => (
                     <option
                       key={`account-${account}`}
                       value={account}>
