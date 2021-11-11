@@ -14,6 +14,7 @@ import {
   appData,
 } from './Electron';
 import {writeLog} from './Debug';
+import {getLocalStorageVar} from './lib/localstorage-util';
 
 // TODO: add a way to remove/add accounts
 
@@ -31,7 +32,7 @@ class Account extends React.Component {
       sendTo: '',
       // debug options
       showXpub: null,
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1,
+      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
     };
   }
 
