@@ -17,6 +17,8 @@ const ipcLedger = require('./ipc-ledger');
 const ipcSPV = require('./spv');
 const ipcNSPV = require('./nspv');
 
+const isDev = process.argv.indexOf('devmode') > -1;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -56,14 +58,14 @@ function createWindow() {
   ]);
 
   global.app = {
-    isDev: process.argv.indexOf('devmode') > -1,
+    isDev,
     noFWCheck: true,
     blockchainAPI: process.argv.indexOf('api=spv') > -1 || process.argv.indexOf('api=nspv') > -1 ? 'spv' : 'insight',
     isNspv: process.argv.indexOf('api=nspv') > -1,
   };
 
   // and load the index.html of the app.
-  if (process.argv.indexOf('devmode') > -1) {
+  if (isDev) {
     mainWindow.maximize();
     mainWindow.loadURL('http://localhost:3000/');
   } else {
@@ -106,7 +108,7 @@ app.on('ready', createWindow);
 app.on('window-all-closed', function() {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin' || process.argv.indexOf('devmode') > -1) {
+  if (process.platform !== 'darwin' || isDev) {
     app.quit();
   }
 });
@@ -122,7 +124,7 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 app.on('browser-window-focus', (event, win) => {
-  if (!win.isDevToolsOpened() && process.argv.indexOf('devmode') > -1) {
+  if (!win.isDevToolsOpened() && isDev) {
     win.openDevTools();
   }
 });

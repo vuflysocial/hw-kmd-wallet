@@ -9,6 +9,7 @@ import {
   appData,
   ipcRenderer,
 } from '../Electron';
+import {writeLog} from '../Debug';
 import TrezorUtxoLib from '@trezor/utxo-lib';
 
 let pubKeysCache = {};
@@ -22,7 +23,7 @@ let config = {
 export const setConfigVar = (name, val) => {
   config[name] = val;
 
-  console.warn('setConfigVar', config);
+  writeLog('setConfigVar', config);
 };
 
 const walkDerivationPath = async node => {
@@ -44,13 +45,13 @@ const walkDerivationPath = async node => {
   if (gapLimit > 50) addressConcurrency = 3;
 
   if (isElectron && appData.isNspv) {
-    console.warn('blockchainAPI', blockchainAPI);
+    writeLog('blockchainAPI', blockchainAPI);
     addressConcurrency = 2;
     gapLimit = 5;
-    console.warn('walkDerivationPath gapLimit', gapLimit);
+    writeLog('walkDerivationPath gapLimit', gapLimit);
   }
 
-  console.warn(`walkDerivationPath gapLimit = ${gapLimit}`);
+  writeLog(`walkDerivationPath gapLimit = ${gapLimit}`);
 
   while (consecutiveUnusedAddresses < gapLimit) {
     const addressApiRequests = [];
@@ -174,12 +175,12 @@ export const getAddressHistoryOld = async addresses => {
   let addressHistory = [];
   let addressHistoryIDs = [];
 
-  console.warn('addresses', addresses);
+  writeLog('addresses', addresses);
 
   await asyncForEach(addresses, async (addressItem, index) => {
     const addressHistoryRes = await blockchain[blockchainAPI].getHistory(addressItem.address);
     
-    console.warn('addressHistoryRes', addressHistoryRes);
+    writeLog('addressHistoryRes', addressHistoryRes);
 
     if (addressHistoryRes &&
         addressHistoryRes.txs) {
@@ -211,7 +212,7 @@ export const getAddressHistoryOld = async addresses => {
     }
   }
 
-  console.warn('filteredHistoryTxs', filteredHistoryTxs);
+  writeLog('filteredHistoryTxs', filteredHistoryTxs);
   
   return {
     addresses: addressCacheTemp,
@@ -226,7 +227,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
   
   // TODO
   if (isElectron && appData.isNspv) {
-    console.warn('accountDiscovery accountIndex', accountIndex);
+    writeLog('accountDiscovery accountIndex', accountIndex);
     const account = await getAccountAddresses(accountIndex, vendor);
     
     if (account.addresses.length === 0) {
@@ -246,19 +247,19 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
       account.enabled = true;
     }
 
-    console.warn('nspv account discovery done');
+    writeLog('nspv account discovery done');
 
     accounts.push(account);
-    console.warn('run diff check');
+    writeLog('run diff check');
     ipcRenderer.send('nspvRunRecheck', {coin, isFirstRun: !isFirstRun.hasOwnProperty(coin)});
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
     while (true) {
       if (!_accounts || (_accounts && _accounts[accountIndex] && _accounts[accountIndex].enabled)) {
-        if (_accounts && _accounts[accountIndex]) console.warn(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
+        if (_accounts && _accounts[accountIndex]) writeLog(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
         //const account = await getAccountAddresses(accountIndex, vendor);
         const account = await getAccountAddresses(accountIndex, vendor, _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null);
-        console.warn('accountDiscovery accountIndex', accountIndex);
+        writeLog('accountDiscovery accountIndex', accountIndex);
         
         if (account.addresses.length === 0) {
           account.utxos = [];
@@ -288,7 +289,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
     }
   }
 
-  console.warn('accounts', accounts);
+  writeLog('accounts', accounts);
 
   return accounts;
 };
@@ -312,7 +313,7 @@ export const getAccountXpub = async (account, vendor) => {
     pubKeysCache[derivationPath] = xpub;
   }
 
-  console.warn('getAccountXpub ' + derivationPath, xpub);
+  writeLog('getAccountXpub ' + derivationPath, xpub);
 
   return xpub;
 };

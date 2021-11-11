@@ -1,5 +1,6 @@
 import TrezorConnect from 'trezor-connect';
 import {KOMODO} from '../constants';
+import {writeLog} from '../Debug';
 
 const init = () => {
   // this will work only on localhost
@@ -35,7 +36,7 @@ const getUniqueInputs = utxos => {
     }
   }
 
-  console.warn(`total utxos ${utxos.length} | unique utxos ${uniqueTxids.length}`);
+  writeLog(`total utxos ${utxos.length} | unique utxos ${uniqueTxids.length}`);
   
   return uniqueInputs;
 };
@@ -147,8 +148,8 @@ const createTransaction = async (utxos, outputs, isKMD) => {
   .then((res) => {
     if (res.payload.hasOwnProperty('error')) {
       if (window.location.href.indexOf('devmode') > -1) {
-        console.warn('trezor tx obj', tx);
-        console.warn('trezor signTransaction error', res);
+        writeLog('trezor tx obj', tx);
+        writeLog('trezor signTransaction error', res);
       }
       return {err: res.payload};
     } else {

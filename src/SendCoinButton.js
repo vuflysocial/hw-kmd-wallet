@@ -24,6 +24,7 @@ import {
   appData,
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
+import {writeLog} from './Debug';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 
@@ -155,7 +156,7 @@ class SendCoinButton extends React.Component {
       error = 'wrong amount format';
     }
 
-    console.warn('validate state', this.state);
+    writeLog('validate state', this.state);
 
     const validateAddress = checkPublicAddress(this.state.sendToIn);
     if (!validateAddress) error = 'Invalid send to address';
@@ -176,7 +177,7 @@ class SendCoinButton extends React.Component {
       }
     }
 
-    console.warn('filterUtxos', utxos);
+    writeLog('filterUtxos', utxos);
 
     return utxos;
   }
@@ -186,9 +187,9 @@ class SendCoinButton extends React.Component {
     const isClaimRewardsOnly = this.props.isClaimRewardsOnly;
 
     if (isClaimRewardsOnly) {
-      console.warn('claim kmd rewards button clicked');
+      writeLog('claim kmd rewards button clicked');
     } else {
-      console.warn('send coin clicked');
+      writeLog('send coin clicked');
     }
     
     this.setState({
@@ -229,27 +230,27 @@ class SendCoinButton extends React.Component {
           balance = this.props.accounts[this.state.accountIndex].balance;
         }
 
-        console.warn('utxos', utxos);
+        writeLog('utxos', utxos);
 
         let formattedUtxos = [];
 
         for (let i = 0; i < utxos.length; i++) {
           let utxo = utxos[i];
-          console.warn('utxos[i].amount', utxos[i].amount);
+          writeLog('utxos[i].amount', utxos[i].amount);
     
           utxo.amountSats = utxo.satoshis;
 
           if (coin === 'KMD') {
             const rewards = getKomodoRewards({tiptime, ...utxo});
-            console.warn('rewards', rewards);
-            console.warn('tiptime', tiptime);
+            writeLog('rewards', rewards);
+            writeLog('tiptime', tiptime);
             utxo.interestSats = rewards;
           }
 
           formattedUtxos.push(utxo);
         }
         
-        console.warn('formatted utxos', formattedUtxos);
+        writeLog('formatted utxos', formattedUtxos);
         
         const txDataPreflight = transactionBuilder(
           coin === 'KMD' ? Object.assign({}, KOMODO, {kmdInterest: true}) : KOMODO,
@@ -260,18 +261,18 @@ class SendCoinButton extends React.Component {
           formattedUtxos
         );
 
-        console.warn('txDataPreflight', txDataPreflight);
+        writeLog('txDataPreflight', txDataPreflight);
 
         let hwUnusedAddress;
         const unusedAddress = this.getUnusedAddressChange();
         const derivationPath = `44'/141'/${accountIndex}'/${this.props.isClaimRewardsOnly ? 0 : 1}/${this.getUnusedAddressIndexChange()}`;
         
-        console.warn('derivationPath', derivationPath);
+        writeLog('derivationPath', derivationPath);
         
         if (isClaimRewardsOnly || txDataPreflight.change > 0 || txDataPreflight.totalInterest) {
           hwUnusedAddress = this.state.address.length ? this.state.address : await hw[this.props.vendor].getAddress(derivationPath, isClaimRewardsOnly && this.props.vendor === 'trezor' ? true : false);
         
-          console.warn('hwUnusedAddress', hwUnusedAddress);
+          writeLog('hwUnusedAddress', hwUnusedAddress);
           if (hwUnusedAddress !== unusedAddress) {
             throw new Error(`${VENDOR[this.props.vendor]} derived address "${hwUnusedAddress}" doesn't match browser derived address "${unusedAddress}"`);
           }
@@ -287,8 +288,8 @@ class SendCoinButton extends React.Component {
           formattedUtxos
         );
 
-        console.warn('amount in', isClaimRewardsOnly ? balance - TX_FEE * 2 : toSats(this.state.amountIn));
-        console.warn('txData', txData);
+        writeLog('amount in', isClaimRewardsOnly ? balance - TX_FEE * 2 : toSats(this.state.amountIn));
+        writeLog('txData', txData);
 
         const filteredUtxos = this.filterUtxos(txData.inputs, formattedUtxos);
 
@@ -310,7 +311,7 @@ class SendCoinButton extends React.Component {
           rewards: txData.totalInterest - TX_FEE,
         });
 
-        console.warn('txb data', {
+        writeLog('txb data', {
           isClaimingRewards: true,
           amount: !this.props.isClaimRewardsOnly && txData.totalInterest && txData.outputAddress === txData.changeAddress ? txData.value - TX_FEE : this.state.amountIn < humanReadableSatoshis(balance) ? txData.value - TX_FEE : txData.value,
           sendTo: txData.outputAddress,
@@ -348,10 +349,10 @@ class SendCoinButton extends React.Component {
           );
         }
 
-        console.warn('tx outputs', txData.change > 0 || txData.totalInterest ?
+        writeLog('tx outputs', txData.change > 0 || txData.totalInterest ?
         [{address: txData.outputAddress, value: txData.value}, {address: txData.changeAddress, value: txData.change + txData.totalInterest - (isClaimRewardsOnly ? 0 : TX_FEE * 2), derivationPath}] : [{address: txData.outputAddress, value: txData.value}]);
 
-        console.warn('rawtx', rawtx);
+        writeLog('rawtx', rawtx);
         if (!rawtx) {
           throw new Error(`${VENDOR[this.props.vendor]} failed to generate a valid transaction`);
         }
@@ -385,7 +386,7 @@ class SendCoinButton extends React.Component {
           let longestBlockHeight = 0;
           let apiEndPointIndex = 0;
       
-          console.warn('checkExplorerEndpoints', getInfoRes);
+          writeLog('checkExplorerEndpoints', getInfoRes);
           
           for (let i = 0; i < coins[coin].api.length; i++) {
             if (getInfoRes[i] &&
@@ -398,7 +399,7 @@ class SendCoinButton extends React.Component {
             }
           }
   
-          console.warn(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
+          writeLog(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
           blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
 
           const {txid} = await blockchain[blockchainAPI].broadcast(rawtx);
@@ -419,12 +420,12 @@ class SendCoinButton extends React.Component {
           }, 5000);
         }
       } catch (error) {
-        console.warn(error);
+        writeLog(error);
         updateActionState(this, currentAction, false);
         this.setState({error: error.message});
       }
     } else {
-      console.warn(isUserInputValid);
+      writeLog(isUserInputValid);
       updateActionState(this, 'connect', false);
       this.setState({error: isUserInputValid});
     }
@@ -456,15 +457,15 @@ class SendCoinButton extends React.Component {
       e.target.value = e.target.value.replace(/[^0-9.]/g, '');
     }
 
-    console.warn(e.target.name);
-    console.warn(e.target.value);
+    writeLog(e.target.name);
+    writeLog(e.target.value);
     
     this.setState({
       [e.target.name]: e.target.value,
     });
 
     setTimeout(() => {
-      console.warn('this.state', this.state);
+      writeLog('this.state', this.state);
     }, 100);
   }
 
@@ -481,7 +482,7 @@ class SendCoinButton extends React.Component {
   }
 
   render() {
-    console.warn('send coin button', this.props);
+    writeLog('send coin button', this.props);
 
     const {isClaimingRewards} = this.state;
     const isNoBalace = this.props.isClaimRewardsOnly ? Number(this.props.balance) <= 0 : Number(this.props.accounts[this.state.accountIndex].balance || 0) <= 0;
@@ -491,9 +492,9 @@ class SendCoinButton extends React.Component {
       balance = this.props.accounts[this.state.accountIndex].balance || 0;
     }
 
-    console.warn('this.props', this.props);
-    console.warn('KMD_REWARDS_MIN_THRESHOLD', KMD_REWARDS_MIN_THRESHOLD);
-    if (this.props.isClaimRewardsOnly) console.warn('this.props.account.claimableAmount', this.props.account.claimableAmount);
+    writeLog('this.props', this.props);
+    writeLog('KMD_REWARDS_MIN_THRESHOLD', KMD_REWARDS_MIN_THRESHOLD);
+    if (this.props.isClaimRewardsOnly) writeLog('this.props.account.claimableAmount', this.props.account.claimableAmount);
     
     return (
       <React.Fragment>

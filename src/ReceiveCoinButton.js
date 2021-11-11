@@ -13,6 +13,7 @@ import {
   shell,
 } from './Electron';
 import './ReceiveCoinModal.scss';
+import {writeLog} from './Debug';
 
 class ReceiveCoinButton extends React.Component {
   state = this.initialState;
@@ -147,7 +148,7 @@ class ReceiveCoinButton extends React.Component {
           </React.Fragment>
       });
     } catch (error) {
-      console.warn(error);
+      writeLog(error);
       updateActionState(this, currentAction, false);
       this.setState({
         error: error.message,
@@ -163,7 +164,7 @@ class ReceiveCoinButton extends React.Component {
       error,
       success
     } = this.state;
-    console.warn(this.props);
+    writeLog(this.props);
 
     return (
       <React.Fragment>

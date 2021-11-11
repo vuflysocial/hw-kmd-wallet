@@ -13,6 +13,7 @@ import {
   isElectron,
   appData,
 } from './Electron';
+import {writeLog} from './Debug';
 
 // TODO: add a way to remove/add accounts
 
@@ -84,12 +85,12 @@ class Account extends React.Component {
       xpub,
     } = account;
 
-    console.warn('account', account);
+    writeLog('account', account);
 
     const {isClaimed} = this.state;
 
-    console.warn('utxos', utxos);
-    console.warn('history', history);
+    writeLog('utxos', utxos);
+    writeLog('history', history);
 
     return (
       <tr

@@ -9,6 +9,7 @@ import {SETTINGS, VENDOR} from './constants';
 import apiEndpoints from './lib/coins';
 import {setConfigVar} from './lib/account-discovery';
 import {isElectron} from './Electron';
+import {writeLog} from './Debug';
 
 // TODO: individual settings for each coin
 
@@ -87,7 +88,7 @@ class SettingsModal extends React.Component {
   }
 
   render() {
-    console.warn(this.props.coin)
+    writeLog(this.props.coin)
     return (
       <React.Fragment>
         <li onClick={this.triggerModal}>

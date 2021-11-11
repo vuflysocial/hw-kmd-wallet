@@ -5,6 +5,7 @@ import {
   isElectron,
   shell,
 } from './Electron';
+import {writeLog} from './Debug';
 
 const headings = {
   many: [
@@ -21,11 +22,11 @@ const headings = {
 const getTransactionsHistory = (accounts, activeAccount) => {
   let lastOperations = [];
 
-  console.warn('activeAccount activeAccount', activeAccount);
+  writeLog('activeAccount activeAccount', activeAccount);
   
   if (activeAccount === null) {
     for (let i = 0; i < accounts.length; i++) {
-      console.warn(accounts[i]);
+      writeLog(accounts[i]);
       for (let a = 0; a < accounts[i].history.historyParsed.length; a++) {
         const {
           type,
@@ -48,13 +49,13 @@ const getTransactionsHistory = (accounts, activeAccount) => {
       }
     }
   } else {
-    console.warn('accounts[activeAccount].history.historyParsed', accounts[activeAccount].history.historyParsed);
+    writeLog('accounts[activeAccount].history.historyParsed', accounts[activeAccount].history.historyParsed);
     lastOperations = lastOperations.concat(accounts[activeAccount].history.historyParsed);
   }
 
   lastOperations = sortTransactions(lastOperations, 'timestamp');
 
-  console.warn('lastOperations', lastOperations);
+  writeLog('lastOperations', lastOperations);
 
   return lastOperations;
 };

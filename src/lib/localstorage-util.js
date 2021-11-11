@@ -1,4 +1,5 @@
 import {createAdapter} from 'iocane';
+import {writeLog} from '../Debug';
 
 const rootVar = 'hw-wallet';
 let localStorageCache = {};
@@ -17,7 +18,7 @@ export const resetLocalStorage = () => {
 export const setLocalStoragePW = (_pw) => {
   pw = _pw;
 
-  //console.warn('localStorage pw set to: ', pw);
+  //writeLog('localStorage pw set to: ', pw);
 };
 
 export const decodeStoredData = () => {
@@ -29,7 +30,7 @@ export const decodeStoredData = () => {
         resolve(false);
       })
       .then(decryptedString => {
-        //console.warn('decryptedString', decryptedString);
+        //writeLog('decryptedString', decryptedString);
         
         localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
         resolve(true);
@@ -44,7 +45,7 @@ export const encodeStoredData = (str) => {
   createAdapter()
   .encrypt(str, pw)
   .catch((err) => {
-    console.warn('encodeStoredData error', err);
+    writeLog('encodeStoredData error', err);
   })
   .then(encryptedString => {
     localStorage.setItem(rootVar, encryptedString);
@@ -58,14 +59,14 @@ export const setLocalStorageVar = (name, json) => {
     try {
       _var = localStorageCache[name] || {};
     } catch (e) {
-      console.warn(e);
+      writeLog(e);
     }
 
     for (let key in json) {
       _var[key] = json[key];
     }
 
-    //console.warn('_var', _var);
+    //writeLog('_var', _var);
 
     localStorageCache[name] = json;
 

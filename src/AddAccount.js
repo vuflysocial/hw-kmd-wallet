@@ -5,6 +5,7 @@ import blockchain, {blockchainAPI} from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
 import {TX_FEE, VENDOR} from './constants';
 import ActionListModal from './ActionListModal';
+import {writeLog} from './Debug';
 
 class AddAccount extends React.Component {
   state = this.initialState;
@@ -49,11 +50,11 @@ class AddAccount extends React.Component {
       currentAction = 'approve';
       updateActionState(this, currentAction, 'loading');
 
-      console.warn('add acc', this.props.accounts.length);
+      writeLog('add acc', this.props.accounts.length);
 
       const xpub = await getAccountXpub(this.props.accounts.length, this.props.vendor);
 
-      console.warn('xpub', xpub);
+      writeLog('xpub', xpub);
 
       updateActionState(this, currentAction, true);
 
@@ -61,7 +62,7 @@ class AddAccount extends React.Component {
 
       this.setState({...this.initialState});
     } catch (error) {
-      console.warn(error);
+      writeLog(error);
       updateActionState(this, currentAction, false);
       this.setState({error: error.message});
     }

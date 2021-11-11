@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectCoinModal from './SelectCoinModal';
 import apiEndpoints from './lib/coins';
+import {writeLog} from './Debug';
 
 class CoinsSelector extends React.Component {
   state = this.initialState;
@@ -22,7 +23,7 @@ class CoinsSelector extends React.Component {
   }
 
   render() {
-    console.warn('selectoinmodal props', this.props);
+    writeLog('selectoinmodal props', this.props);
 
     return (
       <div className="coins-holdings-block">

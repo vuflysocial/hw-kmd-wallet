@@ -39,6 +39,7 @@ import {
   appData,
   ipcRenderer,
 } from './Electron';
+import {writeLog} from './Debug';
 import initSettings from './lib/init-settings';
 import asyncForEach from './lib/async';
 import {sortTransactions} from './lib/sort';
@@ -152,17 +153,17 @@ class App extends React.Component {
       activeAccount: null,
     });
 
-    console.warn(this.state.coins[activeCoin])
+    writeLog(this.state.coins[activeCoin]);
   }
 
   setActiveAccount(activeAccount) {
-    console.warn('activeAccount', activeAccount);
+    writeLog('activeAccount', activeAccount);
 
     this.setState({
       activeAccount,
     });
 
-    if (activeAccount) console.warn(this.state.coins[this.state.activeCoin][activeAccount])
+    if (activeAccount) writeLog(this.state.coins[this.state.activeCoin][activeAccount])
   }
 
   isCoinData() {
@@ -182,14 +183,14 @@ class App extends React.Component {
     if (!isElectron || (isElectron && !appData.isNspv)) {
       setInterval(() => {
         if (!this.state.syncInProgress) {
-          console.warn('auto sync called');
+          writeLog('auto sync called');
           this.syncData();
         }
       }, 300 * 1000);
     }
 
     /*setTimeout(() => {
-      console.warn('run recheck');
+      writeLog('run recheck');
       ipcRenderer.send('nspvRunRecheck', {coin: 'rick'});
     }, 2000);*/
 
@@ -215,13 +216,13 @@ class App extends React.Component {
     
     if (isElectron && appData.isNspv) {
       ipcRenderer.on('nspvRecheck', (event, arg) => {
-        console.warn('nspvRecheck arg', arg);
-        if (!arg.isFirstRun) console.warn('schedule next sync update in 5 min');
-        else console.warn('run sync update immediately (first run)');
+        writeLog('nspvRecheck arg', arg);
+        if (!arg.isFirstRun) writeLog('schedule next sync update in 5 min');
+        else writeLog('run sync update immediately (first run)');
         
         if (arg.coin === this.state.coin.toLowerCase()) {
           setTimeout(() => {
-            console.warn('auto sync called');
+            writeLog('auto sync called');
             this.syncData();
           }, arg.isFirstRun === true ? 1000 : 300 * 1000);
         }
@@ -238,7 +239,7 @@ class App extends React.Component {
     if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {      
       return tiptime;
     } else {
-      console.warn('tiptime vs local time is too big, use local time to calc rewards!');
+      writeLog('tiptime vs local time is too big, use local time to calc rewards!');
       return currentTimestamp;
     }
   }
@@ -280,7 +281,7 @@ class App extends React.Component {
       [e.target.name]: e.target.value,
     });
 
-    console.warn('set api endpoint to ' + e.target.value);
+    writeLog('set api endpoint to ' + e.target.value);
 
     blockchain[blockchainAPI].setExplorerUrl(e.target.value);
   }
@@ -293,7 +294,7 @@ class App extends React.Component {
     let longestBlockHeight = 0;
     let apiEndPointIndex = 0;
 
-    console.warn('checkExplorerEndpoints', getInfoRes);
+    writeLog('checkExplorerEndpoints', getInfoRes);
     
     for (let i = 0; i < apiEndpoints[this.state.coin].api.length; i++) {
       if (getInfoRes[i] &&
@@ -306,7 +307,7 @@ class App extends React.Component {
       }
     }
 
-    console.warn('set api endpoint to ' + apiEndpoints[this.state.coin].api[apiEndPointIndex]);
+    writeLog('set api endpoint to ' + apiEndpoints[this.state.coin].api[apiEndPointIndex]);
     blockchain[blockchainAPI].setExplorerUrl(apiEndpoints[this.state.coin].api[apiEndPointIndex]);    
     isExplorerEndpointSet = true;
     
@@ -365,7 +366,7 @@ class App extends React.Component {
     setLocalStorageVar('coins', coins);
 
     setTimeout(() => {
-      console.warn('enableAccount', this.state.coins);
+      writeLog('enableAccount', this.state.coins);
     }, 100);
   }
 
@@ -393,20 +394,20 @@ class App extends React.Component {
     setLocalStorageVar('coins', coins);
 
     setTimeout(() => {
-      console.warn('addAccount', this.state.coins);
+      writeLog('addAccount', this.state.coins);
     }, 100);
   }
 
   syncData = async (_coin) => {
     if (!this.state.isFirstRun || this.isCoinData()) {
-      console.warn('sync data called');
+      writeLog('sync data called');
 
       const coinTickers = _coin ? [_coin] : Object.keys(this.state.coins);
       const coins = apiEndpoints;
       let balances = [];
       
       await asyncForEach(coinTickers, async (coin, index) => {
-        console.warn(coin)
+        writeLog(coin)
         const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
           return blockchain[blockchainAPI].getInfo(value);
         }));
@@ -414,7 +415,7 @@ class App extends React.Component {
         let longestBlockHeight = 0;
         let apiEndPointIndex = 0;
     
-        console.warn('checkExplorerEndpoints', getInfoRes);
+        writeLog('checkExplorerEndpoints', getInfoRes);
         
         for (let i = 0; i < coins[coin].api.length; i++) {
           if (getInfoRes[i] &&
@@ -427,7 +428,7 @@ class App extends React.Component {
           }
         }
 
-        console.warn(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
+        writeLog(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
         blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
         isExplorerEndpointSet = true;
     
@@ -436,7 +437,7 @@ class App extends React.Component {
         });
 
         if (isExplorerEndpointSet) {
-          console.warn('app vendor', this.state.vendor);
+          writeLog('app vendor', this.state.vendor);
           let [accounts, tiptime] = await Promise.all([
             accountDiscovery(this.state.vendor, coin, this.state.coins[coin].accounts),
             blockchain[blockchainAPI].getTipTime()
@@ -455,17 +456,17 @@ class App extends React.Component {
           }
 
           if (coin === 'KMD') {
-            console.warn('check if any KMD rewards are overdue');
+            writeLog('check if any KMD rewards are overdue');
 
             for (let i = 0; i < accounts.length; i++) {
-              //console.warn(accounts[i].utxos);
+              //writeLog(accounts[i].utxos);
               for (let j = 0; j < accounts[i].utxos.length; j++) {
                 const rewardEndDate = getRewardEndDate({locktime: accounts[i].utxos[j].locktime, height: 7777776});
 
-                console.warn('rewardEndDate', rewardEndDate, ' vs ', Date.now());
+                writeLog('rewardEndDate', rewardEndDate, ' vs ', Date.now());
 
                 if (Date.now() > rewardEndDate) {
-                  console.warn('account', i, 'rewards overdue');
+                  writeLog('account', i, 'rewards overdue');
                   accounts[i].isRewardsOverdue = true;
                 } else {
                   accounts[i].isRewardsOverdue = false;
@@ -482,7 +483,7 @@ class App extends React.Component {
           });
 
           if (index === coinTickers.length - 1) {
-            console.warn('coin data sync finished', balances);
+            writeLog('coin data sync finished', balances);
             
             this.handleScanData({
               coins: balances,
@@ -518,9 +519,9 @@ class App extends React.Component {
       }
     }
 
-    console.warn('lastops', lastOperations);
-    console.warn(newCoins);
-    console.warn(coins);  
+    writeLog('lastops', lastOperations);
+    writeLog(newCoins);
+    writeLog(coins);  
     
     lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
 
@@ -538,7 +539,7 @@ class App extends React.Component {
   }
 
   addCoins(coins) {
-    console.warn('main addCoins', coins);
+    writeLog('main addCoins', coins);
 
     let currentCoins = this.state.coins;
     for (let i = 0; i < coins.length; i++) {
@@ -554,7 +555,7 @@ class App extends React.Component {
     setLocalStorageVar('coins', currentCoins);
 
     setTimeout(() => {
-      console.warn(this.state)
+      writeLog(this.state)
     }, 1000)
   }
 

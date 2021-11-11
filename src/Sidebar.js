@@ -3,6 +3,7 @@ import AboutModal from './AboutModal';
 import SendCoinButton from './SendCoinButton';
 import ReceiveCoinButton from './ReceiveCoinButton';
 import SettingsModal from './SettingsModal';
+import {writeLog} from './Debug';
 
 class Sidebar extends React.Component {
   state = this.initialState;
@@ -13,7 +14,7 @@ class Sidebar extends React.Component {
   };
 
   render() {
-    console.warn('sidebar props', this.props);
+    writeLog('sidebar props', this.props);
     
     return (
       <div className="sidebar-right">

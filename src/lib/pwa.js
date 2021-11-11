@@ -1,11 +1,12 @@
 // ref: https://github.com/mdn/pwa-examples
+import {writeLog} from '../Debug';
 
 const initPWA = () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('serviceWorker.js')
       .then(() => {
-        console.warn('Service Worker Registered');
+        writeLog('Service Worker Registered');
       });
   }
 
@@ -28,9 +29,9 @@ const initPWA = () => {
       // Wait for the user to respond to the prompt
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.warn('User accepted the A2HS prompt');
+          writeLog('User accepted the A2HS prompt');
         } else {
-          console.warn('User dismissed the A2HS prompt');
+          writeLog('User dismissed the A2HS prompt');
         }
 
         deferredPrompt = null;

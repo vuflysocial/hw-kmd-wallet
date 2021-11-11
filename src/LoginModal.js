@@ -7,6 +7,7 @@ import {
   resetLocalStorage,
 } from './lib/localstorage-util';
 import {isElectron} from './Electron';
+import {writeLog} from './Debug';
 
 class LoginModal extends React.Component {
   state = this.initialState;
@@ -29,7 +30,7 @@ class LoginModal extends React.Component {
     });
 
     /*setTimeout(() => {
-      console.warn('this.state', this.state);
+      writeLog('this.state', this.state);
     }, 100);*/
   }
 
