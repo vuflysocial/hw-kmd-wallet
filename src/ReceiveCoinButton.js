@@ -146,9 +146,7 @@ class ReceiveCoinButton extends React.Component {
                       href={`${FAUCET_URL[this.props.coin]}${unusedAddress}`}>Get funds from a faucet</a>
                   }
                   {isElectron &&
-                    <a
-                      href="#"
-                      onClick={() => shell.openExternal(`${FAUCET_URL[this.props.coin]}${unusedAddress}`)}>Get funds from a faucet</a>
+                    <a onClick={() => shell.openExternal(`${FAUCET_URL[this.props.coin]}${unusedAddress}`)}>Get funds from a faucet</a>
                   }
                 </strong>
               </span>

@@ -87,10 +87,8 @@ class TransactionDetailsModal extends React.Component {
                 </tbody>
               </table>
               <div className="modal-action-block center">
-              {isElectron &&
-                  <a
-                    href="#"
-                    onClick={() => shell.openExternal(`${coins[coin].explorer}tx/${tx.txid}`)}>
+                {isElectron &&
+                  <a onClick={() => shell.openExternal(`${coins[coin].explorer}tx/${tx.txid}`)}>
                     <button
                       className="button is-primary"
                       onClick={this.confirm}>
