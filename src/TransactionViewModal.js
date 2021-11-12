@@ -48,7 +48,9 @@ class TransactionDetailsModal extends React.Component {
                   <i className={`fa fa-long-arrow-alt-${tx.type === 'sent' ? 'up' : 'down'}`}></i>
                   {Number(tx.height) === -1 || Number(tx.height) === 0 || Number(tx.confirmations) === 0 ? 'pending' : tx.type}
                 </div>
-                <div className={`amount ${tx.type === 'received' ? 'amount-increase' : 'amount-decrease'}`}>{tx.type === 'received' ? '+' + tx.amount : '-' + tx.amount} {coin}</div>
+                <div className={`amount ${tx.type === 'received' ? 'amount-increase' : 'amount-decrease'}`}>
+                  {tx.type === 'received' ? '+' + tx.amount : '-' + tx.amount} {coin}
+                </div>
               </div>
               <table className="table">
                 <tbody>

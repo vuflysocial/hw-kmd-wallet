@@ -26,6 +26,7 @@ import {
 import {getLocalStorageVar} from './lib/localstorage-util';
 import {writeLog} from './Debug';
 import copyToClipboard from './lib/copy-to-clipboard';
+import QRReaderModal from './QRReaderModal';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 
@@ -37,6 +38,7 @@ class SendCoinButton extends React.Component {
     this.nextStep = this.nextStep.bind(this);
     this.updateInput = this.updateInput.bind(this);
     this.initSendCoinForm = this.initSendCoinForm.bind(this);
+    this.setRecieverFromScan = this.setRecieverFromScan.bind(this);
     
     return {
       isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
@@ -488,6 +490,13 @@ class SendCoinButton extends React.Component {
     });
   }
 
+  setRecieverFromScan(data) {
+    this.setState({
+      sendToIn: data.replace(/[^a-zA-Z0-9]/g, ''),
+    });
+    writeLog('send coin setRecieverFromScan', data);
+  }
+
   render() {
     writeLog('send coin button', this.props);
 
@@ -585,6 +594,7 @@ class SendCoinButton extends React.Component {
                     placeholder="Enter an address"
                     autoComplete="off"
                     required />
+                  <QRReaderModal setRecieverFromScan={this.setRecieverFromScan} />
                 </div>
               </div>
             }

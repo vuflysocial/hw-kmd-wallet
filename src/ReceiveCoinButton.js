@@ -16,6 +16,7 @@ import {
 import './ReceiveCoinModal.scss';
 import {writeLog} from './Debug';
 import copyToClipboard from './lib/copy-to-clipboard';
+import QRGenModal from './QRGenModal';
 
 class ReceiveCoinButton extends React.Component {
   state = this.initialState;
@@ -127,6 +128,9 @@ class ReceiveCoinButton extends React.Component {
               This your new <strong>{this.props.coin} {accountIndex + 1}</strong> deposit address
               <span className="new-address">
                 <strong>{unusedAddress}</strong>
+                <QRGenModal
+                  coin={this.props.coin}
+                  address={unusedAddress}/>
                 <button
                   className="button is-light copy-btn"
                   onClick={() => this.triggerCopyToClipboard(unusedAddress)}>

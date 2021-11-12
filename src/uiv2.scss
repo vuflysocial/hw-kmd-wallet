@@ -76,6 +76,11 @@
     * {
       color: #fff !important;
     }
+    .qr-gen-modal {
+      * {
+        color: #121958 !important;
+      }
+    }
   }
   .notification.is-danger {
     * {
@@ -333,6 +338,21 @@
   }
 }
 
+.Receive-modal .Modal {
+  .fa-qrcode {
+    margin-left: 10px;
+    font-size: 20px;
+    position: relative;
+    top: 1px;
+  }
+
+  .qr-gen-modal {
+    .content {
+      text-align: center;
+    }
+  }
+}
+
 .trezor-webusb-container {
   display: none;
 }
@@ -583,6 +603,12 @@
   .button.copy-btn {
     margin-left: 0 !important;
     margin-top: 5px!important;
+  }
+  .fa-qrcode {
+    margin-left: 15px;
+    font-size: 20px;
+    position: relative;
+    top: 2px;
   }
 }
 
