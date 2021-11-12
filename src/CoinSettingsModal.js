@@ -1,6 +1,5 @@
 import React from 'react';
 import Modal from './Modal';
-//import './CoinSettingsModal.scss';
 
 class CoinSettingsModal extends React.Component {
   state = this.initialState;
@@ -11,6 +10,7 @@ class CoinSettingsModal extends React.Component {
 
     return {
       isClosed: true,
+      showXpub: {},
     };
   };
 
@@ -36,6 +36,16 @@ class CoinSettingsModal extends React.Component {
     this.close();
   }
 
+  toggleShowXpub(index) {
+    this.setState({
+      showXpub: Object.assign(
+        {},
+        this.state.showXpub,
+        !this.state.showXpub[index] ? {[index]: true} : {[index]: !this.state.showXpub[index]}
+      ),
+    });
+  }
+
   renderAccountList() {
     return (
       <div className="coin-settings-accounts-block">
@@ -51,6 +61,17 @@ class CoinSettingsModal extends React.Component {
                 onClick={() => this.props.enableAccount(item.accountIndex)}>
                 <i className={`fa fa-${item.enabled ? 'eye' : 'eye-slash'}`}></i>
               </button>
+              <button
+                className="button"
+                onClick={() => this.toggleShowXpub(item.accountIndex)}>
+                XPUB <i className={`fa fa-${this.state.showXpub && this.state.showXpub[item.accountIndex] ? 'eye' : 'eye-slash'}`} style={{'marginLeft': '7px'}}></i>
+              </button>
+              {this.state.showXpub &&
+                this.state.showXpub[item.accountIndex] &&
+                <div className="xpub-string">
+                  {item.xpub}
+                </div>
+              }
             </div>
           ))}
         </div>
