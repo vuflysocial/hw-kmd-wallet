@@ -25,6 +25,7 @@ import {
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import {writeLog} from './Debug';
+import copyToClipboard from './lib/copy-to-clipboard';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 
@@ -78,6 +79,8 @@ class SendCoinButton extends React.Component {
       accountIndex: 0,
     };
   }
+
+  triggerCopyToClipboard = (text) => copyToClipboard(text);
   
   setSkipBroadcast() {
     if (!this.state.skipBroadcastClicked) {
@@ -119,13 +122,7 @@ class SendCoinButton extends React.Component {
   }
   
   getUnusedAddressChange = () => {
-    let xpub;
-    
-    if (this.props.isClaimRewardsOnly) {
-      xpub = this.props.account.xpub;
-    } else {
-      xpub = this.props.accounts[this.state.accountIndex].xpub;
-    }
+    const xpub = this.props.isClaimRewardsOnly ? this.props.account.xpub : this.props.accounts[this.state.accountIndex].xpub;
 
     return this.state.address.length ? this.state.address : getAddress(getAccountNode(xpub)[this.props.isClaimRewardsOnly ? 'externalNode' : 'internalNode'].derive(this.getUnusedAddressIndexChange()).publicKey);
   }
@@ -371,6 +368,11 @@ class SendCoinButton extends React.Component {
                   'display': 'block',
                   'paddingLeft': '3px'
                 }}>{rawtx}</span>
+                <button
+                  className="button is-light copy-btn"
+                  onClick={() => this.triggerCopyToClipboard(rawtx)}>
+                  <i className="fa fa-copy"></i> <span className="copy-btn-text">Copy</span>
+                </button>
               </React.Fragment>
           });
           setTimeout(() => {
@@ -413,6 +415,11 @@ class SendCoinButton extends React.Component {
             success: 
               <React.Fragment>
                 Transaction ID: <TxidLink txid={txid} coin={coin} />
+                <button
+                  className="button is-light copy-btn"
+                  onClick={() => this.triggerCopyToClipboard(txid)}>
+                  <i className="fa fa-copy"></i> <span className="copy-btn-text">Copy</span>
+                </button>
               </React.Fragment>
           });
           setTimeout(() => {

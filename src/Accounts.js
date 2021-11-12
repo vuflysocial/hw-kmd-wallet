@@ -1,7 +1,6 @@
 import React from 'react';
 import Transactions from './Transactions';
 import SendCoinButton from './SendCoinButton';
-import ReceiveCoinButton from './ReceiveCoinButton';
 import {TX_FEE} from './constants';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
 import ClaimRewardsButton from './ClaimRewardsButton';
@@ -16,8 +15,6 @@ import {
 import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 
-// TODO: add a way to remove/add accounts
-
 class Account extends React.Component {
   state = this.initialState;
 
@@ -31,7 +28,6 @@ class Account extends React.Component {
       amount: '',
       sendTo: '',
       // debug options
-      showXpub: null,
       isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
     };
   }
@@ -54,20 +50,6 @@ class Account extends React.Component {
     });
   }
 
-  /*handleRewardClaim = txid => {
-    this.setState({
-      isClaimed: true,
-      claimTxid: txid,
-      showXpub: null,
-    });
-  };*/
-
-  showXpub(index) {
-    this.setState({
-      showXpub: index === this.state.showXpub ? null : index,
-    });
-  }
-
   render() {
     const {
       account,
@@ -85,11 +67,9 @@ class Account extends React.Component {
       claimableAmount,
       xpub,
     } = account;
-
-    writeLog('account', account);
-
     const {isClaimed} = this.state;
-
+    
+    writeLog('account', account);
     writeLog('utxos', utxos);
     writeLog('history', history);
 

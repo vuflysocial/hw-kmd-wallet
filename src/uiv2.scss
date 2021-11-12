@@ -565,7 +565,7 @@
   }
 }
 
-.send-coin-modal {
+.Modal.send-coin-modal {
   .switch {
     margin: 7px 0 25px 0;
 
@@ -575,11 +575,14 @@
   }
 
   .account-selector {
-    margin-left: 10px;
+    margin: 5px 0 0 10px;
   }
   .receive-account-selector-block {
-    padding-bottom: 35px;
-    padding-top: 5px;
+    padding-bottom: 30px;
+  }
+  .button.copy-btn {
+    margin-left: 0 !important;
+    margin-top: 5px!important;
   }
 }
 
@@ -706,5 +709,61 @@ select:-moz-focusring {
     font-size: 13px;
     left: 1px;
     top: -4px;
+  }
+}
+
+.xpub-string {
+  word-break: break-all;
+  padding: 10px 0;
+}
+
+.new-address {
+  display: block;
+
+  * {
+    color: #363636 !important;
+  }
+}
+
+.notification.is-success {
+  .copy-btn {
+    background: transparent !important;
+    border: solid 1px #fff !important;
+    float: none;
+    display: inline-block !important;
+    margin: 0 0 0 15px !important;
+    font-size: 0.95em;
+    padding: 0 7px;
+    height: 28px;
+    position: relative;
+    top: -2px;
+
+    i {
+      font-size: 0.9em;
+    }
+  }
+}
+
+#js-copytextarea {
+  opacity: 0;
+  height: 10px;
+  width: 200px;
+}
+
+.copy-btn {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.4rem;
+  margin: 0 0 0 10px !important;
+  margin-left: 10px;
+  height: 1.4rem;
+  text-transform: lowercase;
+
+  .copy-btn-text {
+    position: relative;
+    top: -1px;
+  }
+  i {
+    margin-right: 5px;
+    font-size: 0.75rem;
   }
 }

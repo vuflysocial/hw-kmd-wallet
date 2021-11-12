@@ -15,6 +15,7 @@ import {
 } from './Electron';
 import './ReceiveCoinModal.scss';
 import {writeLog} from './Debug';
+import copyToClipboard from './lib/copy-to-clipboard';
 
 class ReceiveCoinButton extends React.Component {
   state = this.initialState;
@@ -43,6 +44,8 @@ class ReceiveCoinButton extends React.Component {
       }
     };
   }
+
+  triggerCopyToClipboard = (text) => copyToClipboard(text);
 
   close() {
     this.setState({
@@ -122,9 +125,14 @@ class ReceiveCoinButton extends React.Component {
               'display': 'block'
             }}>
               This your new <strong>{this.props.coin} {accountIndex + 1}</strong> deposit address
-              <div className="new-address">
+              <span className="new-address">
                 <strong>{unusedAddress}</strong>
-              </div>
+                <button
+                  className="button is-light copy-btn"
+                  onClick={() => this.triggerCopyToClipboard(unusedAddress)}>
+                  <i className="fa fa-copy"></i> <span className="copy-btn-text">Copy</span>
+                </button>
+              </span>
             {FAUCET_URL[this.props.coin] &&
               <span style={{
                 'padding': '15px 0 0',
@@ -165,7 +173,15 @@ class ReceiveCoinButton extends React.Component {
       error,
       success
     } = this.state;
+    let style;
+
     writeLog(this.props);
+
+    if (error) {
+      style = {
+        'paddingBottom': '50px',
+      };
+    }
 
     return (
       <React.Fragment>
@@ -187,25 +203,27 @@ class ReceiveCoinButton extends React.Component {
               <p>
                 Select an account to get a new address for.
               </p>
-              <div className="receive-account-selector-block">
+              <div
+                className="receive-account-selector-block"
+                style={style}>
                 Account
                 <select
                   className="account-selector minimal"
                   name="accountIndex"
                   value={this.state.accountIndex}
                   onChange={(event) => this.updateAccountIndex(event)}>
-                  {[...Array(SETTINGS.ACCOUNT_INDEX_LIMIT).keys()].map((account, index) => (
+                  {this.props.accounts.map((account, index) => (
                     <option
-                      key={`account-${account}`}
-                      value={account}>
-                      {this.props.coin} {account + 1}
+                      key={`account-${account}-${index}`}
+                      value={index}>
+                      {this.props.coin} {index + 1}
                     </option>
                   ))}
                 </select>
                 <button
                   className="button is-primary"
                   onClick={this.getNewAddress}>
-                  Confirm
+                  {error ? 'Try again' : 'Confirm'}
                 </button>
               </div>
             </React.Fragment>

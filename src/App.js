@@ -611,6 +611,9 @@ class App extends React.Component {
             </h1>
           </div>
         </Header>
+        <input
+          type="text"
+          id="js-copytextarea" />
         <Sidebar
           isCoinData={this.isCoinData}
           activeCoin={this.state.activeCoin}
@@ -682,6 +685,9 @@ class App extends React.Component {
               </h1>
             </div>
           </Header>
+          <input
+            type="text"
+            id="js-copytextarea" />
           <Sidebar
             isCoinData={this.isCoinData}
             activeCoin={this.state.activeCoin}

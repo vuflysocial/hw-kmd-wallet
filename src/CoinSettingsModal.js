@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from './Modal';
+import copyToClipboard from './lib/copy-to-clipboard';
 
 class CoinSettingsModal extends React.Component {
   state = this.initialState;
@@ -36,6 +37,8 @@ class CoinSettingsModal extends React.Component {
     this.close();
   }
 
+  triggerCopyToClipboard = (text) => copyToClipboard(text);
+
   toggleShowXpub(index) {
     this.setState({
       showXpub: Object.assign(
@@ -70,6 +73,11 @@ class CoinSettingsModal extends React.Component {
                 this.state.showXpub[item.accountIndex] &&
                 <div className="xpub-string">
                   {item.xpub}
+                  <button
+                    className="button is-light copy-btn"
+                    onClick={() => this.triggerCopyToClipboard(item.xpub)}>
+                    <i className="fa fa-copy"></i> <span className="copy-btn-text">Copy</span>
+                  </button>
                 </div>
               }
             </div>
