@@ -20,7 +20,8 @@ export const voteCoin = 'VOTE2020';
 export const testCoins = [
   'RICK',
   'MORTY',
-  'VOTE2020'
+  'VOTE2020',
+  'TKLTEST',
 ];
 export const LEDGER_FW_VERSIONS = {
   nano_s: {
