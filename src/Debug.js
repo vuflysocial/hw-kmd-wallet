@@ -14,8 +14,4 @@ if (isElectron &&
   isDev = false;
 }
 
-export const writeLog = (...args) => {
-  if (isDev) {
-    console.warn(...args);
-  }
-};
+export const writeLog = isDev ? console.warn : () => {};
