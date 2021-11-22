@@ -5,13 +5,14 @@ import {
 
 export let isDev = false;
 
-if (window.location.href.indexOf('devmode') > -1) {
+if ((!process || (process && process.title !== 'node')) &&
+    window.location.href.indexOf('devmode') > -1) {
   isDev = true;
 }
 
 if (isElectron &&
     appData.isDev) {
-  isDev = false;
+  isDev = true;
 }
 
 export const writeLog = isDev ? console.warn : () => {};
