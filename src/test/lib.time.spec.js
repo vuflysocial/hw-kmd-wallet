@@ -20,7 +20,7 @@ test('it should return 23 Feb 2018 00:00 (time - secondsToString)', () => {
 });
 
 test('it should return 23 Feb 2018 00:00:0 (time - secondsToString)', () => {
-  expect(secondsToString(timeExample / 1000, false, true)).toBe('23 Feb 2018 00:00:0');
+  expect(secondsToString(Math.floor(timeExample / 1000), false, true)).toBe('23 Feb 2018 03:00:0');
 });
 
 test('it should return 1 second (time - secondsElapsedToString - 1s (singular))', () => {
