@@ -58,7 +58,6 @@ function createWindow() {
   ]);
 
   const decodeStoredData = (str, pw) => {
-    console.warn('decoding');
     return new Promise((resolve, reject) => {
       if (str.length) {
         createAdapter()

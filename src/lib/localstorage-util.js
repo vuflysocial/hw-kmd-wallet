@@ -74,7 +74,7 @@ export const encodeStoredData = (str) => {
   } else {
     helpers.encodeStoredData(str, pw)
     .catch((err) => {
-      resolve(false);
+      writeLog('encodeStoredData error', err);
     })
     .then(encryptedString => {
       //writeLog('encryptedString', encryptedString);
