@@ -16,8 +16,8 @@ const url = require('url');
 const ipcLedger = require('./ipc-ledger');
 const ipcSPV = require('./spv');
 const ipcNSPV = require('./nspv');
-
 const isDev = process.argv.indexOf('devmode') > -1;
+const {createAdapter} = require('iocane');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -57,11 +57,49 @@ function createWindow() {
     { role: 'selectall' },
   ]);
 
+  const decodeStoredData = (str, pw) => {
+    console.warn('decoding');
+    return new Promise((resolve, reject) => {
+      if (str.length) {
+        createAdapter()
+        .decrypt(str, pw)
+        .catch((err) => {
+          console.log('decodeStoredData error', err);
+          resolve(false);
+        })
+        .then(decryptedString => {
+          //console.log('decryptedString', decryptedString);
+          resolve(decryptedString);
+        });
+      } else {
+        resolve(false);
+      }
+    });
+  };
+
+  const encodeStoredData = (str, pw) => {
+    return new Promise((resolve, reject) => {
+      createAdapter()
+      .encrypt(str, pw)
+      .catch((err) => {
+        console.log('encodeStoredData error', err);
+        resolve(false);
+      })
+      .then(encryptedString => {
+        resolve(encryptedString);
+      });
+    });
+  };
+
   global.app = {
     isDev,
     noFWCheck: true,
     blockchainAPI: process.argv.indexOf('api=spv') > -1 || process.argv.indexOf('api=nspv') > -1 ? 'spv' : 'insight',
     isNspv: process.argv.indexOf('api=nspv') > -1,
+    helpers: {
+      decodeStoredData,
+      encodeStoredData,
+    },
   };
 
   // and load the index.html of the app.

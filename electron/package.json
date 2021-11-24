@@ -38,6 +38,7 @@
     "create-hash": "git://github.com/pbca26/createHash#electron-v4",
     "fix-path": "^2.1.0",
     "fs-extra": "^7.0.0",
+    "iocane": "^5.1.1",
     "node-abi": "^3.2.0",
     "request": "^2.88.0",
     "tx-decoder": "git+https://github.com/pbca26/tx-decoder"

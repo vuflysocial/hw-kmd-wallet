@@ -1,5 +1,6 @@
 import {createAdapter} from 'iocane';
 import {writeLog} from '../Debug';
+import {isElectron, helpers} from '../Electron';
 
 const rootVar = 'hw-wallet';
 let localStorageCache = {};
@@ -22,34 +23,64 @@ export const setLocalStoragePW = (_pw) => {
 };
 
 export const decodeStoredData = () => {
-  return new Promise((resolve, reject) => {
-    if (localStorage.getItem(rootVar).length) {
-      createAdapter()
-      .decrypt(localStorage.getItem(rootVar), pw)
-      .catch((err) => {
+  if (!isElectron) {
+    return new Promise((resolve, reject) => {
+      if (localStorage.getItem(rootVar).length) {
+        createAdapter()
+        .decrypt(localStorage.getItem(rootVar), pw)
+        .catch((err) => {
+          resolve(false);
+        })
+        .then(decryptedString => {
+          //writeLog('decryptedString', decryptedString);
+          
+          localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
+          resolve(true);
+        });
+      } else {
         resolve(false);
-      })
-      .then(decryptedString => {
-        //writeLog('decryptedString', decryptedString);
-        
-        localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
-        resolve(true);
-      });
-    } else {
-      resolve(false);
-    }
-  });
+      }
+    });
+  } else {
+    return new Promise((resolve, reject) => {
+      if (localStorage.getItem(rootVar).length) {
+        helpers.decodeStoredData(localStorage.getItem(rootVar), pw)
+        .catch((err) => {
+          resolve(false);
+        })
+        .then(decryptedString => {
+          //writeLog('decryptedString', decryptedString);
+          
+          localStorageCache = decryptedString ? JSON.parse(decryptedString) : {};
+          resolve(true);
+        });
+      } else {
+        resolve(false);
+      }
+    });
+  }
 };
 
 export const encodeStoredData = (str) => {
-  createAdapter()
-  .encrypt(str, pw)
-  .catch((err) => {
-    writeLog('encodeStoredData error', err);
-  })
-  .then(encryptedString => {
-    localStorage.setItem(rootVar, encryptedString);
-  });
+  if (!isElectron) {
+    createAdapter()
+    .encrypt(str, pw)
+    .catch((err) => {
+      writeLog('encodeStoredData error', err);
+    })
+    .then(encryptedString => {
+      localStorage.setItem(rootVar, encryptedString);
+    });
+  } else {
+    helpers.encodeStoredData(str, pw)
+    .catch((err) => {
+      resolve(false);
+    })
+    .then(encryptedString => {
+      //writeLog('encryptedString', encryptedString);
+      localStorage.setItem(rootVar, encryptedString);
+    });
+  }
 };
 
 export const setLocalStorageVar = (name, json) => {
