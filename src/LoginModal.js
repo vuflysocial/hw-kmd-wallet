@@ -45,12 +45,12 @@ class LoginModal extends React.Component {
       });
     } else {
       decodeStoredData().then((res) => {
-        if (res) {
-          this.props.closeLoginModal(this.state.password);
-          
+        if (res) {          
           this.setState({
             password: '',
           });
+
+          this.props.closeLoginModal(this.state.password);
         } else {
           this.setState({
             error: true,
