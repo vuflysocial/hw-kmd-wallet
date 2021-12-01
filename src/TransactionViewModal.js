@@ -58,7 +58,7 @@ class TransactionDetailsModal extends React.Component {
                     <td>
                       <strong>Account</strong>
                     </td>
-                    <td>{coin} {tx.accountIndex + 1}</td>
+                    <td>{coin} {(tx.accountIndex || this.props.activeAccount) + 1}</td>
                   </tr>
                   <tr>
                     <td>
