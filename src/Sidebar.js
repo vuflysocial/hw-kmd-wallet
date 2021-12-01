@@ -34,7 +34,6 @@ class Sidebar extends React.Component {
           {this.props.activeCoin &&
             <SendCoinButton
               accounts={this.props.accounts}
-              handleRewardClaim={this.props.handleRewardClaim}
               vendor={this.props.vendor}
               syncData={this.props.syncData}
               coin={this.props.activeCoin}>
