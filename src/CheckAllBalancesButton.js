@@ -115,7 +115,7 @@ class CheckAllBalancesButton extends React.Component {
             ...this.initialState,
             isCheckingRewards: true,
             coin,
-            progress: ` (${index + 1}/${coinTickers.length})`,
+            progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
             balances,
             isInProgress: true,
           });
