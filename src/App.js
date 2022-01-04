@@ -750,6 +750,18 @@ class App extends React.Component {
                   src={`${this.state.vendor}-logo.png`}
                   alt={VENDOR[this.state.vendor]} />
                 <div className="trezor-webusb-container"></div>
+                {!isElectron &&
+                  <div className="download-desktop-block">
+                    <a
+                      href="https://github.com/pbca26/hw-kmd-wallet/releases"
+                      target="_blank">
+                      <button
+                        className="button is-light">
+                        <i className="fa fa-download"></i>Download for desktop
+                      </button>
+                    </a>
+                  </div>
+                }
                 {/*!isMobile &&
                  this.state.vendor === 'ledger' &&
                  !isElectron &&
