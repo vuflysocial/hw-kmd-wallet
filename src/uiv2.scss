@@ -7,8 +7,8 @@
   color: #fff;
   z-index: 100;
 
-  ul {
-    li {
+  > ul {
+    > li {
       text-align: center;
       padding: 20px 0;
       border-left: solid 4px #121958;
@@ -654,6 +654,7 @@ select.minimal:focus {
   background-size: 5px 5px, 5px 5px, 1px 2em;
   background-repeat: no-repeat;
   outline: none;
+  cursor: pointer;
 }
 
 select:-moz-focusring {
