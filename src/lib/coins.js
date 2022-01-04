@@ -110,6 +110,7 @@ const coins = {
       'https://explorer.komodoplatform.com:10000/vote2021/api/',
       'https://vote2021.explorer.dexstats.info/insight-api-komodo/',
     ],
+    airdrop: true,
   },
   RICK: {
     explorer: 'https://rick.explorer.dexstats.info/',
@@ -141,6 +142,7 @@ const coins = {
       'https://wsb.explorer.dexstats.info/insight-api-komodo/',
       'https://explorer.komodoplatform.com:10000/wsb/api/',
     ],
+    airdrop: true,
   },
   SPACE: {
     explorer: 'https://space.explorer.dexstats.info/',
@@ -171,6 +173,7 @@ const coins = {
       'https://tokel.explorer.dexstats.info/insight-api-komodo/',
       'https://explorer.komodoplatform.com:10000/tokel/api/',
     ],
+    airdrop: true,
   },
   TKLTEST: {
     explorer: 'https://tkltest.explorer.dexstats.info/',
