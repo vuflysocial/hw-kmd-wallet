@@ -50,6 +50,7 @@ import HWFirmwareRequirements from './HWFirmwareRequirementsModal';
 import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import getRewardEndDate from './lib/get-reward-end-date';
+import {getPrices} from './lib/prices';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 const MAX_TIP_TIME_DIFF = 3600 * 24;
@@ -79,6 +80,7 @@ class App extends React.Component {
       activeCoin: null,
       activeAccount: null,
       loginModalClosed: false,
+      prices: {},
       coins: {},
       lastOperations: [],
       theme: 'tdark',
@@ -188,6 +190,13 @@ class App extends React.Component {
         }
       }, 300 * 1000);
     }
+
+    getPrices()
+    .then((prices) => {
+      this.setState({
+        prices,
+      });
+    });
 
     /*setTimeout(() => {
       writeLog('run recheck');
@@ -399,6 +408,13 @@ class App extends React.Component {
   }
 
   syncData = async (_coin) => {
+    getPrices()
+    .then((prices) => {
+      this.setState({
+        prices,
+      });
+    });
+
     if (!this.state.isFirstRun || this.isCoinData()) {
       writeLog('sync data called');
 
@@ -733,7 +749,9 @@ class App extends React.Component {
                   }
                   {this.isCoinData() &&
                     <div className="bottom-blocks">
-                      <DashboardPrices />
+                      <DashboardPrices
+                        prices={this.state.prices}
+                        coins={this.state.coins} />
                       <DashboardOperations lastOperations={this.state.lastOperations} />
                     </div>
                   }
