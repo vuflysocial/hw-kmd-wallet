@@ -13,6 +13,9 @@ if (!localStorage.getItem(rootVar)) {
 export const resetLocalStorage = () => {
   pw = null;
 
+  if (isElectron) {
+    helpers.setPW();
+  }
   localStorageCache = {};
   localStorage.setItem(rootVar, '');
 };
@@ -22,6 +25,9 @@ export const setLocalStoragePW = (_pw) => {
 
   localStorageCache = {};
 
+  if (isElectron) {
+    helpers.setPW(_pw);
+  }
   //writeLog('localStorage pw set to: ', pw);
 };
 

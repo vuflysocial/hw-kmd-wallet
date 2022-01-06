@@ -22,6 +22,7 @@ const {createAdapter} = require('iocane');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let pw;
 
 function createWindow() {
   // Create the browser window.
@@ -36,6 +37,7 @@ function createWindow() {
     },
   });
 
+  // TODO: refactor
   require("@electron/remote/main").enable(mainWindow.webContents);
 
   require(path.join(__dirname, 'menu'));
@@ -57,7 +59,7 @@ function createWindow() {
     { role: 'selectall' },
   ]);
 
-  const decodeStoredData = (str, pw) => {
+  const decodeStoredData = (str/*, pw*/) => {
     return new Promise((resolve, reject) => {
       if (str.length) {
         createAdapter()
@@ -76,7 +78,7 @@ function createWindow() {
     });
   };
 
-  const encodeStoredData = (str, pw) => {
+  const encodeStoredData = (str/*, pw*/) => {
     return new Promise((resolve, reject) => {
       createAdapter()
       .encrypt(str, pw)
@@ -90,6 +92,13 @@ function createWindow() {
     });
   };
 
+  const getPW = () => {
+    return pw;
+  };
+  const setPW = (_pw) => {
+    pw = _pw;
+  };
+
   global.app = {
     isDev,
     noFWCheck: true,
@@ -98,6 +107,8 @@ function createWindow() {
     helpers: {
       decodeStoredData,
       encodeStoredData,
+      getPW,
+      setPW,
     },
   };
 

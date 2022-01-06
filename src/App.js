@@ -181,6 +181,12 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    if (isElectron &&
+        helpers.getPW()) {
+      // init app data decryption and login if PW is set
+      this.closeLoginModal(helpers.getPW());
+    }
+
     document.title = `Komodo Hardware Wallet (v${version})`;
     if (!isElectron || (isElectron && !appData.isNspv)) {
       setInterval(() => {
