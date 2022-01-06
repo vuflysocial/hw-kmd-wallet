@@ -27,8 +27,8 @@ let pw;
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     webPreferences: {
       nativeWindowOpen: true, // <-- important for trezor
       nodeIntegration: true,
