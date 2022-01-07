@@ -18,6 +18,10 @@ class Sidebar extends React.Component {
     };
   };
 
+  logout() {
+    this.props.resetState('logout');
+  }
+
   render() {
     const sidebarSize = getLocalStorageVar('settings').sidebarSize || 'short';
     writeLog('sidebar props', this.props);
@@ -95,6 +99,14 @@ class Sidebar extends React.Component {
             }
           </li>
           <AboutModal sidebarSize={sidebarSize} />
+          {this.props.isAuth &&
+            <li onClick={() => this.logout()}>
+              <i className="fa fa-lock"></i>
+              {sidebarSize === 'full' &&
+                <span className="sidebar-item-title">Lock</span>
+              }
+            </li>
+          }
         </ul>
       </div>
     );

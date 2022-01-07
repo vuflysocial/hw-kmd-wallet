@@ -21,6 +21,8 @@ import hw from './lib/hw';
 import {
   getLocalStorageVar,
   setLocalStorageVar,
+  resetLocalStorage,
+  setLocalStoragePW,
 } from './lib/localstorage-util';
 import {
   LEDGER_FW_VERSIONS,
@@ -38,6 +40,7 @@ import {
   isElectron,
   appData,
   ipcRenderer,
+  helpers,
 } from './Electron';
 import {writeLog} from './Debug';
 import initSettings from './lib/init-settings';
@@ -54,6 +57,7 @@ import {getPrices} from './lib/prices';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 const MAX_TIP_TIME_DIFF = 3600 * 24;
+let syncDataInterval;
 
 class App extends React.Component {
   state = this.initialState;
@@ -68,7 +72,7 @@ class App extends React.Component {
     this.enableAccount = this.enableAccount.bind(this);
     this.addAccount = this.addAccount.bind(this);
     this.triggerSidebarSizeChange = this.triggerSidebarSizeChange.bind(this);
-    
+
     return {
       accounts: [],
       tiptime: null,
@@ -81,10 +85,11 @@ class App extends React.Component {
       activeCoin: null,
       activeAccount: null,
       loginModalClosed: false,
-      prices: {},
       coins: {},
       lastOperations: [],
+      prices: {},
       theme: 'tdark',
+      isAuth: false,
       sidebarSizeChanged: false,
       //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
@@ -106,13 +111,14 @@ class App extends React.Component {
     initSettings();
 
     if (!getLocalStorageVar('settings')) {
-        setLocalStorageVar('settings', {theme: 'tdark'});
+      setLocalStorageVar('settings', {theme: 'tdark'});
       document.getElementById('body').className = 'tdark';
     } else {
       document.getElementById('body').className = getLocalStorageVar('settings').theme;
     }
-
+    
     this.setState({
+      isAuth: true,
       coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
@@ -195,22 +201,22 @@ class App extends React.Component {
       this.closeLoginModal(helpers.getPW());
     }
 
-    document.title = `Komodo Hardware Wallet (v${version})`;
-    if (!isElectron || (isElectron && !appData.isNspv)) {
-      setInterval(() => {
-        if (!this.state.syncInProgress) {
-          writeLog('auto sync called');
-          this.syncData();
-        }
-      }, 300 * 1000);
-    }
-
     getPrices()
     .then((prices) => {
       this.setState({
         prices,
       });
     });
+
+    document.title = `Komodo Hardware Wallet (v${version})`;
+    if (!isElectron || (isElectron && !appData.isNspv)) {
+      syncDataInterval = setInterval(() => {
+        if (!this.state.syncInProgress) {
+          writeLog('auto sync called');
+          this.syncData();
+        }
+      }, 300 * 1000);
+    }
 
     /*setTimeout(() => {
       writeLog('run recheck');
@@ -347,9 +353,19 @@ class App extends React.Component {
     }, 50);
   };
 
-  resetState = () => {
+  resetState = (clearData) => {
+    clearInterval(syncDataInterval);
     this.setVendor();
-    this.setState(this.initialState);
+
+    if (clearData &&
+        clearData !== 'logout') {
+      resetLocalStorage();
+    } else if (
+      clearData &&
+      clearData === 'logout') {
+      setLocalStoragePW();
+    }
+    this.setState(Object.assign({}, this.initialState, {loginModalClosed: false}));
     // TODO: auto-close connection after idle time
     hw.ledger.resetTransport();
 
@@ -437,7 +453,7 @@ class App extends React.Component {
       let balances = [];
       
       await asyncForEach(coinTickers, async (coin, index) => {
-        writeLog(coin);
+        writeLog(coin)
         const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
           return blockchain[blockchainAPI].getInfo(value);
         }));
@@ -604,7 +620,7 @@ class App extends React.Component {
       });
     }
 
-    setLocalStorageVar('settings', {vendor});
+    if (vendor) setLocalStorageVar('settings', {vendor});
   }
 
   setTheme(name) {
@@ -620,7 +636,9 @@ class App extends React.Component {
       <div className={`App isPristine${!isElectron && window.location.href.indexOf('disable-mobile') === -1 ? ' Responsive' : ''}`}>
         <LoginModal
           closeLoginModal={this.closeLoginModal}
-          isClosed={this.state.loginModalClosed} />
+          resetState={this.resetState}
+          isClosed={this.state.loginModalClosed}
+          isAuth={this.state.isAuth} />
         <Header>
           <div className="navbar-brand">
             <div className="navbar-item">
@@ -653,8 +671,10 @@ class App extends React.Component {
           vendor={this.state.vendor}
           loginModalClosed={this.state.loginModalClosed}
           setVendor={this.state.setVendor}
+          resetState={this.resetState}
+          isAuth={this.state.isAuth}
           triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
-        <section className="main">
+        <section className={'main main-' + (getLocalStorageVar('settings').sidebarSize || 'short')}>
           <React.Fragment>
             <div className="container content text-center">
               <h2>{this.state.coin === voteCoin ? 'Cast your VOTEs' : 'Manage your coins'} from a hardware wallet device.</h2>
@@ -730,6 +750,8 @@ class App extends React.Component {
             syncData={this.syncData}
             loginModalClosed={this.state.loginModalClosed}
             setVendor={this.setVendor}
+            isAuth={this.state.isAuth}
+            resetState={this.resetState}
             triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
 
           {this.state.explorerEndpoint === false &&
