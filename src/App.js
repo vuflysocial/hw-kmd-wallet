@@ -744,7 +744,7 @@ class App extends React.Component {
               updateLedgerFWVersion={this.updateLedgerFWVersion} />
           }
 
-          <section className={`main${testCoins.indexOf(this.state.coin) === -1 ? ' beta-warning-fix' : ''}`}>
+          <section className={`main${testCoins.indexOf(this.state.coin) === -1 ? ' beta-warning-fix' : ''}${' main-' + (getLocalStorageVar('settings').sidebarSize || 'short')}`}>
             <div className="container content text-center">
               {testCoins.indexOf(this.state.coin) === -1 &&
                 <BetaWarning />
@@ -771,31 +771,33 @@ class App extends React.Component {
                       <DashboardOperations lastOperations={this.state.lastOperations} />
                     </div>
                   }
+                  {!this.isCoinData() &&
+                    <div className="container content content-init-hw-vendor">
+                      <HWFirmwareRequirements vendor={this.state.vendor} />
+                      <img
+                        className="hw-graphic"
+                        src={`${this.state.vendor}-logo.png`}
+                        alt={VENDOR[this.state.vendor]} />
+                    </div>
+                  }
+                  {!isElectron &&
+                    <div className="download-desktop-block">
+                      <a
+                        href="https://github.com/pbca26/hw-kmd-wallet/releases"
+                        target="_blank">
+                        <button
+                          className="button is-light">
+                          <i className="fa fa-download"></i>Download for desktop
+                        </button>
+                      </a>
+                    </div>
+                  }
                 </React.Fragment>
               }
             </div>
             {!this.isCoinData() ? (
               <React.Fragment>
-                <div className="container content">
-                  <HWFirmwareRequirements vendor={this.state.vendor} />
-                </div>
-                <img
-                  className="hw-graphic"
-                  src={`${this.state.vendor}-logo.png`}
-                  alt={VENDOR[this.state.vendor]} />
                 <div className="trezor-webusb-container"></div>
-                {!isElectron &&
-                  <div className="download-desktop-block">
-                    <a
-                      href="https://github.com/pbca26/hw-kmd-wallet/releases"
-                      target="_blank">
-                      <button
-                        className="button is-light">
-                        <i className="fa fa-download"></i>Download for desktop
-                      </button>
-                    </a>
-                  </div>
-                }
                 {/*!isMobile &&
                  this.state.vendor === 'ledger' &&
                  !isElectron &&
