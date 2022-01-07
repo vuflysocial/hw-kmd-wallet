@@ -53,6 +53,9 @@ class AboutModal extends React.Component {
       <React.Fragment>
         <li onClick={() => this.open()}>
           <i className="fa fa-copyright"></i>
+          {this.props.sidebarSize === 'full' &&
+            <span className="sidebar-item-title">About</span>
+          }
         </li>
         <Modal
           title="About"

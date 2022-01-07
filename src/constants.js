@@ -62,4 +62,8 @@ export const SETTINGS = {
     10: '10 (default)',
   },
   ACCOUNT_INDEX_LIMIT: 30,
+  SIDEBAR: {
+    'full': 'Full size',
+    'short': 'Compact size (icons only)',
+  },
 };

@@ -31,6 +31,7 @@ class SettingsModal extends React.Component {
       fwCheck: getLocalStorageVar('settings').fwCheck,
       enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
       vendor: getLocalStorageVar('settings').vendor,
+      sidebarSize: getLocalStorageVar('settings').sidebarSize,
     };
   }
 
@@ -80,6 +81,15 @@ class SettingsModal extends React.Component {
     });
   }
 
+  setSidebarSize(e) {
+    setLocalStorageVar('settings', {sidebarSize: e.target.value});
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+
+    this.props.triggerSidebarSizeChange();
+  }
+
   triggerModal() {
     this.setState({
       isClosed: !this.state.isClosed,
@@ -88,12 +98,18 @@ class SettingsModal extends React.Component {
   }
 
   render() {
-    writeLog(this.props.coin)
+    writeLog(this.props.coin);
+
     return (
       <React.Fragment>
-        <li onClick={this.triggerModal}>
+        <div
+          className="settings-modal-trigger-block"
+          onClick={this.triggerModal}>
           <i className="fa fa-cogs"></i>
-        </li>
+          {this.props.sidebarSize === 'full' &&
+            <span className="sidebar-item-title">Settings</span>
+          }
+        </div>
         <Modal
           title="Settings"
           show={this.state.isClosed === false}
@@ -112,6 +128,24 @@ class SettingsModal extends React.Component {
                   className={'item light' + (this.state.theme === 'tlight' ? ' active' : '')}></div>
               </div>
             </li>*/}
+            {this.props.isAuth &&
+              <li>
+                Sidebar
+                <select
+                  name="sidebarSize"
+                  className="explorer-selector minimal"
+                  value={this.state.sidebarSize}
+                  onChange={(event) => this.setSidebarSize(event)}>
+                  {Object.keys(SETTINGS.SIDEBAR).map((item, index) => (
+                    <option
+                      key={`sidebar-size-${item}`}
+                      value={item}>
+                      {SETTINGS.SIDEBAR[item]}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            }
             {!isElectron &&
               <li>
                 <span className="slider-text">Always check firmware version</span>

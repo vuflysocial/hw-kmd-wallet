@@ -68,8 +68,6 @@ class SelectCoinModal extends React.Component {
     const selectCoins = this.state.selectedCoins;
 
     for (let i = 0; i < selectCoins.length; i++) {
-      console.warn(apiEndpoints[selectCoins[i]]);
-
       if (apiEndpoints[selectCoins[i]].airdrop) return true;
     }
   }

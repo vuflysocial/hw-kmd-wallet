@@ -67,7 +67,8 @@ class App extends React.Component {
     this.closeLoginModal = this.closeLoginModal.bind(this);
     this.enableAccount = this.enableAccount.bind(this);
     this.addAccount = this.addAccount.bind(this);
-
+    this.triggerSidebarSizeChange = this.triggerSidebarSizeChange.bind(this);
+    
     return {
       accounts: [],
       tiptime: null,
@@ -84,10 +85,17 @@ class App extends React.Component {
       coins: {},
       lastOperations: [],
       theme: 'tdark',
+      sidebarSizeChanged: false,
       //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       //theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
     };
+  }
+
+  triggerSidebarSizeChange() {
+    this.setState({
+      sidebarSizeChanged: !this.state.sidebarSizeChanged,
+    });
   }
 
   closeLoginModal(pw) {
@@ -98,7 +106,7 @@ class App extends React.Component {
     initSettings();
 
     if (!getLocalStorageVar('settings')) {
-      setLocalStorageVar('settings', {theme: 'tdark'});
+        setLocalStorageVar('settings', {theme: 'tdark'});
       document.getElementById('body').className = 'tdark';
     } else {
       document.getElementById('body').className = getLocalStorageVar('settings').theme;
@@ -429,7 +437,7 @@ class App extends React.Component {
       let balances = [];
       
       await asyncForEach(coinTickers, async (coin, index) => {
-        writeLog(coin)
+        writeLog(coin);
         const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
           return blockchain[blockchainAPI].getInfo(value);
         }));
@@ -644,7 +652,8 @@ class App extends React.Component {
           setActiveAccount={this.setActiveAccount}
           vendor={this.state.vendor}
           loginModalClosed={this.state.loginModalClosed}
-          setVendor={this.state.setVendor} />
+          setVendor={this.state.setVendor}
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
         <section className="main">
           <React.Fragment>
             <div className="container content text-center">
@@ -720,7 +729,8 @@ class App extends React.Component {
             accounts={this.state.activeCoin ? this.state.coins[this.state.activeCoin].accounts : []}
             syncData={this.syncData}
             loginModalClosed={this.state.loginModalClosed}
-            setVendor={this.setVendor} />
+            setVendor={this.setVendor}
+            triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />

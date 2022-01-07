@@ -528,6 +528,9 @@ class SendCoinButton extends React.Component {
         {!this.props.isClaimRewardsOnly &&
           <li onClick={this.initSendCoinForm}>
             <i className="fa fa-paper-plane"></i>
+            {this.props.sidebarSize === 'full' &&
+              <span className="sidebar-item-title">Send</span>
+            }
           </li>
         }
         {!this.state.step &&

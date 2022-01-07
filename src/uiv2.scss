@@ -19,6 +19,11 @@
         left: -4px;
       }
 
+      * > i,
+      > i {
+        width: 30px !important;
+      }
+
       &:hover {
         cursor: pointer;
         border-left: solid 4px #25CDDA;
@@ -30,6 +35,8 @@
 
       .plane-icon-invert {
         transform: rotate(175deg);
+
+        left: -10px;
       }
     }
   }
@@ -37,6 +44,33 @@
   a,
   a:hover {
     color: #fff !important;
+  }
+
+  &.sidebar-full {
+    width: 200px;
+
+    > ul {
+      > li {
+        text-align: left;
+        padding-left: 20px;
+
+        .sidebar-item-title {
+          position: relative;
+          left: 5px;
+          top: -2px;
+        }
+      }
+    }
+  }
+
+  .sidebar-item-no-pad {
+    padding: 0;
+
+    a {
+      display: block;
+      padding: 20px 0;
+      text-decoration: none;
+    }
   }
 }
 
@@ -122,6 +156,10 @@
   .vendor-trezor,
   .vendor-ledger {
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &.main-full {
+    margin-left: 200px;
   }
 }
 
@@ -310,6 +348,15 @@
 .dashboard {
   .hw-graphic {
     top: 60% !important;
+  }
+
+  .container.content.content-init-hw-vendor {
+    padding-top: 30px !important;
+    text-align: left;
+  
+    .hw-graphic {
+      top: -45px !important;
+    }
   }
 }
 
@@ -800,6 +847,17 @@ select:-moz-focusring {
   a:hover {
     text-decoration: underline;
     color: #121958 !important;
+  }
+}
+
+.login-modal {
+  .settings-modal-trigger-block {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    right: 13px;
+    cursor: pointer;
+    font-size: 1.2em;
   }
 }
 

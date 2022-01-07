@@ -8,6 +8,7 @@ import {
   isElectron,
   shell,
 } from './Electron';
+import {getLocalStorageVar} from './lib/localstorage-util';
 
 class Sidebar extends React.Component {
   state = this.initialState;
@@ -18,21 +19,28 @@ class Sidebar extends React.Component {
   };
 
   render() {
+    const sidebarSize = getLocalStorageVar('settings').sidebarSize || 'short';
     writeLog('sidebar props', this.props);
     
     return (
-      <div className="sidebar-right">
+      <div className={'sidebar-right sidebar-' + sidebarSize}>
         <ul>
           {this.props.isCoinData() &&
            this.props.activeCoin &&
            this.props.vendor &&
             <li onClick={() => this.props.setActiveCoin(null)}>
               <i className="fa fa-coins"></i>
+              {sidebarSize === 'full' &&
+                <span className="sidebar-item-title">Holdings</span>
+              }
             </li>
           }
           {this.props.activeAccount !== null &&
             <li onClick={() => this.props.setActiveAccount(null)}>
               <i className="fa fa-wallet"></i>
+              {sidebarSize === 'full' &&
+                <span className="sidebar-item-title">Accounts</span>
+              }
             </li>
           }
           {this.props.activeCoin &&
@@ -40,7 +48,8 @@ class Sidebar extends React.Component {
               accounts={this.props.accounts}
               vendor={this.props.vendor}
               syncData={this.props.syncData}
-              coin={this.props.activeCoin}>
+              coin={this.props.activeCoin}
+              sidebarSize={sidebarSize}>
               Send
             </SendCoinButton>
           }
@@ -48,26 +57,44 @@ class Sidebar extends React.Component {
             <ReceiveCoinButton
               vendor={this.props.vendor}
               coin={this.props.activeCoin}
-              accounts={this.props.accounts}>
+              accounts={this.props.accounts}
+              sidebarSize={sidebarSize}>
               Receive
             </ReceiveCoinButton>
           }
           {this.props.loginModalClosed &&
-            <SettingsModal
-              coin={this.props.activeCoin || 'KMD'}
-              setVendor={this.props.setVendor} />
+            <li>
+              <SettingsModal
+                coin={this.props.activeCoin || 'KMD'}
+                setVendor={this.props.setVendor}
+                resetState={this.props.resetState}
+                isAuth={this.props.isAuth}
+                triggerSidebarSizeChange={this.props.triggerSidebarSizeChange}
+                sidebarSize={sidebarSize} />
+            </li>
           }
-          <li>
+          <li className="sidebar-item-no-pad">
             {isElectron &&
-              <a onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/issues/new')}><i className="fa fa-life-ring"></i></a>
+              <a onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/issues/new')}>
+                <i className="fa fa-life-ring"></i>
+                {sidebarSize === 'full' &&
+                  <span className="sidebar-item-title">Feedback</span>
+                }
+              </a>
             }
             {!isElectron &&
               <a
                 target="_blank"
-                href="https://github.com/pbca26/hw-kmd-wallet/issues/new"><i className="fa fa-life-ring"></i></a>
+                href="https://github.com/pbca26/hw-kmd-wallet/issues/new"
+                className="sidebar-item-no-pad">
+                <i className="fa fa-life-ring"></i>
+                {sidebarSize === 'full' &&
+                  <span className="sidebar-item-title">Feedback</span>
+                }
+              </a>
             }
           </li>
-          <AboutModal />
+          <AboutModal sidebarSize={sidebarSize} />
         </ul>
       </div>
     );

@@ -13,6 +13,7 @@ export const defaultSettings = {
   discoveryGapLimit: 20,
   discoveryAddressConcurrency: 10,
   accountIndex: 0,
+  sidebarSize: 'full',
 };
 
 const initSettings = () => {
