@@ -91,6 +91,7 @@ class App extends React.Component {
       theme: 'tdark',
       isAuth: false,
       sidebarSizeChanged: false,
+      syncInProgress: false,
       //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       //theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
@@ -447,6 +448,9 @@ class App extends React.Component {
 
     if (!this.state.isFirstRun || this.isCoinData()) {
       writeLog('sync data called');
+      this.setState({
+        syncInProgress: true,
+      });      
 
       const coinTickers = _coin ? [_coin] : Object.keys(this.state.coins);
       const coins = apiEndpoints;
@@ -578,6 +582,7 @@ class App extends React.Component {
       lastOperations,
       tiptime,
       isFirstRun: false,
+      syncInProgress: false,
     });
 
     setLocalStorageVar('coins', coins);
@@ -728,6 +733,11 @@ class App extends React.Component {
                 }
                 {this.state.vendor &&
                   <strong>{VENDOR[this.state.vendor]} KMD HW {this.state.coin === voteCoin ? 'Notary Elections' : ' wallet'}</strong>
+                }
+                {this.state.syncInProgress &&
+                  <i
+                    className="fa fa-redo-alt sync-progress-icon"
+                    title="Sync in progress..."></i>
                 }
                 {/*<SettingsModal
                   updateExplorerEndpoint={this.updateExplorerEndpoint}

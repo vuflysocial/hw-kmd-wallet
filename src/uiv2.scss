@@ -886,3 +886,16 @@ select:-moz-focusring {
   margin-top: 20px;
   text-align: center;
 }
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-progress-icon {
+  animation: rotate 2s infinite;
+  font-size: 0.9em;
+  position: absolute;
+  left: 200px;
+}
