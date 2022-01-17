@@ -72,6 +72,7 @@ class App extends React.Component {
     this.enableAccount = this.enableAccount.bind(this);
     this.addAccount = this.addAccount.bind(this);
     this.triggerSidebarSizeChange = this.triggerSidebarSizeChange.bind(this);
+    this.updateExplorerEndpoint = this.updateExplorerEndpoint.bind(this);
 
     return {
       accounts: [],
@@ -92,6 +93,7 @@ class App extends React.Component {
       isAuth: false,
       sidebarSizeChanged: false,
       syncInProgress: false,
+      explorerEndpointOverride: {},
       //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
       //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
       //theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
@@ -307,13 +309,18 @@ class App extends React.Component {
   }
 
   updateExplorerEndpoint(e) {
+    writeLog(`set ${this.state.coin} api endpoint to ${e.target.value}`);
+
+    let explorerEndpointOverride = this.state.explorerEndpointOverride;
+    explorerEndpointOverride[this.state.coin] = e.target.value;
+
     this.setState({
-      [e.target.name]: e.target.value,
+      explorerEndpointOverride,
     });
 
-    writeLog('set api endpoint to ' + e.target.value);
-
-    blockchain[blockchainAPI].setExplorerUrl(e.target.value);
+    setTimeout(() => {
+      console.warn(this.state);
+    }, 100)
   }
 
   checkExplorerEndpoints = async () => {
@@ -457,34 +464,41 @@ class App extends React.Component {
       let balances = [];
       
       await asyncForEach(coinTickers, async (coin, index) => {
-        writeLog(coin)
-        const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
-          return blockchain[blockchainAPI].getInfo(value);
-        }));
         let isExplorerEndpointSet = false;
-        let longestBlockHeight = 0;
-        let apiEndPointIndex = 0;
-    
-        writeLog('checkExplorerEndpoints', getInfoRes);
+        writeLog(coin);
         
-        for (let i = 0; i < coins[coin].api.length; i++) {
-          if (getInfoRes[i] &&
-              getInfoRes[i].hasOwnProperty('info') &&
-              getInfoRes[i].info.hasOwnProperty('version')) {
-            if (getInfoRes[i].info.blocks > longestBlockHeight) {
-              longestBlockHeight = getInfoRes[i].info.blocks;
-              apiEndPointIndex = i;
+        if (this.state.explorerEndpointOverride.hasOwnProperty(coin)) {
+          writeLog(`${coin} set api endpoint to ${this.state.explorerEndpointOverride[coin]}`);
+          blockchain[blockchainAPI].setExplorerUrl(this.state.explorerEndpointOverride[coin]);
+          isExplorerEndpointSet = true;
+        } else {
+          const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
+            return blockchain[blockchainAPI].getInfo(value);
+          }));
+          let longestBlockHeight = 0;
+          let apiEndPointIndex = 0;
+      
+          writeLog('checkExplorerEndpoints', getInfoRes);
+          
+          for (let i = 0; i < coins[coin].api.length; i++) {
+            if (getInfoRes[i] &&
+                getInfoRes[i].hasOwnProperty('info') &&
+                getInfoRes[i].info.hasOwnProperty('version')) {
+              if (getInfoRes[i].info.blocks > longestBlockHeight) {
+                longestBlockHeight = getInfoRes[i].info.blocks;
+                apiEndPointIndex = i;
+              }
             }
           }
-        }
 
-        writeLog(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
-        blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
-        isExplorerEndpointSet = true;
-    
-        this.setState({
-          explorerEndpoint: coins[coin].api[apiEndPointIndex],
-        });
+          writeLog(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
+          blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
+          isExplorerEndpointSet = true;
+      
+          this.setState({
+            explorerEndpoint: coins[coin].api[apiEndPointIndex],
+          });
+        }
 
         if (isExplorerEndpointSet) {
           writeLog('app vendor', this.state.vendor);
@@ -678,7 +692,8 @@ class App extends React.Component {
           setVendor={this.state.setVendor}
           resetState={this.resetState}
           isAuth={this.state.isAuth}
-          triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange}
+          updateExplorerEndpoint={this.updateExplorerEndpoint} />
         <section className={'main main-' + (getLocalStorageVar('settings').sidebarSize || 'short')}>
           <React.Fragment>
             <div className="container content text-center">
@@ -762,7 +777,8 @@ class App extends React.Component {
             setVendor={this.setVendor}
             isAuth={this.state.isAuth}
             resetState={this.resetState}
-            triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
+            triggerSidebarSizeChange={this.triggerSidebarSizeChange}
+            updateExplorerEndpoint={this.updateExplorerEndpoint} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />

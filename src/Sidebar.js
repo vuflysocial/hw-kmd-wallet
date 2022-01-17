@@ -74,7 +74,8 @@ class Sidebar extends React.Component {
                 resetState={this.props.resetState}
                 isAuth={this.props.isAuth}
                 triggerSidebarSizeChange={this.props.triggerSidebarSizeChange}
-                sidebarSize={sidebarSize} />
+                sidebarSize={sidebarSize}
+                updateExplorerEndpoint={this.props.updateExplorerEndpoint} />
             </li>
           }
           <li className="sidebar-item-no-pad">
