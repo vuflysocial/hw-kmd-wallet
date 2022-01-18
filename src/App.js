@@ -570,6 +570,12 @@ class App extends React.Component {
     
     for (let coin in coins) {
       for (let j = 0; j < coins[coin].accounts.length; j++) {
+        for (let a = 0; a < coins[coin].accounts[j].utxos.length; a++) {
+          if (Number(coins[coin].accounts[j].utxos[a].confirmations) < 0) {
+            writeLog(`${coin} utxo data is incorrect for acc ${j}`);
+          }
+        }
+
         for (let a = 0; a < coins[coin].accounts[j].history.historyParsed.length; a++) {
           lastOperations.push({
             coin: coin,
