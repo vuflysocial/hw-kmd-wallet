@@ -902,3 +902,11 @@ select:-moz-focusring {
   position: absolute;
   left: 200px;
 }
+
+.scroll {
+  overflow-y: auto !important;
+}
+
+.no-scroll {
+  overflow-y: hidden !important;
+}
