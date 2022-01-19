@@ -32,7 +32,15 @@ class SettingsModal extends React.Component {
       enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
       vendor: getLocalStorageVar('settings').vendor,
       sidebarSize: getLocalStorageVar('settings').sidebarSize,
+      autolock: getLocalStorageVar('settings').autolock && Number(getLocalStorageVar('settings').autolock),
     };
+  }
+
+  setAutoLock(e) {
+    setLocalStorageVar('settings', {autolock: Number(e.target.value)});
+    this.setState({
+      [e.target.name]: Number(e.target.value),
+    });
   }
 
   setDiscoveryConfigVar(e, name) {
@@ -141,6 +149,24 @@ class SettingsModal extends React.Component {
                       key={`sidebar-size-${item}`}
                       value={item}>
                       {SETTINGS.SIDEBAR[item]}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            }
+            {this.props.isAuth &&
+              <li>
+                Auto-lock
+                <select
+                  name="autolock"
+                  className="explorer-selector minimal"
+                  value={this.state.autolock}
+                  onChange={(event) => this.setAutoLock(event)}>
+                  {Object.keys(SETTINGS.AUTOLOCK).map((item, index) => (
+                    <option
+                      key={`autolock-timeout-${item}`}
+                      value={item}>
+                      {SETTINGS.AUTOLOCK[item]}
                     </option>
                   ))}
                 </select>

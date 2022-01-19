@@ -14,6 +14,7 @@ export const defaultSettings = {
   discoveryAddressConcurrency: 10,
   accountIndex: 0,
   sidebarSize: 'full',
+  autolock: 0,
 };
 
 const initSettings = () => {

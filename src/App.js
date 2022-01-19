@@ -57,7 +57,7 @@ import {getPrices} from './lib/prices';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 const MAX_TIP_TIME_DIFF = 3600 * 24;
-let syncDataInterval;
+let syncDataInterval, autoLogoutTimer;
 
 class App extends React.Component {
   state = this.initialState;
@@ -107,6 +107,8 @@ class App extends React.Component {
   }
 
   closeLoginModal(pw) {
+    const self = this;
+
     this.setState({
       loginModalClosed: true,
     });
@@ -127,10 +129,33 @@ class App extends React.Component {
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
       vendor: getLocalStorageVar('settings') && getLocalStorageVar('settings').vendor ? getLocalStorageVar('settings').vendor : null,
     });
+    
+    this.setupAutoLock();
+    document.getElementById('body')
+    .addEventListener('click', function() {
+      //writeLog('add global click event to handle autolock');
+      
+      self.setupAutoLock();
+    });
 
     setTimeout(() => {
       this.syncData();
     });
+  }
+
+  setupAutoLock() {
+    if (autoLogoutTimer) {
+      clearTimeout(autoLogoutTimer);
+    } else {
+      if (getLocalStorageVar('settings') &&
+          getLocalStorageVar('settings').autolock) {
+        writeLog(`set autolock to ${getLocalStorageVar('settings').autolock}s`);
+        autoLogoutTimer = setTimeout(() => {
+          writeLog('autolock triggered');
+          this.resetState('logout');
+        }, getLocalStorageVar('settings').autolock * 1000);
+      }
+    }
   }
 
   removeCoin(coin) {
@@ -368,6 +393,7 @@ class App extends React.Component {
     if (clearData &&
         clearData !== 'logout') {
       resetLocalStorage();
+      document.getElementById('body').removeEventListener('click');
     } else if (
       clearData &&
       clearData === 'logout') {

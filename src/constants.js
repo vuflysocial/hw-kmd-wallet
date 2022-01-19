@@ -66,4 +66,11 @@ export const SETTINGS = {
     'full': 'Full size',
     'short': 'Compact size (icons only)',
   },
+  AUTOLOCK: {
+    0: 'Never',
+    300: '5 min',
+    600: '10 min',
+    1800: '30 min',
+    3200: '60 min',
+  },
 };
