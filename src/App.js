@@ -465,23 +465,24 @@ class App extends React.Component {
   }
 
   syncData = async (_coin) => {
+    const coinTickers = _coin ? [_coin] : Object.keys(this.state.coins);
+    
+    getPrices(coinTickers)
+    .then((prices) => {
+      this.setState({
+        prices,
+      });
+    });
+
     if (!this.state.isFirstRun || this.isCoinData()) {
       writeLog('sync data called');
       this.setState({
         syncInProgress: true,
       });      
 
-      const coinTickers = _coin ? [_coin] : Object.keys(this.state.coins);
       const coins = apiEndpoints;
       let balances = [];
-      
-      getPrices(coinTickers)
-      .then((prices) => {
-        this.setState({
-          prices,
-        });
-      });
-
+    
       await asyncForEach(coinTickers, async (coin, index) => {
         let isExplorerEndpointSet = false;
         writeLog(coin);
