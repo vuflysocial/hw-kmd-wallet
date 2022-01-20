@@ -1,4 +1,12 @@
 import coins from './coins';
+let coinPaprikaTickers = [];
+
+for (let key in coins) {
+  if (coins[key].hasOwnProperty('prices') &&
+      coins[key].prices.hasOwnProperty('coinpaprika')) {
+    coinPaprikaTickers.push(key);
+  }
+}
 
 const getCoinpaprikaPrices = async (coin) => {
   try {
@@ -18,16 +26,29 @@ const getCoinpaprikaPrices = async (coin) => {
   }
 };
 
-export const getPrices = async() => {
-  try {
+export const getPrices = async(userCoinTickers) => {
+  //try {
     const defaultCoins = ['KMD', 'VRSC', 'TOKEL'];
     let pricePromises = [];
     let prices = {};
 
-    for (let i = 0; i < 3; i++) {
-      pricePromises.push(
-        getCoinpaprikaPrices(defaultCoins[i])
-      );
+    console.warn('userCoinTickers', userCoinTickers);
+    console.warn('coinPaprikaTickers', coinPaprikaTickers);
+
+    for (let i = 0; i < userCoinTickers.length && pricePromises.length < 3; i++) {
+      if (coinPaprikaTickers.indexOf(userCoinTickers[i]) > -1) {
+        pricePromises.push(
+          getCoinpaprikaPrices(userCoinTickers[i])
+        );
+      }
+    }
+
+    for (let i = 0; i < defaultCoins.length && pricePromises.length < 3; i++) {
+      if (userCoinTickers.indexOf(defaultCoins[i]) === -1) {
+        pricePromises.push(
+          getCoinpaprikaPrices(defaultCoins[i])
+        );
+      }
     }
 
     const pricesRes = await Promise.all(pricePromises);
@@ -46,7 +67,7 @@ export const getPrices = async() => {
 
     //console.warn('prices', prices);
     return prices;
-  } catch (e) {
+  /*} catch (e) {
     return null;
-  }
+  }*/
 };

@@ -229,13 +229,6 @@ class App extends React.Component {
       this.closeLoginModal(helpers.getPW());
     }
 
-    getPrices()
-    .then((prices) => {
-      this.setState({
-        prices,
-      });
-    });
-
     document.title = `Komodo Hardware Wallet (v${version})`;
     if (!isElectron || (isElectron && !appData.isNspv)) {
       syncDataInterval = setInterval(() => {
@@ -472,13 +465,6 @@ class App extends React.Component {
   }
 
   syncData = async (_coin) => {
-    getPrices()
-    .then((prices) => {
-      this.setState({
-        prices,
-      });
-    });
-
     if (!this.state.isFirstRun || this.isCoinData()) {
       writeLog('sync data called');
       this.setState({
@@ -489,6 +475,13 @@ class App extends React.Component {
       const coins = apiEndpoints;
       let balances = [];
       
+      getPrices(coinTickers)
+      .then((prices) => {
+        this.setState({
+          prices,
+        });
+      });
+
       await asyncForEach(coinTickers, async (coin, index) => {
         let isExplorerEndpointSet = false;
         writeLog(coin);

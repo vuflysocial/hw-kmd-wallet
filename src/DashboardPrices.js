@@ -9,7 +9,8 @@ class DashboardPrices extends React.Component {
   };
 
   render() {
-    const {coins, prices} = this.props;
+    const coins = ['KMD', 'VRSC', 'TOKEL'];
+    const {prices} = this.props;
     const coinPriceTickers = Object.keys(prices);
 
     return (
@@ -24,18 +25,34 @@ class DashboardPrices extends React.Component {
                 <th>Change, %</th>
               </tr>
             </thead>
-            <tbody>
-              {coinPriceTickers.map((item, index) => (
-                <tr key={`prices-${item}`}>
-                  <td>
-                    <img src={`coins/${item}.png`} />
-                    <span className="coin-name">{item}</span>
-                  </td>
-                  <td>{prices[item].price}</td>
-                  <td>{prices[item].perc}</td>
-                </tr>
-              ))}
-            </tbody>
+            {!coinPriceTickers.length &&
+              <tbody>
+                {coins.map((item, index) => (
+                  <tr key={`prices-${item}`}>
+                    <td>
+                      <img src={`coins/${item}.png`} />
+                      <span className="coin-name">{item}</span>
+                    </td>
+                    <td>...</td>
+                    <td>...</td>
+                  </tr>
+                ))}
+              </tbody>
+            }
+            {coinPriceTickers.length > 0 &&
+              <tbody>
+                {coinPriceTickers.map((item, index) => (
+                  <tr key={`prices-${item}`}>
+                    <td>
+                      <img src={`coins/${item}.png`} />
+                      <span className="coin-name">{item}</span>
+                    </td>
+                    <td>{prices[item].price}</td>
+                    <td>{prices[item].perc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            }
           </table>
         </div>
       </div>
