@@ -23,6 +23,7 @@ import {
   setLocalStorageVar,
   resetLocalStorage,
   setLocalStoragePW,
+  decodeStoredData,
 } from './lib/localstorage-util';
 import {
   LEDGER_FW_VERSIONS,
@@ -125,7 +126,7 @@ class App extends React.Component {
     this.setState({
       isAuth: true,
       coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
-      lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
+      lastOperations: getLocalStorageVar('lastOperations') && Array.isArray(getLocalStorageVar('lastOperations')) ? getLocalStorageVar('lastOperations') : [],
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
       vendor: getLocalStorageVar('settings') && getLocalStorageVar('settings').vendor ? getLocalStorageVar('settings').vendor : null,
     });
@@ -223,10 +224,15 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+      // init app data decryption and login if PW is set
     if (isElectron &&
         helpers.getPW()) {
-      // init app data decryption and login if PW is set
-      this.closeLoginModal(helpers.getPW());
+      const _pw = helpers.getPW();
+      setLocalStoragePW(_pw);
+      decodeStoredData()
+      .then(() => {
+        this.closeLoginModal(_pw);
+      });
     }
 
     document.title = `Komodo Hardware Wallet (v${version})`;
