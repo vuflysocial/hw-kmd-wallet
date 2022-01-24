@@ -121,6 +121,8 @@ class SettingsModal extends React.Component {
       importAppDataStr: null,
       importAppDataError: false,
     });
+
+    this.props.triggerSidebarSizeChange();
   }
 
   setResetAppData() {
