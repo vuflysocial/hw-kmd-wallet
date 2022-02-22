@@ -6,6 +6,7 @@ import {writeLog} from '../Debug';
 const parse = ([txs, addr, options]) => {
   let txHistory = [];
   let addresses = [];
+  let myOutAddress = false;
 
   if (options && options.hasOwnProperty('debug')) {
     writeLog('parsehistory txs', txs);
@@ -40,6 +41,7 @@ const parse = ([txs, addr, options]) => {
       if (addr.indexOf(txs[i].vout[j].scriptPubKey.addresses[0]) > -1) {
         voutSum += Number(txs[i].vout[j].value);
         writeLog('vout', JSON.stringify(txs[i].vout[j]));
+        myOutAddress = true;
       }
     }
   
@@ -59,9 +61,12 @@ const parse = ([txs, addr, options]) => {
     };
 
     // TODO: dectect send to self txs
-    if /*(vinSum && voutSum) {
-      tx.type = 'self';
-    } else if */(vinSum && !voutSum) {
+    if (options.coin &&
+        options.coin.toUpperCase() === 'KMD' &&
+        (Number(vinSum - voutSum) < 0) &&
+        myOutAddress) {
+      tx.type = 'rewards';
+    } else if (vinSum && !voutSum) {
       tx.type = 'sent';
     } else if (!vinSum && voutSum) {
       tx.type = 'received';
