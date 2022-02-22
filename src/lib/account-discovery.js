@@ -1,7 +1,6 @@
 import hw from './hw';
 import blockchain, {blockchainAPI} from './blockchain';
 import getAddress from './get-address';
-import bitcoin from 'bitcoinjs-lib';
 import parseHistory from './history-parser';
 import asyncForEach from './async';
 import {
@@ -10,7 +9,7 @@ import {
   ipcRenderer,
 } from '../Electron';
 import {writeLog} from '../Debug';
-import TrezorUtxoLib from '@trezor/utxo-lib';
+import bitcoin from '@trezor/utxo-lib';
 
 let pubKeysCache = {};
 let isFirstRun = {};
@@ -137,8 +136,8 @@ const getAddressUtxos = async addresses => {
     ]);
 
     // fix for insight explorer value rounding issue
-    TrezorUtxoLib.Transaction.USE_STRING_VALUES = true;
-    const decodeFromRaw = TrezorUtxoLib.Transaction.fromHex(rawtx, TrezorUtxoLib.networks.komodo);
+    bitcoin.Transaction.USE_STRING_VALUES = true;
+    const decodeFromRaw = bitcoin.Transaction.fromHex(rawtx, bitcoin.networks.komodo);
 
     for (let i = 0; i < vout.length; i++) {
       vout[i].satoshis = parseInt(decodeFromRaw.outs[i].value);
