@@ -61,7 +61,8 @@ const parse = ([txs, addr, options]) => {
     };
 
     // TODO: dectect send to self txs
-    if (options.coin &&
+    if (options &&
+        options.coin &&
         options.coin.toUpperCase() === 'KMD' &&
         (Number(vinSum - voutSum) < 0) &&
         myOutAddress) {
