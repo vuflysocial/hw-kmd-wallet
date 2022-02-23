@@ -88,7 +88,10 @@ test('it should return (time - secondsElapsedToString - 1y 1m 1w 1d 1h 1m 1s', (
   const min = 60;
   const sec = 1;
 
-  expect(secondsElapsedToString(Date.now() - (year + month + week + day + hr + min + sec) * 1000)).toBe('1 year 1 month 1 week 1 day 1 hour 1 minute 1 second');
+  expect(
+    secondsElapsedToString(Date.now() - (year + month + week + day + hr + min + sec) * 1000)
+  )
+  .toBe('1 year 1 month 1 week 1 day 1 hour 1 minute 1 second');
 });
 
 test('it should return 2 years (time - secondsElapsedToString - 2y (plural) value in seconds)', () => {
