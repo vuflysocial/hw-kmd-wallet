@@ -1,4 +1,4 @@
-.Receive-modal {
+.Receive-modal .Modal {
   .account-selector {
     margin-left: 10px;
   }
@@ -13,5 +13,25 @@
   }
   .new-address {
     padding-top: 10px;
+  }
+  .fa-qrcode {
+    margin-left: 10px;
+    font-size: 20px;
+    position: relative;
+    top: 1px;
+  }
+
+  .qr-gen-modal {
+    .content {
+      text-align: center;
+    }
+  }
+}
+
+.new-address {
+  display: block;
+
+  * {
+    color: #363636 !important;
   }
 }

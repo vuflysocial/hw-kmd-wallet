@@ -1,9 +1,7 @@
 @import './bulma-custom.scss';
 @import './App.scss';
-@import './dark-theme.scss';
-@import './light-theme.scss';
-//@import './Responsive.scss'; // old responsive rules mess up new styling
 @import './uiv2.scss';
+@import './Select.scss';
 
 html,
 body {
@@ -18,7 +16,6 @@ body {
 
 html {
   background: inherit !important;
-  overflow-y: inherit !important;
 }
 
 .vendor-trezor,
