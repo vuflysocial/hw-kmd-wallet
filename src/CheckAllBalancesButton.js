@@ -19,11 +19,6 @@ const headings = [
   'Coin',
   'Balance',
 ];
-const coinsToCheckDev = [
-  //'RICK',
-  //'MORTY',
-  'KMD',
-];
 
 let cancel = false;
 
@@ -161,7 +156,6 @@ class CheckAllBalancesButton extends React.Component {
               balances,
               isInProgress: index === coinTickers.length - 1 ? false : true,
             });
-            //this.setState({...this.initialState});
           } catch (error) {
             writeLog(error);
             updateActionState(this, currentAction, false);
@@ -172,7 +166,8 @@ class CheckAllBalancesButton extends React.Component {
     });
     
     if (!cancel) {
-      if (!this.state.error || (this.state.error && this.state.error.indexOf('Failed to fetch') > -1)) {
+      if (!this.state.error ||
+          (this.state.error && this.state.error.indexOf('Failed to fetch') > -1)) {
         updateActionState(this, 'approve', true);
         updateActionState(this, 'finished', true);
       }

@@ -1,4 +1,5 @@
 import React from 'react';
+import './DashboardPrices';
 
 class DashboardPrices extends React.Component {
   state = this.initialState;
@@ -30,7 +31,9 @@ class DashboardPrices extends React.Component {
                 {coins.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img src={`coins/${item}.png`} />
+                      <img
+                        src={`coins/${item}.png`}
+                        alt={`${item} icon`} />
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>...</td>
@@ -44,7 +47,9 @@ class DashboardPrices extends React.Component {
                 {coinPriceTickers.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img src={`coins/${item}.png`} />
+                      <img
+                        src={`coins/${item}.png`}
+                        alt={`${item} icon`} />
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>{prices[item].price}</td>

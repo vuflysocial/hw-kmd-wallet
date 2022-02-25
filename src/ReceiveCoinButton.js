@@ -4,7 +4,6 @@ import updateActionState from './lib/update-action-state';
 import {
   FAUCET_URL,
   VENDOR,
-  SETTINGS,
 } from './constants';
 import ActionListModal from './ActionListModal';
 import getAddress from './lib/get-address';

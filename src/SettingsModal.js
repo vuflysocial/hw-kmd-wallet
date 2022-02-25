@@ -156,7 +156,7 @@ class SettingsModal extends React.Component {
     const appData = localStorage.getItem('hw-wallet');
 
     a.href = 'data:text/plain;charset=UTF-8;base64,' + btoa(appData);
-    a.download = 'hw-wallet-export-app-data';
+    a.download = 'hw-kmd-wallet-export-app-data';
   }
 
   updateInput(e) {
@@ -185,17 +185,6 @@ class SettingsModal extends React.Component {
           isCloseable={true}
           className="settings-modal">
           <ul>
-            {/*<li>
-              <div className="theme-selector">
-                Theme
-                <div
-                  onClick={() => this.setTheme('tdark')}
-                  className={'item black' + (this.state.theme === 'tdark' ? ' active' : '')}></div>
-                <div
-                  onClick={() => this.setTheme('tlight')}
-                  className={'item light' + (this.state.theme === 'tlight' ? ' active' : '')}></div>
-              </div>
-            </li>*/}
             {this.props.isAuth &&
               <li>
                 Sidebar

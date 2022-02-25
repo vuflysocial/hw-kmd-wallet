@@ -132,7 +132,7 @@ const getAddressUtxos = async addresses => {
       }
     ] = await Promise.all([
       blockchain[blockchainAPI].getRawTransaction(utxo.txid),
-      blockchain[blockchainAPI].getTransaction(utxo.txid)
+      blockchain[blockchainAPI].getTransaction(utxo.txid),
     ]);
 
     // fix for insight explorer value rounding issue
@@ -140,7 +140,7 @@ const getAddressUtxos = async addresses => {
     const decodeFromRaw = bitcoin.Transaction.fromHex(rawtx, bitcoin.networks.komodo);
 
     for (let i = 0; i < vout.length; i++) {
-      vout[i].satoshis = parseInt(decodeFromRaw.outs[i].value);
+      vout[i].satoshis = parseInt(decodeFromRaw.outs[i].value, 10);
     }
 
     return {
@@ -258,7 +258,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
         //const account = await getAccountAddresses(accountIndex, vendor);
         const account = await getAccountAddresses(accountIndex, vendor, _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null);
         writeLog('accountDiscovery accountIndex', accountIndex);
-        
+
         if (account.addresses.length === 0) {
           account.utxos = [];
           account.history = {

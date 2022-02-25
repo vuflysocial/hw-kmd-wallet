@@ -1,10 +1,6 @@
 import React from 'react';
 import {sortTransactions} from './lib/sort';
 import TransactionViewModal from './TransactionViewModal';
-import {
-  isElectron,
-  shell,
-} from './Electron';
 import {writeLog} from './Debug';
 
 const headings = {
@@ -98,15 +94,18 @@ class Transactions extends React.Component {
                           <i className={`fa fa-long-arrow-alt-${tx.type === 'sent' ? 'up' : 'down'}`}></i>
                           {Number(tx.height) === -1 || Number(tx.height) === 0 || Number(tx.confirmations) === 0 ? 'pending' : tx.type}
                         </span>
-                        <span className="date">{Number(tx.height) === -1 || Number(tx.height) === 0 ? '' : tx.date === 'pending' ? 'Awaiting confirmations' : tx.date}</span>
+                        <span className="date">
+                          {Number(tx.height) === -1 || Number(tx.height) === 0 ? '' : tx.date === 'pending' ? 'Awaiting confirmations' : tx.date}
+                        </span>
                       </td>
                       {activeAccount === null &&
                         <td className="ws--nowrap">
                           {coin} {tx.accountIndex + 1}
                         </td>
                       }
-                      <td className={tx.type === 'received' || tx.type === 'rewards' ? 'amount-increase' : 'amount-decrease'}>{tx.type === 'received' || tx.type === 'rewards' ? '+' + tx.amount : '-' + tx.amount}</td>
-                      {/*<td>{tx.confirmations}</td>*/}
+                      <td className={tx.type === 'received' || tx.type === 'rewards' ? 'amount-increase' : 'amount-decrease'}>
+                        {tx.type === 'received' || tx.type === 'rewards' ? '+' + tx.amount : '-' + tx.amount}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -115,8 +114,7 @@ class Transactions extends React.Component {
             <TransactionViewModal
               coin={coin}
               tx={this.state.txDetails}
-              activeAccount={activeAccount}
-              />
+              activeAccount={activeAccount} />
           </div>
         }
       </React.Fragment>

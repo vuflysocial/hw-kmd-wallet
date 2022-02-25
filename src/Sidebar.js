@@ -9,6 +9,7 @@ import {
   shell,
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
+import './Sidebar.scss';
 
 class Sidebar extends React.Component {
   state = this.initialState;
@@ -27,7 +28,7 @@ class Sidebar extends React.Component {
     writeLog('sidebar props', this.props);
     
     return (
-      <div className={'sidebar-right sidebar-' + sidebarSize}>
+      <div className={`sidebar-right sidebar-${sidebarSize}`}>
         <ul>
           {this.props.isCoinData() &&
            this.props.activeCoin &&
@@ -91,6 +92,7 @@ class Sidebar extends React.Component {
               <a
                 target="_blank"
                 href="https://github.com/pbca26/hw-kmd-wallet/issues/new"
+                rel="noopener noreferrer"
                 className="sidebar-item-no-pad">
                 <i className="fa fa-life-ring"></i>
                 {sidebarSize === 'full' &&

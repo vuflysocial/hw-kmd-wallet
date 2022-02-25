@@ -1,15 +1,10 @@
 import React from 'react';
 import Modal from './Modal';
-import Footer from './Footer';
-import {
-  repository,
-  version,
-} from '../package.json';
+import {repository} from '../package.json';
 import {
   isElectron,
   shell,
 } from './Electron';
-//import './AboutModal.scss';
 
 class AboutModal extends React.Component {
   state = this.initialState;

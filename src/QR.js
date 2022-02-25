@@ -17,10 +17,8 @@ class QRModal extends React.Component {
   }
 
   handleScan(data) {
-    if (data !== null) {
-      if (this.props.mode === 'scan') {
-        this.props.setRecieverFromScan(data);
-      }
+    if (data !== null && this.props.mode === 'scan') {
+      this.props.setRecieverFromScan(data);
     }
   }
 
@@ -59,14 +57,14 @@ const QRModalReaderRender = function() {
   if (!this.state.errorShown) {
     return (
       <React.Fragment>
-        { !this.state.error &&
+        {!this.state.error &&
           <QrReader
-            delay={ 250 }
+            delay={250}
             className="qr-reader-comp"
-            onError={ this.handleError }
-            onScan={ this.handleScan } />
+            onError={this.handleError}
+            onScan={this.handleScan} />
         }
-        { this.state.error }
+        {this.state.error}
       </React.Fragment>
     );
   } else {

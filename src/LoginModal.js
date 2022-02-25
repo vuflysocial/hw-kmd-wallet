@@ -7,8 +7,7 @@ import {
   decodeStoredData,
   resetLocalStorage,
 } from './lib/localstorage-util';
-import {isElectron} from './Electron';
-import {writeLog} from './Debug';
+//import {writeLog} from './Debug';
 
 class LoginModal extends React.Component {
   state = this.initialState;
@@ -47,7 +46,8 @@ class LoginModal extends React.Component {
         error: false,
       });
     } else {
-      decodeStoredData().then((res) => {
+      decodeStoredData()
+      .then((res) => {
         if (res) {          
           this.setState({
             password: '',

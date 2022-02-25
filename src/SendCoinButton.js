@@ -27,6 +27,7 @@ import {getLocalStorageVar} from './lib/localstorage-util';
 import {writeLog} from './Debug';
 import copyToClipboard from './lib/copy-to-clipboard';
 import QRReaderModal from './QRReaderModal';
+import './SendCoin.scss';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
 

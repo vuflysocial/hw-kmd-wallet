@@ -1,21 +1,13 @@
 import 'babel-polyfill';
 import React from 'react';
 import {hot} from 'react-hot-loader';
-import {isEqual} from 'lodash';
 import Header from './Header';
 import BetaWarning from './BetaWarning';
-import CheckAllBalancesButton from './CheckAllBalancesButton';
 import Accounts from './Accounts';
-import WarnU2fCompatibility from './WarnU2fCompatibility';
 import WarnBrowser from './WarnBrowser';
 import ConnectionError from './ConnectionError';
-import Footer from './Footer';
 import FirmwareCheckModal from './FirmwareCheckModal';
-import SettingsModal from './SettingsModal';
-import {
-  repository,
-  version,
-} from '../package.json';
+import {version} from '../package.json';
 import './App.scss';
 import hw from './lib/hw';
 import {
@@ -26,7 +18,6 @@ import {
   decodeStoredData,
 } from './lib/localstorage-util';
 import {
-  LEDGER_FW_VERSIONS,
   voteCoin,
   testCoins,
   TX_FEE,
@@ -36,7 +27,7 @@ import accountDiscovery from './lib/account-discovery';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
 import apiEndpoints from './lib/coins';
 import getKomodoRewards from './lib/get-komodo-rewards';
-import {isMobile, osName} from 'react-device-detect';
+import {isMobile} from 'react-device-detect';
 import {
   isElectron,
   appData,
@@ -95,9 +86,6 @@ class App extends React.Component {
       sidebarSizeChanged: false,
       syncInProgress: false,
       explorerEndpointOverride: {},
-      //coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
-      //lastOperations: getLocalStorageVar('lastOperations') ? getLocalStorageVar('lastOperations') : [],
-      //theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
     };
   }
 
@@ -700,13 +688,6 @@ class App extends React.Component {
             </div>
             <h1 className="navbar-item">
               <strong>HW KMD {this.state.coin === voteCoin ? 'Notary Elections' : ' wallet'}</strong>
-              {/*<SettingsModal
-                updateExplorerEndpoint={this.updateExplorerEndpoint}
-                coin={this.state.coin}
-              explorerEndpoint={this.state.explorerEndpoint} />*/}
-            {/*<button
-              className="button is-primary add-pwa-button"
-              style={{'display': 'none'}}>Add to home screen</button>*/}
             </h1>
           </div>
         </Header>
@@ -750,10 +731,6 @@ class App extends React.Component {
         </section>
 
         {!isElectron &&
-          process.env.HTTPS &&
-          <WarnU2fCompatibility />
-        }
-        {!isElectron &&
           <WarnBrowser />
         }
       </div>
@@ -786,10 +763,6 @@ class App extends React.Component {
                     className="fa fa-redo-alt sync-progress-icon"
                     title="Sync in progress..."></i>
                 }
-                {/*<SettingsModal
-                  updateExplorerEndpoint={this.updateExplorerEndpoint}
-                  coin={this.state.coin} 
-                explorerEndpoint={this.state.explorerEndpoint} />*/}
               </h1>
             </div>
           </Header>
@@ -876,47 +849,7 @@ class App extends React.Component {
               }
             </div>
             {!this.isCoinData() ? (
-              <React.Fragment>
-                <div className="trezor-webusb-container"></div>
-                {/*!isMobile &&
-                 this.state.vendor === 'ledger' &&
-                 !isElectron &&
-                  <div className="ledger-device-selector">
-                    <div className="ledger-device-selector-buttons">
-                      <button
-                        className="button is-light"
-                        disabled={this.state.ledgerDeviceType}
-                        onClick={() => this.updateLedgerDeviceType('s')}>
-                        Nano S
-                      </button>
-                      <button
-                        className="button is-light"
-                        disabled={this.state.ledgerDeviceType}
-                        onClick={() => this.updateLedgerDeviceType('x')}>
-                        Nano X
-                      </button>
-                    </div>
-                    {this.state.ledgerDeviceType &&
-                      <div className="ledger-fw-version-selector-block">
-                        Mode
-                        <select
-                          className="ledger-fw-selector"
-                          name="ledgerFWVersion"
-                          value={this.state.ledgerFWVersion}
-                          onChange={(event) => this.updateLedgerFWVersion(event)}>
-                          {Object.keys(LEDGER_FW_VERSIONS[`nano_${this.state.ledgerDeviceType}`]).map((val, index) => (
-                            <option
-                              key={`ledger-fw-selector-${val}-${this.state.ledgerDeviceType}`}
-                              value={val}>
-                              {LEDGER_FW_VERSIONS[`nano_${this.state.ledgerDeviceType}`][val]}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    }
-                  </div>
-                  */}
-              </React.Fragment>
+              <div className="trezor-webusb-container"></div>
             ) : (
               <React.Fragment>
                 {this.state.coins &&
