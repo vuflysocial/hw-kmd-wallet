@@ -609,7 +609,7 @@ class SendCoinButton extends React.Component {
                 Send change to
                 <select
                   style={{'marginLeft': '10px'}}
-                  className="account-index-selector"
+                  className="account-index-selector minimal"
                   name="address"
                   value={this.state.address}
                   onChange={(event) => this.updateInput(event)}>
