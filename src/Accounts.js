@@ -115,6 +115,7 @@ const Accounts = ({
   activeAccount,
   removeCoin,
   enableAccount,
+  checkTipTime,
 }) => (
   <div className="container content">
     <div className="accounts-block">
@@ -183,7 +184,8 @@ const Accounts = ({
             coin={coin}
             tiptime={tiptime}
             isClaimRewardsOnly={true}
-            claimableAmount={coins[activeCoin].accounts[activeAccount].claimableAmount} />
+            claimableAmount={coins[activeCoin].accounts[activeAccount].claimableAmount}
+            checkTipTime={checkTipTime} />
         }
         <UtxosModal
           utxos={coins[activeCoin].accounts[activeAccount].utxos}

@@ -291,8 +291,8 @@ class App extends React.Component {
 
     const currentTimestamp = Date.now() / 1000;
     const secondsDiff = Math.floor(Number(currentTimestamp) - Number(tiptime));
-
-    if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {      
+    
+    if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {  
       return tiptime;
     } else {
       writeLog('tiptime vs local time is too big, use local time to calc rewards!');
@@ -810,7 +810,8 @@ class App extends React.Component {
             isAuth={this.state.isAuth}
             resetState={this.resetState}
             triggerSidebarSizeChange={this.triggerSidebarSizeChange}
-            updateExplorerEndpoint={this.updateExplorerEndpoint} />
+            updateExplorerEndpoint={this.updateExplorerEndpoint}
+            checkTipTime={this.checkTipTime} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />
@@ -929,7 +930,8 @@ class App extends React.Component {
                     syncData={this.syncData}
                     removeCoin={this.removeCoin}
                     enableAccount={this.enableAccount}
-                    addAccount={this.addAccount} />
+                    addAccount={this.addAccount}
+                    checkTipTime={this.checkTipTime} />
                 }
               </React.Fragment>
             )}

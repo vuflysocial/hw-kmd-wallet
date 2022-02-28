@@ -53,7 +53,8 @@ class Sidebar extends React.Component {
               vendor={this.props.vendor}
               syncData={this.props.syncData}
               coin={this.props.activeCoin}
-              sidebarSize={sidebarSize}>
+              sidebarSize={sidebarSize}
+              checkTipTime={this.props.checkTipTime}>
               Send
             </SendCoinButton>
           }
