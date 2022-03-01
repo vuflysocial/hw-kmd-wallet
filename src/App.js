@@ -292,7 +292,7 @@ class App extends React.Component {
     const currentTimestamp = Date.now() / 1000;
     const secondsDiff = Math.floor(Number(currentTimestamp) - Number(tiptime));
     
-    if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {  
+    if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {      
       return tiptime;
     } else {
       writeLog('tiptime vs local time is too big, use local time to calc rewards!');
@@ -689,7 +689,8 @@ class App extends React.Component {
           closeLoginModal={this.closeLoginModal}
           resetState={this.resetState}
           isClosed={this.state.loginModalClosed}
-          isAuth={this.state.isAuth} />
+          isAuth={this.state.isAuth}
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
         <Header>
           <div className="navbar-brand">
             <div className="navbar-item">
