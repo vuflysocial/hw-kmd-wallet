@@ -1,7 +1,7 @@
 import React from 'react';
 import Transactions from './Transactions';
 import SendCoinButton from './SendCoinButton';
-import {TX_FEE} from './constants';
+import {TX_FEE, CACHE_MAX_LIFETIME} from './constants';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
 import ClaimRewardsButton from './ClaimRewardsButton';
 import CoinSettingsModal from './CoinSettingsModal';
@@ -16,6 +16,7 @@ import {
 import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
+import {checkTimestamp} from './lib/time';
 
 class Account extends React.Component {
   state = this.initialState;
@@ -184,6 +185,10 @@ const Accounts = ({
             coin={coin}
             tiptime={tiptime}
             isClaimRewardsOnly={true}
+            disabled={
+              !coins[activeCoin].lastChecked ||
+              (coins[activeCoin].lastChecked && checkTimestamp(coins[activeCoin].lastChecked) > CACHE_MAX_LIFETIME)
+            }
             claimableAmount={coins[activeCoin].accounts[activeAccount].claimableAmount}
             checkTipTime={checkTipTime} />
         }

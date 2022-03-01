@@ -592,6 +592,7 @@ class App extends React.Component {
 
     for (var i = 0; i < newCoins.length; i++) {
       coins[newCoins[i].coin] = newCoins[i];
+      coins[newCoins[i].coin].lastChecked = Date.now();
     }
     
     for (let coin in coins) {
@@ -812,6 +813,7 @@ class App extends React.Component {
             resetState={this.resetState}
             triggerSidebarSizeChange={this.triggerSidebarSizeChange}
             updateExplorerEndpoint={this.updateExplorerEndpoint}
+            coins={this.state.coins}
             checkTipTime={this.checkTipTime} />
 
           {this.state.explorerEndpoint === false &&

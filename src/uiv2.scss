@@ -33,6 +33,11 @@
         }
       }
 
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
       .plane-icon-invert {
         transform: rotate(175deg);
 
