@@ -341,10 +341,6 @@ class App extends React.Component {
     this.setState({
       explorerEndpointOverride,
     });
-
-    setTimeout(() => {
-      console.warn(this.state);
-    }, 100)
   }
 
   checkExplorerEndpoints = async () => {
@@ -578,7 +574,7 @@ class App extends React.Component {
             this.handleScanData({
               coins: balances,
               tiptime,
-            })
+            });
           }
         }
       });
