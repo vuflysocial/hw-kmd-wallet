@@ -6,11 +6,12 @@ import transport from './ledger-transport';
 import {isElectron} from '../Electron';
 import ledgerIpcWrapper from './ledger-ipc-wrapper';
 import {writeLog} from '../Debug';
+import {COIN_DERIVATION_PATH} from '../constants';
 
 let ledgerFWVersion = 'default';
 export let ledgerTransport;
 
-const setLedgerTransport = (transport) => {
+const setLedgerTransport = transport => {
   ledgerTransport = transport;
   writeLog(ledgerTransport);
 };
@@ -69,7 +70,7 @@ let isAvailable = async () => {
   const ledger = await getDevice();
 
   try {
-    await ledger.getWalletPublicKey(`m/44'/141'/0'/0/0`, {
+    await ledger.getWalletPublicKey(`m/${COIN_DERIVATION_PATH}/0'/0/0`, {
       verify: window.location.href.indexOf('ledger-ble') > -1 || ledgerFWVersion === 'ble',
     });
     await ledger.close();
@@ -95,7 +96,7 @@ const getAddress = async (derivationPath, verify) => {
   return bitcoinAddress;
 };
 
-const createTransaction = async function(utxos, outputs, isKMD) {
+const createTransaction = async (utxos, outputs, isKMD) => {
   const ledger = await getDevice();
 
   const inputs = await Promise.all(utxos.map(async utxo => {

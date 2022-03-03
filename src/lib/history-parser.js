@@ -79,7 +79,9 @@ const parse = ([txs, addr, options]) => {
   return txHistory;
 };
 
-const sort = (txHistory) => {
+const sort = txHistory => {
+  let _txHistory;
+
   if (txHistory.length && !txHistory.txid) {
     txHistory[0] = sortTransactions(txHistory[0], 'timestamp');
 
@@ -89,7 +91,9 @@ const sort = (txHistory) => {
   return sortTransactions(txHistory, 'timestamp');
 };
 
-const limit = (txHistory) => {
+const limit = txHistory => {
+  let _txHistory;
+
   if (txHistory.length && !txHistory.txid) {
     txHistory[0] = txHistory[0].slice(0, 10);
 

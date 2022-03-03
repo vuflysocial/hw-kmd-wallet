@@ -200,7 +200,6 @@ const coins = {
       'https://explorer.komodoplatform.com:10000/tkltest/api/',
     ],
   },
-  // SHARK: '',
   /* coins below need special handling due to no overwinter support
   ZILLA: {
     explorer: 'https://zilla.explorer.dexstats.info/',

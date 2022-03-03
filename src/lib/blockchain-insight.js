@@ -1,6 +1,6 @@
 let explorerUrl;
 
-const setExplorerUrl = (name) => {
+const setExplorerUrl = name => {
   explorerUrl = name;
 };
 
@@ -29,7 +29,7 @@ const get = async (endpoint, postData) => {
 
 const getAddress = address => get(`addr/${address}/?noTxList=1`);
 
-const getAddressHistory = (address) => get(`/txs?address=${address}`);
+const getAddressHistory = address => get(`/txs?address=${address}`);
 
 const getHistory = addresses => get(`addrs/txs`, {addrs: addresses.join(',')});
 
@@ -52,7 +52,7 @@ const getTipTime = async () => {
 
 const broadcast = transaction => get('tx/send', {rawtx: transaction});
 
-export const getInfo = async (explorerUrl) => {
+export const getInfo = async explorerUrl => {
   try {
     const response = await fetch(`${explorerUrl}/status?q=getInfo`);
     const isJson = response.headers.get('Content-Type').includes('application/json');

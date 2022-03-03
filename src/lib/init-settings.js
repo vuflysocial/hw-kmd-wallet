@@ -23,7 +23,7 @@ const initSettings = () => {
   if (!settings || !Object.keys(settings).length) {
     document.getElementById('body').className = 'tdark';
     setLocalStorageVar('settings', defaultSettings);
-    writeLog(`no stored settings found, set all to default`, defaultSettings);
+    writeLog('no stored settings found, set all to default', defaultSettings);
   } else {
     for (let key in defaultSettings) {
       if (settings &&

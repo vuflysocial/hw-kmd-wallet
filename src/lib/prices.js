@@ -2,13 +2,13 @@ import coins from './coins';
 let coinPaprikaTickers = [];
 
 for (let key in coins) {
-  if (coins[key].hasOwnProperty('prices') &&
-      coins[key].prices.hasOwnProperty('coinpaprika')) {
+  if ('prices' in coins[key] &&
+      'coinpaprika' in coins[key].prices) {
     coinPaprikaTickers.push(key);
   }
 }
 
-const getCoinpaprikaPrices = async (coin) => {
+const getCoinpaprikaPrices = async coin => {
   try {
     const response = await fetch(`https://api.coinpaprika.com/v1/tickers/${coins[coin].prices.coinpaprika}`);
     const isJson = response.headers.get('Content-Type').includes('application/json');
@@ -26,14 +26,11 @@ const getCoinpaprikaPrices = async (coin) => {
   }
 };
 
-export const getPrices = async(userCoinTickers) => {
-  //try {
+export const getPrices = async userCoinTickers => {
+  try {
     const defaultCoins = ['KMD', 'VRSC', 'TOKEL'];
     let pricePromises = [];
     let prices = {};
-
-    console.warn('userCoinTickers', userCoinTickers);
-    console.warn('coinPaprikaTickers', coinPaprikaTickers);
 
     for (let i = 0; i < userCoinTickers.length && pricePromises.length < 3; i++) {
       if (coinPaprikaTickers.indexOf(userCoinTickers[i]) > -1) {
@@ -65,9 +62,8 @@ export const getPrices = async(userCoinTickers) => {
       }
     }
 
-    //console.warn('prices', prices);
     return prices;
-  /*} catch (e) {
+  } catch (e) {
     return null;
-  }*/
+  }
 };

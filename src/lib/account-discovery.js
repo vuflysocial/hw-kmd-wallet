@@ -10,6 +10,7 @@ import {
 } from '../Electron';
 import {writeLog} from '../Debug';
 import bitcoin from '@trezor/utxo-lib';
+import {COIN_DERIVATION_PATH} from '../constants';
 
 let pubKeysCache = {};
 let isFirstRun = {};
@@ -44,9 +45,9 @@ const walkDerivationPath = async node => {
   if (gapLimit > 50) addressConcurrency = 3;
 
   if (isElectron && appData.isNspv) {
-    writeLog('blockchainAPI', blockchainAPI);
     addressConcurrency = 2;
     gapLimit = 5;
+    writeLog('blockchainAPI', blockchainAPI);
     writeLog('walkDerivationPath gapLimit', gapLimit);
   }
 
@@ -65,7 +66,9 @@ const walkDerivationPath = async node => {
     }
 
     for (const address of await Promise.all(addressApiRequests)) {
-      if (address.txApperances > 0 || address.totalReceived > 0 || address.unconfirmedBalance > 0) {
+      if (address.txApperances > 0 ||
+          address.totalReceived > 0 ||
+          address.unconfirmedBalance > 0) {
         consecutiveUnusedAddresses = 0;
       } else {
         consecutiveUnusedAddresses++;
@@ -77,7 +80,7 @@ const walkDerivationPath = async node => {
 };
 
 const getAccountAddresses = async (account, vendor, _xpub) => {
-  const derivationPath = `44'/141'/${account}'`;
+  const derivationPath = `${COIN_DERIVATION_PATH}/${account}'`;
   const xpub = _xpub || pubKeysCache[derivationPath] || await hw[vendor].getXpub(derivationPath);
   const node = bitcoin.bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
@@ -167,66 +170,14 @@ const getAddressHistory = async (addresses, coin) => {
   };
 };
 
-export const getAddressHistoryOld = async addresses => {
-  let addressCacheTemp = {};
-  let allTxs = [];
-  let addressHistory = [];
-  let addressHistoryIDs = [];
-
-  writeLog('addresses', addresses);
-
-  await asyncForEach(addresses, async (addressItem, index) => {
-    const addressHistoryRes = await blockchain[blockchainAPI].getHistory(addressItem.address);
-    
-    writeLog('addressHistoryRes', addressHistoryRes);
-
-    if (addressHistoryRes &&
-        addressHistoryRes.txs) {
-      addressCacheTemp[addressItem.address] = addressHistoryRes.txs;
-  
-      for (let i = 0; i < addressHistoryRes.txs.length; i++) {
-        if (addressHistoryIDs.indexOf(addressHistoryRes.txs[i].txid) === -1) {
-          addressHistory.push(addressHistoryRes.txs[i]);
-          addressHistoryIDs.push(addressHistoryRes.txs[i].txid);
-        }
-        if (allTxs.indexOf(addressHistoryRes.txs[i].txid) === -1) {
-          allTxs.push(addressHistoryRes.txs[i]);
-        }
-      }
-    } else {
-      // TODO: something went wrong, request again
-    }          
-  });
-
-  let uniqueTxids = [];
-  let filteredHistoryTxs = [];
-
-  for (let i = 0; i < 2; i++) {        
-    for (let j = 0; j < allTxs.length; j++) {
-      if (uniqueTxids.indexOf(allTxs[j].txid) === -1) {
-        uniqueTxids.push(allTxs[j].txid);
-        filteredHistoryTxs.push(allTxs[j]);
-      }
-    }
-  }
-
-  writeLog('filteredHistoryTxs', filteredHistoryTxs);
-  
-  return {
-    addresses: addressCacheTemp,
-    allTxs,
-    historyParsed: parseHistory(filteredHistoryTxs, Object.keys(Object.assign(addressCacheTemp))),
-  };
-};
-
 const accountDiscovery = async (vendor, coin, _accounts) => {
   const accounts = [];
   let accountIndex = config.accountIndex > 0 ? config.accountIndex - 1 : 0;
   
   // TODO
   if (isElectron && appData.isNspv) {
-    writeLog('accountDiscovery accountIndex', accountIndex);
     const account = await getAccountAddresses(accountIndex, vendor);
+    writeLog('accountDiscovery accountIndex', accountIndex);
     
     if (account.addresses.length === 0) {
       account.utxos = [];
@@ -249,14 +200,23 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
 
     accounts.push(account);
     writeLog('run diff check');
-    ipcRenderer.send('nspvRunRecheck', {coin, isFirstRun: !isFirstRun.hasOwnProperty(coin)});
+    ipcRenderer.send('nspvRunRecheck', {
+      coin,
+      isFirstRun: !isFirstRun.hasOwnProperty(coin)
+    });
     if (!isFirstRun.hasOwnProperty(coin)) isFirstRun[coin] = true;
   } else {
     while (true) {
-      if (!_accounts || (_accounts && _accounts[accountIndex] && _accounts[accountIndex].enabled)) {
-        if (_accounts && _accounts[accountIndex]) writeLog(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
+      if (!_accounts ||
+          (_accounts && _accounts[accountIndex] && _accounts[accountIndex].enabled)) {
+        if (_accounts && _accounts[accountIndex])
+          writeLog(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
         //const account = await getAccountAddresses(accountIndex, vendor);
-        const account = await getAccountAddresses(accountIndex, vendor, _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null);
+        const account = await getAccountAddresses(
+          accountIndex,
+          vendor,
+          _accounts && _accounts[accountIndex] ? _accounts[accountIndex].xpub : null
+        );
         writeLog('accountDiscovery accountIndex', accountIndex);
 
         if (account.addresses.length === 0) {
@@ -292,7 +252,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
   return accounts;
 };
 
-export const getAccountNode = (xpub) => {
+export const getAccountNode = xpub => {
   const node = bitcoin.bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
   const internalNode = node.derive(1);
@@ -304,14 +264,14 @@ export const getAccountNode = (xpub) => {
 };
 
 export const getAccountXpub = async (account, vendor) => {
-  const derivationPath = `44'/141'/${account}'`;
+  const derivationPath = `${COIN_DERIVATION_PATH}/${account}'`;
   const xpub = await hw[vendor].getXpub(derivationPath);
 
   if (!pubKeysCache[derivationPath]) {
     pubKeysCache[derivationPath] = xpub;
   }
 
-  writeLog('getAccountXpub ' + derivationPath, xpub);
+  writeLog(`getAccountXpub ${derivationPath}`, xpub);
 
   return xpub;
 };
