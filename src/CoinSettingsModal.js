@@ -67,7 +67,7 @@ class CoinSettingsModal extends React.Component {
               <button
                 className="button"
                 onClick={() => this.toggleShowXpub(item.accountIndex)}>
-                XPUB <i className={`fa fa-${this.state.showXpub && this.state.showXpub[item.accountIndex] ? 'eye' : 'eye-slash'}`} style={{'marginLeft': '7px'}}></i>
+                XPUB <i className={`fa fa-${this.state.showXpub && this.state.showXpub[item.accountIndex] ? 'eye' : 'eye-slash'} coin-settings-margin-left`}></i>
               </button>
               {this.state.showXpub &&
                 this.state.showXpub[item.accountIndex] &&
@@ -88,6 +88,8 @@ class CoinSettingsModal extends React.Component {
   }
 
   render() {
+    const {activeCoin} = this.props;
+
     return (
       <React.Fragment>
         <span
@@ -104,12 +106,12 @@ class CoinSettingsModal extends React.Component {
           <button
             className="button del-btn"
             onClick={this.syncData}>
-            Resync {this.props.activeCoin} <i className="fa fa-history"></i>
+            Resync {activeCoin} <i className="fa fa-history"></i>
           </button>
           <button
             className="button del-btn"
             onClick={this.deleteCoin}>
-            Remove {this.props.activeCoin} <i className="fa fa-trash"></i>
+            Remove {activeCoin} <i className="fa fa-trash"></i>
           </button>
           {this.renderAccountList()}
         </Modal>

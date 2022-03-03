@@ -23,26 +23,18 @@ const getTransactionsHistory = (accounts, activeAccount) => {
   if (activeAccount === null) {
     for (let i = 0; i < accounts.length; i++) {
       writeLog(accounts[i]);
-      for (let a = 0; a < accounts[i].history.historyParsed.length; a++) {
-        const {
-          type,
-          date,
-          amount,
-          txid,
-          confirmations,
-          timestamp,
-        } = accounts[i].history.historyParsed[a];
 
-        lastOperations.push({
-          type,
-          date,
-          amount,
-          txid,
-          confirmations,
-          timestamp,
+      lastOperations = lastOperations.concat(accounts[i].history.historyParsed.map(item => {
+        return {
+          type: item.type,
+          date: item.date,
+          amount: item.amount,
+          txid: item.txid,
+          confirmations: item.confirmations,
+          timestamp: item.timestamp,
           accountIndex: accounts[i].accountIndex,
-        });
-      }
+        };
+      }));
     }
   } else {
     writeLog('accounts[activeAccount].history.historyParsed', accounts[activeAccount].history.historyParsed);

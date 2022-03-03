@@ -146,8 +146,7 @@ const Accounts = ({
                 syncData={syncData}
                 coin={activeCoin}
                 activeAccount={activeAccount}
-                setActiveAccount={setActiveAccount}
-                />
+                setActiveAccount={setActiveAccount} />
             ))}
           </tbody>
         </table>

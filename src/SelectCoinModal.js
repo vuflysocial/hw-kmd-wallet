@@ -4,6 +4,7 @@ import CheckAllBalancesButton from './CheckAllBalancesButton';
 import apiEndpoints from './lib/coins';
 import './AddCoinModal.scss';
 import {setConfigVar} from './lib/account-discovery';
+import {SETTINGS} from './constants';
 
 class SelectCoinModal extends React.Component {
   state = this.initialState;
@@ -22,7 +23,9 @@ class SelectCoinModal extends React.Component {
   };
 
   setAirdropDiscovery() {
-    setConfigVar('discoveryGapLimit', !this.state.enableAirdropDiscovery ? 100 : 20);
+    setConfigVar(
+      'discoveryGapLimit', !this.state.enableAirdropDiscovery ? SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP : SETTINGS.DISCOVERY_GAP_LIMIT_DEFAULT
+    );
 
     this.setState({
       enableAirdropDiscovery: !this.state.enableAirdropDiscovery,
@@ -43,7 +46,8 @@ class SelectCoinModal extends React.Component {
     let coinsList = [];
 
     for (let i = 0; i < allAvailableCoins.length; i++) {
-      if (Object.keys(this.props.coins).indexOf(allAvailableCoins[i]) === -1) coinsList.push(allAvailableCoins[i]);
+      if (Object.keys(this.props.coins).indexOf(allAvailableCoins[i]) === -1)
+        coinsList.push(allAvailableCoins[i]);
     }
 
     this.setState({

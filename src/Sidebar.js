@@ -9,6 +9,7 @@ import {
   shell,
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
+import {version} from '../package.json';
 import './Sidebar.scss';
 
 class Sidebar extends React.Component {
@@ -111,6 +112,7 @@ class Sidebar extends React.Component {
             </li>
           }
         </ul>
+        <div className="sidebar-app-version">v{version}</div>
       </div>
     );
   }

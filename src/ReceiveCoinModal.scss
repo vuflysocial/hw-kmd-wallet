@@ -13,6 +13,11 @@
   }
   .new-address {
     padding-top: 10px;
+    display: block;
+    
+    * {
+      color: #363636 !important;
+    }
   }
   .fa-qrcode {
     margin-left: 10px;
@@ -26,12 +31,15 @@
       text-align: center;
     }
   }
-}
-
-.new-address {
-  display: block;
-
-  * {
-    color: #363636 !important;
+  .receive-coin-modal-success {
+    padding: 10px 0;
+    display: block;
+  }
+  .receive-coin-modal-faucet {
+    padding: 15px 0 0;
+    display: block;
+  }
+  .receive-coin-modal-padding-bottom {
+    padding-bottom: 50px;
   }
 }

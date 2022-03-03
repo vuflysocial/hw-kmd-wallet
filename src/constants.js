@@ -55,6 +55,8 @@ export const LEDGER_DEVICE_HEX_ENUM = {
   '33000004': 'x',
 };
 export const SETTINGS = {
+  DISCOVERY_GAP_LIMIT_DEFAULT: 20,
+  DISCOVERY_GAP_LIMIT_AIRDROP: 20,
   DISCOVERY_GAP_LIMIT: 200,
   DISCOVERY_ADDRESS_CONCURRENCY: {
     2: 2,
@@ -74,3 +76,4 @@ export const SETTINGS = {
     3200: '60 min',
   },
 };
+export const COIN_DERIVATION_PATH = `44'/141'`;

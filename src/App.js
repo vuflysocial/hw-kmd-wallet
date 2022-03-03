@@ -23,10 +23,7 @@ import {
   TX_FEE,
   VENDOR,
 } from './constants';
-import accountDiscovery from './lib/account-discovery';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
-import apiEndpoints from './lib/coins';
-import getKomodoRewards from './lib/get-komodo-rewards';
 import {isMobile} from 'react-device-detect';
 import {
   isElectron,
@@ -36,7 +33,6 @@ import {
 } from './Electron';
 import {writeLog} from './Debug';
 import initSettings from './lib/init-settings';
-import asyncForEach from './lib/async';
 import {sortTransactions} from './lib/sort';
 import CoinsSelector from './CoinsSelector';
 import DashboardOperations from './DashboardOperations';
@@ -44,11 +40,11 @@ import DashboardPrices from './DashboardPrices';
 import HWFirmwareRequirements from './HWFirmwareRequirementsModal';
 import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
-import getRewardEndDate from './lib/get-reward-end-date';
+import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateRewardData, checkRewardsOverdue, scanCoins} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
-const MAX_TIP_TIME_DIFF = 3600 * 24;
 let syncDataInterval, autoLogoutTimer;
 
 class App extends React.Component {
@@ -148,26 +144,7 @@ class App extends React.Component {
   }
 
   removeCoin(coin) {
-    let lastOperations = [];
-    let coins = this.state.coins;
-    delete coins[coin];
-
-    for (let coin in coins) {
-      for (let j = 0; j < coins[coin].accounts.length; j++) {
-        for (let a = 0; a < coins[coin].accounts[j].history.historyParsed.length; a++) {
-          lastOperations.push({
-            coin: coin,
-            type: coins[coin].accounts[j].history.historyParsed[a].type,
-            date: coins[coin].accounts[j].history.historyParsed[a].date,
-            amount: coins[coin].accounts[j].history.historyParsed[a].amount,
-            txid: coins[coin].accounts[j].history.historyParsed[a].txid,
-            timestamp: coins[coin].accounts[j].history.historyParsed[a].timestamp,
-          });
-        }
-      }
-    }
-
-    lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
+    const lastOperations = removeCoin(coin, this.state.coins);
 
     this.setState({
       coins,
@@ -212,7 +189,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-      // init app data decryption and login if PW is set
+    // init app data decryption and login if PW is set
     if (isElectron &&
         helpers.getPW()) {
       const _pw = helpers.getPW();
@@ -233,11 +210,6 @@ class App extends React.Component {
       }, 300 * 1000);
     }
 
-    /*setTimeout(() => {
-      writeLog('run recheck');
-      ipcRenderer.send('nspvRunRecheck', {coin: 'rick'});
-    }, 2000);*/
-
     // limit mobile support to ledger webusb only
     if (isMobile) {
       hw.ledger.setLedgerFWVersion('webusb');
@@ -255,8 +227,6 @@ class App extends React.Component {
       blockchain[blockchainAPI].setCoin(this.state.coin);
       setBlockchainAPI('spv');
     }
-
-    if (!isElectron || (isElectron && appData.blockchainAPI === 'insight')) this.checkExplorerEndpoints();
     
     if (isElectron && appData.isNspv) {
       ipcRenderer.on('nspvRecheck', (event, arg) => {
@@ -271,20 +241,6 @@ class App extends React.Component {
           }, arg.isFirstRun === true ? 1000 : 300 * 1000);
         }
       });
-    }
-  }
-
-  checkTipTime(tiptime) {
-    if (!tiptime || Number(tiptime) <= 0) return tiptime;
-
-    const currentTimestamp = Date.now() / 1000;
-    const secondsDiff = Math.floor(Number(currentTimestamp) - Number(tiptime));
-
-    if (Math.abs(secondsDiff) < MAX_TIP_TIME_DIFF) {      
-      return tiptime;
-    } else {
-      writeLog('tiptime vs local time is too big, use local time to calc rewards!');
-      return currentTimestamp;
     }
   }
 
@@ -335,44 +291,6 @@ class App extends React.Component {
     }, 100)
   }
 
-  checkExplorerEndpoints = async () => {
-    const getInfoRes =  await Promise.all(apiEndpoints[this.state.coin].api.map((value, index) => {
-      return blockchain[blockchainAPI].getInfo(value);
-    }));
-    let isExplorerEndpointSet = false;
-    let longestBlockHeight = 0;
-    let apiEndPointIndex = 0;
-
-    writeLog('checkExplorerEndpoints', getInfoRes);
-    
-    for (let i = 0; i < apiEndpoints[this.state.coin].api.length; i++) {
-      if (getInfoRes[i] &&
-          getInfoRes[i].hasOwnProperty('info') &&
-          getInfoRes[i].info.hasOwnProperty('version')) {
-        if (getInfoRes[i].info.blocks > longestBlockHeight) {
-          longestBlockHeight = getInfoRes[i].info.blocks;
-          apiEndPointIndex = i;
-        }
-      }
-    }
-
-    writeLog('set api endpoint to ' + apiEndpoints[this.state.coin].api[apiEndPointIndex]);
-    blockchain[blockchainAPI].setExplorerUrl(apiEndpoints[this.state.coin].api[apiEndPointIndex]);    
-    isExplorerEndpointSet = true;
-    
-    this.setState({
-      explorerEndpoint: apiEndpoints[this.state.coin].api[apiEndPointIndex],
-    });
-
-    setTimeout(() => {
-      if (!isExplorerEndpointSet) {
-        this.setState({
-          explorerEndpoint: false,
-        });
-      }
-    }, 50);
-  };
-
   resetState = (clearData) => {
     clearInterval(syncDataInterval);
     this.setVendor();
@@ -404,14 +322,6 @@ class App extends React.Component {
     }
   }
 
-  calculateRewardData = ({accounts, tiptime}) => accounts.map(account => {
-    account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
-    account.rewards = account.utxos.reduce((rewards, utxo) => rewards + getKomodoRewards({tiptime, ...utxo}), 0);
-    account.claimableAmount = account.rewards - TX_FEE * 2;
-
-    return account;
-  });
-
   enableAccount(accountIndex) {
     let coins = JSON.parse(JSON.stringify(this.state.coins));
 
@@ -432,20 +342,7 @@ class App extends React.Component {
 
   addAccount(accountIndex, xpub) {
     let coins = JSON.parse(JSON.stringify(this.state.coins));
-    coins[this.state.activeCoin].accounts[accountIndex] = {
-      xpub,
-      balance: 0,
-      rewards: 0,
-      claimableAmount: 0,
-      enabled: true,
-      accountIndex,
-      utxos: [],
-      history: {
-        addresses: [],
-        allTxs: [],
-        historyParsed: [],
-      },
-    };
+    coins[this.state.activeCoin].accounts[accountIndex] = emptyAccountState();
 
     this.setState({
       coins,
@@ -474,152 +371,35 @@ class App extends React.Component {
         syncInProgress: true,
       });      
 
-      const coins = apiEndpoints;
-      let balances = [];
-    
-      await asyncForEach(coinTickers, async (coin, index) => {
-        let isExplorerEndpointSet = false;
-        writeLog(coin);
-        
-        if (this.state.explorerEndpointOverride.hasOwnProperty(coin)) {
-          writeLog(`${coin} set api endpoint to ${this.state.explorerEndpointOverride[coin]}`);
-          blockchain[blockchainAPI].setExplorerUrl(this.state.explorerEndpointOverride[coin]);
-          isExplorerEndpointSet = true;
-        } else {
-          const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
-            return blockchain[blockchainAPI].getInfo(value);
-          }));
-          let longestBlockHeight = 0;
-          let apiEndPointIndex = 0;
+      const {balances, tiptime} = await scanCoins(
+        coinTickers,
+        blockchain[blockchainAPI],
+        this.state.explorerEndpointOverride,
+        this.state.vendor,
+        this.state.coins
+      );
+
+      writeLog('coin data sync finished', balances);
       
-          writeLog('checkExplorerEndpoints', getInfoRes);
-          
-          for (let i = 0; i < coins[coin].api.length; i++) {
-            if (getInfoRes[i] &&
-                getInfoRes[i].hasOwnProperty('info') &&
-                getInfoRes[i].info.hasOwnProperty('version')) {
-              if (getInfoRes[i].info.blocks > longestBlockHeight) {
-                longestBlockHeight = getInfoRes[i].info.blocks;
-                apiEndPointIndex = i;
-              }
-            }
-          }
-
-          writeLog(`${coin} set api endpoint to ${coins[coin].api[apiEndPointIndex]}`);
-          blockchain[blockchainAPI].setExplorerUrl(coins[coin].api[apiEndPointIndex]);
-          isExplorerEndpointSet = true;
-      
-          this.setState({
-            explorerEndpoint: coins[coin].api[apiEndPointIndex],
-          });
-        }
-
-        if (isExplorerEndpointSet) {
-          writeLog('app vendor', this.state.vendor);
-          let [accounts, tiptime] = await Promise.all([
-            accountDiscovery(this.state.vendor, coin, this.state.coins[coin].accounts),
-            blockchain[blockchainAPI].getTipTime()
-          ]);
-
-          tiptime = this.checkTipTime(tiptime);
-
-          accounts = this.calculateRewardData({accounts, tiptime});
-
-          let balanceSum = 0;
-          let rewardsSum = 0;
-
-          for (let i = 0; i < accounts.length; i++) {
-            balanceSum += accounts[i].balance;
-            rewardsSum += accounts[i].rewards; 
-          }
-
-          if (coin === 'KMD') {
-            writeLog('check if any KMD rewards are overdue');
-
-            for (let i = 0; i < accounts.length; i++) {
-              //writeLog(accounts[i].utxos);
-              for (let j = 0; j < accounts[i].utxos.length; j++) {
-                const rewardEndDate = getRewardEndDate({locktime: accounts[i].utxos[j].locktime, height: 7777776});
-
-                writeLog('rewardEndDate', rewardEndDate, ' vs ', Date.now());
-
-                if (Date.now() > rewardEndDate) {
-                  writeLog('account', i, 'rewards overdue');
-                  accounts[i].isRewardsOverdue = true;
-                } else {
-                  accounts[i].isRewardsOverdue = false;
-                }
-              }
-            }
-          }
-
-          balances.push({
-            coin,
-            balance: balanceSum,
-            rewards: rewardsSum,
-            accounts,
-          });
-
-          if (index === coinTickers.length - 1) {
-            writeLog('coin data sync finished', balances);
-            
-            this.handleScanData({
-              coins: balances,
-              tiptime,
-            })
-          }
-        }
+      this.handleScanData({
+        coins: balances,
+        tiptime,
       });
     }
   }
 
   handleScanData = ({coins, tiptime}) => {
-    let newCoins = coins;
-    let lastOperations = [];
-    coins = this.state.coins;
-
-    for (var i = 0; i < newCoins.length; i++) {
-      coins[newCoins[i].coin] = newCoins[i];
-    }
-    
-    for (let coin in coins) {
-      for (let j = 0; j < coins[coin].accounts.length; j++) {
-        for (let a = 0; a < coins[coin].accounts[j].utxos.length; a++) {
-          if (Number(coins[coin].accounts[j].utxos[a].confirmations) < 0) {
-            writeLog(`${coin} utxo data is incorrect for acc ${j}`);
-          }
-        }
-
-        for (let a = 0; a < coins[coin].accounts[j].history.historyParsed.length; a++) {
-          lastOperations.push({
-            coin: coin,
-            type: coins[coin].accounts[j].history.historyParsed[a].type,
-            date: coins[coin].accounts[j].history.historyParsed[a].date,
-            amount: coins[coin].accounts[j].history.historyParsed[a].amount,
-            txid: coins[coin].accounts[j].history.historyParsed[a].txid,
-            timestamp: coins[coin].accounts[j].history.historyParsed[a].timestamp,
-          });
-        }
-      }
-    }
-
-    writeLog('lastops', lastOperations);
-    writeLog(newCoins);
-    writeLog(coins);  
-    
-    lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
-
-    tiptime = this.checkTipTime(tiptime);
+    const {lastOperations, updatedCoins} = handleScanData(coins, tiptime, this.state.coins);
     
     this.setState({
-      coins,
+      coins: updatedCoins,
       lastOperations,
-      tiptime,
+      tiptime: checkTipTime(tiptime),
       isFirstRun: false,
       syncInProgress: false,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', updatedCoins);
     setLocalStorageVar('lastOperations', lastOperations);
   }
 
@@ -662,15 +442,7 @@ class App extends React.Component {
     if (vendor) setLocalStorageVar('settings', {vendor});
   }
 
-  setTheme(name) {
-    document.getElementById('body').className = name;
-    setLocalStorageVar('settings', {theme: name});
-    this.setState({
-      theme: name,
-    });
-  }
-
-  vendorSelectorRender() {
+  loginStateRender() {
     return (
       <div className={`App isPristine${!isElectron && window.location.href.indexOf('disable-mobile') === -1 ? ' Responsive' : ''}`}>
         <LoginModal
@@ -678,19 +450,7 @@ class App extends React.Component {
           resetState={this.resetState}
           isClosed={this.state.loginModalClosed}
           isAuth={this.state.isAuth} />
-        <Header>
-          <div className="navbar-brand">
-            <div className="navbar-item">
-              <img
-                src="favicon.png"
-                className="KmdIcon"
-                alt="Komodo logo" />
-            </div>
-            <h1 className="navbar-item">
-              <strong>HW KMD {this.state.coin === voteCoin ? 'Notary Elections' : ' wallet'}</strong>
-            </h1>
-          </div>
-        </Header>
+        <HeaderNonAuth coin={this.state.coin} />
         <input
           type="text"
           id="js-copytextarea" />
@@ -712,21 +472,7 @@ class App extends React.Component {
             <div className="container content text-center">
               <h2>{this.state.coin === voteCoin ? 'Cast your VOTEs' : 'Manage your coins'} from a hardware wallet device.</h2>
             </div>
-            <div className="vendor-selector">
-              <h3>Choose your vendor</h3>
-              <div className="vendor-selector-items">
-                <img
-                  className="vendor-ledger"
-                  src="ledger-logo.png"
-                  alt="Ledger"
-                  onClick={() => this.setVendor('ledger')} />
-                <img
-                  className="vendor-trezor"
-                  src="trezor-logo.png"
-                  alt="Trezor"
-                  onClick={() => this.setVendor('trezor')} />
-              </div>
-            </div>
+            <VendorSelector setVendor={this.setVendor} />
           </React.Fragment>
         </section>
 
@@ -739,33 +485,14 @@ class App extends React.Component {
 
   render() {
     if (!this.state.vendor) {
-      return this.vendorSelectorRender();
+      return this.loginStateRender();
     } else {
       return (
         <div className={`App dashboard ${testCoins.indexOf(this.state.coin) > -1 ? ' testcoins-warning-fix' : ''}${!isElectron && window.location.href.indexOf('disable-mobile') === -1 ? ' Responsive' : ''}`}>
-          <Header>
-            <div className="navbar-brand">
-              <div className="navbar-item">
-                <img
-                  src="favicon.png"
-                  className="KmdIcon"
-                  alt="Komodo logo" />
-              </div>
-              <h1 className="navbar-item">
-                {!this.state.vendor &&
-                  <strong>HW KMD {this.state.coin === voteCoin ? 'Notary Elections' : ' wallet'}</strong>
-                }
-                {this.state.vendor &&
-                  <strong>{VENDOR[this.state.vendor]} KMD HW {this.state.coin === voteCoin ? 'Notary Elections' : ' wallet'}</strong>
-                }
-                {this.state.syncInProgress &&
-                  <i
-                    className="fa fa-redo-alt sync-progress-icon"
-                    title="Sync in progress..."></i>
-                }
-              </h1>
-            </div>
-          </Header>
+          <HeaderAuth
+            coin={this.state.coin}
+            vendor={this.state.vendor}
+            syncInProgress={this.state.syncInProgress} />
           <input
             type="text"
             id="js-copytextarea" />
@@ -809,7 +536,7 @@ class App extends React.Component {
                     addCoins={this.addCoins}
                     setActiveCoin={this.setActiveCoin}
                     handleScanData={this.handleScanData}
-                    checkTipTime={this.checkTipTime}
+                    checkTipTime={checkTipTime}
                     vendor={this.state.vendor}
                     explorerEndpoint={this.state.explorerEndpoint} />
                   {this.isCoinData() &&
@@ -827,23 +554,11 @@ class App extends React.Component {
                   {!this.isCoinData() &&
                     <div className="container content content-init-hw-vendor">
                       <HWFirmwareRequirements vendor={this.state.vendor} />
-                      <img
-                        className="hw-graphic"
-                        src={`${this.state.vendor}-logo.png`}
-                        alt={VENDOR[this.state.vendor]} />
+                      <VendorImage vendor={this.state.vendor} />
                     </div>
                   }
                   {!isElectron &&
-                    <div className="download-desktop-block">
-                      <a
-                        href="https://github.com/pbca26/hw-kmd-wallet/releases"
-                        target="_blank">
-                        <button
-                          className="button is-light">
-                          <i className="fa fa-download"></i>Download for desktop
-                        </button>
-                      </a>
-                    </div>
+                    <DesktopDownloadButton />
                   }
                 </React.Fragment>
               }

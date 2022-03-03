@@ -166,7 +166,8 @@ class SettingsModal extends React.Component {
   }
 
   render() {
-    writeLog(this.props.coin);
+    const {coin, isAuth} = this.props;
+    writeLog(coin);
 
     return (
       <React.Fragment>
@@ -185,7 +186,7 @@ class SettingsModal extends React.Component {
           isCloseable={true}
           className="settings-modal">
           <ul>
-            {this.props.isAuth &&
+            {isAuth &&
               <li>
                 Sidebar
                 <select
@@ -203,7 +204,7 @@ class SettingsModal extends React.Component {
                 </select>
               </li>
             }
-            {this.props.isAuth &&
+            {isAuth &&
               <li>
                 Auto-lock
                 <select
@@ -274,7 +275,7 @@ class SettingsModal extends React.Component {
                 className="explorer-selector minimal"
                 value={this.state.discoveryGapLimit}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
-                {Array.from({length: SETTINGS.DISCOVERY_GAP_LIMIT / 5}, (_, i) => i + 1).map((item, index) => (
+                {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].map((item, index) => (
                   <option
                     key={`discovery-account-index-${index}`}
                     value={(index + 1) * 5}>
@@ -315,7 +316,7 @@ class SettingsModal extends React.Component {
                 ))}
               </select>
             </li>
-            {apiEndpoints[this.props.coin].api.length > 1 &&
+            {apiEndpoints[coin].api.length > 1 &&
               <li>
                 Explorer API end point
                 <select
@@ -323,7 +324,7 @@ class SettingsModal extends React.Component {
                   name="explorerEndpoint"
                   value={this.state.explorerEndpoint}
                   onChange={(event) => this.setExplorerEndpoint(event)}>
-                  {apiEndpoints[this.props.coin].api.map((val, index) => (
+                  {apiEndpoints[coin].api.map((val, index) => (
                     <option
                       key={`explorer-selector-${val}`}
                       value={val}>
