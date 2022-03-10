@@ -200,10 +200,11 @@ class SendCoinButton extends React.Component {
     if (!isUserInputValid) {
       const {coin} = this.props;
       let currentAction = 'connect';
+      let tiptime;
       
       try {
         if (coin === 'KMD') {
-          let tiptime = await blockchain[blockchainAPI].getTipTime();
+          tiptime = await blockchain[blockchainAPI].getTipTime();
           tiptime = this.props.checkTipTime(tiptime);
           if (!tiptime) throw new Error('Unable to get tiptime!');
         }
