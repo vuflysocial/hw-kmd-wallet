@@ -188,7 +188,7 @@ class App extends React.Component {
       activeCoin: null,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', coins, true);
     setLocalStorageVar('lastOperations', lastOperations);
   }
 
