@@ -77,3 +77,4 @@ export const SETTINGS = {
   },
 };
 export const COIN_DERIVATION_PATH = `44'/141'`;
+export const CACHE_MAX_LIFETIME = 10 * 60;

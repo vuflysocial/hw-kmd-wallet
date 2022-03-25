@@ -10,6 +10,8 @@ import {
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import {version} from '../package.json';
+import {CACHE_MAX_LIFETIME} from './constants';
+import {checkTimestamp} from './lib/time';
 import './Sidebar.scss';
 
 class Sidebar extends React.Component {
@@ -55,7 +57,12 @@ class Sidebar extends React.Component {
               vendor={this.props.vendor}
               syncData={this.props.syncData}
               coin={this.props.activeCoin}
-              sidebarSize={sidebarSize}>
+              sidebarSize={sidebarSize}
+              checkTipTime={this.props.checkTipTime}
+              disabled={
+                (this.props.activeCoin === 'KMD' && !this.props.coins.KMD.lastChecked) ||
+                (this.props.activeCoin === 'KMD' && this.props.coins.KMD.lastChecked && checkTimestamp(this.props.coins.KMD.lastChecked) > CACHE_MAX_LIFETIME)
+              }>
               Send
             </SendCoinButton>
           }

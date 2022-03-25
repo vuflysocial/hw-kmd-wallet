@@ -153,7 +153,7 @@ class App extends React.Component {
       activeCoin: null,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', coins, true);
     setLocalStorageVar('lastOperations', lastOperations);
   }
 
@@ -285,10 +285,6 @@ class App extends React.Component {
     this.setState({
       explorerEndpointOverride,
     });
-
-    setTimeout(() => {
-      console.warn(this.state);
-    }, 100)
   }
 
   resetState = (clearData) => {
@@ -389,17 +385,59 @@ class App extends React.Component {
   }
 
   handleScanData = ({coins, tiptime}) => {
-    const {lastOperations, updatedCoins} = handleScanData(coins, tiptime, this.state.coins);
+    let newCoins = coins;
+    let lastOperations = [];
+    coins = this.state.coins;
+
+    for (var i = 0; i < newCoins.length; i++) {
+      coins[newCoins[i].coin] = newCoins[i];
+      coins[newCoins[i].coin].lastChecked = Date.now();
+    }
+    
+    for (let coin in coins) {
+      for (let j = 0; j < coins[coin].accounts.length; j++) {
+        for (let a = 0; a < coins[coin].accounts[j].utxos.length; a++) {
+          if (Number(coins[coin].accounts[j].utxos[a].confirmations) < 0) {
+            writeLog(`${coin} utxo data is incorrect for acc ${j}`);
+          }
+        }
+
+        for (let a = 0; a < coins[coin].accounts[j].history.historyParsed.length; a++) {
+          lastOperations.push({
+            coin: coin,
+            type: coins[coin].accounts[j].history.historyParsed[a].type,
+            date: coins[coin].accounts[j].history.historyParsed[a].date,
+            amount: coins[coin].accounts[j].history.historyParsed[a].amount,
+            txid: coins[coin].accounts[j].history.historyParsed[a].txid,
+            timestamp: coins[coin].accounts[j].history.historyParsed[a].timestamp,
+          });
+        }
+      }
+
+      if (coin === 'KMD') {
+        writeLog('check if any KMD rewards are overdue');
+        
+        coins[coin].accounts = checkRewardsOverdue(coins[coin].accounts);
+      }
+    }
+
+    writeLog('lastops', lastOperations);
+    writeLog(newCoins);
+    writeLog(coins);  
+    
+    lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
+
+    tiptime = this.checkTipTime(tiptime);
     
     this.setState({
-      coins: updatedCoins,
+      coins,
       lastOperations,
-      tiptime: checkTipTime(tiptime),
+      tiptime,
       isFirstRun: false,
       syncInProgress: false,
     });
 
-    setLocalStorageVar('coins', updatedCoins);
+    setLocalStorageVar('coins', coins);
     setLocalStorageVar('lastOperations', lastOperations);
   }
 
@@ -449,7 +487,8 @@ class App extends React.Component {
           closeLoginModal={this.closeLoginModal}
           resetState={this.resetState}
           isClosed={this.state.loginModalClosed}
-          isAuth={this.state.isAuth} />
+          isAuth={this.state.isAuth}
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange}/>
         <HeaderNonAuth coin={this.state.coin} />
         <input
           type="text"
@@ -510,7 +549,9 @@ class App extends React.Component {
             isAuth={this.state.isAuth}
             resetState={this.resetState}
             triggerSidebarSizeChange={this.triggerSidebarSizeChange}
-            updateExplorerEndpoint={this.updateExplorerEndpoint} />
+            updateExplorerEndpoint={this.updateExplorerEndpoint}
+            coins={this.state.coins}
+            checkTipTime={this.checkTipTime} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />
@@ -577,7 +618,8 @@ class App extends React.Component {
                     syncData={this.syncData}
                     removeCoin={this.removeCoin}
                     enableAccount={this.enableAccount}
-                    addAccount={this.addAccount} />
+                    addAccount={this.addAccount}
+                    checkTipTime={this.checkTipTime} />
                 }
               </React.Fragment>
             )}

@@ -142,14 +142,16 @@ class SendCoinButton extends React.Component {
     if (!isUserInputValid) {
       const {coin, vendor, isClaimRewardsOnly, account, accounts} = this.props;
       const {address} = this.state;
-
-      const tiptime = await blockchain[blockchainAPI].getTipTime();
-
-      //tiptime = this.props.checkTipTime(tiptime);
-
-      let currentAction;
+      let currentAction = 'connect';
+      let tiptime;
+      
       try {
-        currentAction = 'connect';
+        if (coin === 'KMD') {
+          tiptime = await blockchain[blockchainAPI].getTipTime();
+          tiptime = this.props.checkTipTime(tiptime);
+          if (!tiptime) throw new Error('Unable to get tiptime!');
+        }
+
         updateActionState(this, currentAction, 'loading');
         const hwIsAvailable = await hw[vendor].isAvailable();
         if (!hwIsAvailable) {
@@ -271,8 +273,8 @@ class SendCoinButton extends React.Component {
         [{address: txData.outputAddress, value: txData.value}, {address: txData.changeAddress, value: txData.change + txData.totalInterest - (isClaimRewardsOnly ? 0 : TX_FEE * 2), derivationPath}] : [{address: txData.outputAddress, value: txData.value}]);
 
         writeLog('rawtx', rawtx);
-        if (!rawtx) {
-          throw new Error(`${VENDOR[vendor]} failed to generate a valid transaction`);
+        if (!rawtx || typeof rawtx !== 'string') {
+          throw new Error(`${VENDOR[this.props.vendor]} failed to generate a valid transaction`);
         }
         updateActionState(this, currentAction, true);
         
@@ -594,6 +596,7 @@ class SendCoinButton extends React.Component {
           <button
             className={`button is-primary${className ? ' ' + className : ''}`}
             disabled={
+              disabled ||
               isNoBalace ||
               (coin === 'KMD' && account.claimableAmount < KMD_REWARDS_MIN_THRESHOLD && isClaimRewardsOnly)
             }
@@ -601,8 +604,10 @@ class SendCoinButton extends React.Component {
             {children}
           </button>
         }
-        {!isClaimRewardsOnly &&
-          <li onClick={this.initSendCoinForm}>
+        {!this.props.isClaimRewardsOnly &&
+          <li
+            onClick={disabled && coin === 'KMD' ? null : this.initSendCoinForm}
+            className={disabled && coin === 'KMD' ? 'disabled': ''}>
             <i className="fa fa-paper-plane"></i>
             {sidebarSize === 'full' &&
               <span className="sidebar-item-title">Send</span>

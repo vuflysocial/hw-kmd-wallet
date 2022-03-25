@@ -86,6 +86,7 @@ class LoginModal extends React.Component {
           <SettingsModal
             resetState={this.props.resetState}
             isAuth={this.state.isAuth}
+            triggerSidebarSizeChange={this.props.triggerSidebarSizeChange}
             coin="KMD" />
           Password <input
             type="password"
