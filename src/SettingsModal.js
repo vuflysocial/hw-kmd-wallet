@@ -156,7 +156,7 @@ class SettingsModal extends React.Component {
     const appData = localStorage.getItem('hw-wallet');
 
     a.href = 'data:text/plain;charset=UTF-8;base64,' + btoa(appData);
-    a.download = 'hw-wallet-export-app-data';
+    a.download = 'hw-kmd-wallet-export-app-data';
   }
 
   updateInput(e) {
@@ -166,7 +166,8 @@ class SettingsModal extends React.Component {
   }
 
   render() {
-    writeLog(this.props.coin);
+    const {coin, isAuth} = this.props;
+    writeLog(coin);
 
     return (
       <React.Fragment>
@@ -185,18 +186,7 @@ class SettingsModal extends React.Component {
           isCloseable={true}
           className="settings-modal">
           <ul>
-            {/*<li>
-              <div className="theme-selector">
-                Theme
-                <div
-                  onClick={() => this.setTheme('tdark')}
-                  className={'item black' + (this.state.theme === 'tdark' ? ' active' : '')}></div>
-                <div
-                  onClick={() => this.setTheme('tlight')}
-                  className={'item light' + (this.state.theme === 'tlight' ? ' active' : '')}></div>
-              </div>
-            </li>*/}
-            {this.props.isAuth &&
+            {isAuth &&
               <li>
                 Sidebar
                 <select
@@ -214,7 +204,7 @@ class SettingsModal extends React.Component {
                 </select>
               </li>
             }
-            {this.props.isAuth &&
+            {isAuth &&
               <li>
                 Auto-lock
                 <select
@@ -285,7 +275,7 @@ class SettingsModal extends React.Component {
                 className="explorer-selector minimal"
                 value={this.state.discoveryGapLimit}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
-                {Array.from({length: SETTINGS.DISCOVERY_GAP_LIMIT / 5}, (_, i) => i + 1).map((item, index) => (
+                {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].map((item, index) => (
                   <option
                     key={`discovery-account-index-${index}`}
                     value={(index + 1) * 5}>
@@ -326,7 +316,7 @@ class SettingsModal extends React.Component {
                 ))}
               </select>
             </li>
-            {apiEndpoints[this.props.coin].api.length > 1 &&
+            {apiEndpoints[coin].api.length > 1 &&
               <li>
                 Explorer API end point
                 <select
@@ -334,7 +324,7 @@ class SettingsModal extends React.Component {
                   name="explorerEndpoint"
                   value={this.state.explorerEndpoint}
                   onChange={(event) => this.setExplorerEndpoint(event)}>
-                  {apiEndpoints[this.props.coin].api.map((val, index) => (
+                  {apiEndpoints[coin].api.map((val, index) => (
                     <option
                       key={`explorer-selector-${val}`}
                       value={val}>

@@ -83,7 +83,7 @@ const parse = ([txs, addr, options]) => {
   return txHistory;
 };
 
-const sort = (txHistory) => {
+const sort = txHistory => {
   let _txHistory;
 
   if (txHistory.length && !txHistory.txid) {
@@ -95,7 +95,7 @@ const sort = (txHistory) => {
   return sortTransactions(txHistory, 'timestamp');
 };
 
-const limit = (txHistory) => {
+const limit = txHistory => {
   let _txHistory;
 
   if (txHistory.length && !txHistory.txid) {

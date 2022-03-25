@@ -1,7 +1,7 @@
 import {KOMODO} from './../constants';
-import bitcoin from 'bitcoinjs-lib';
+import p2pkh from '@trezor/utxo-lib/src/payments/p2pkh';
 
-const getAddress = publicKey => bitcoin.payments.p2pkh({
+const getAddress = publicKey => p2pkh({
   pubkey: publicKey,
   network: KOMODO
 }).address;

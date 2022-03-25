@@ -6,8 +6,6 @@ import humanReadableSatoshis from './lib/human-readable-satoshis';
 import ClaimRewardsButton from './ClaimRewardsButton';
 import CoinSettingsModal from './CoinSettingsModal';
 import UtxosModal from './UtxosModal';
-import './Accounts.scss';
-import './Account.scss';
 import {
   isElectron,
   appData,
@@ -17,6 +15,8 @@ import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
 import {checkTimestamp} from './lib/time';
+import './Accounts.scss';
+import './Account.scss';
 
 class Account extends React.Component {
   state = this.initialState;
@@ -31,7 +31,7 @@ class Account extends React.Component {
       amount: '',
       sendTo: '',
       // debug options
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
+      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || (getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools),
     };
   }
 
@@ -56,8 +56,6 @@ class Account extends React.Component {
   render() {
     const {
       account,
-      tiptime,
-      vendor,
       coin,
       setActiveAccount,
       activeAccount,
@@ -68,9 +66,7 @@ class Account extends React.Component {
       history,
       balance,
       claimableAmount,
-      xpub,
     } = account;
-    const {isClaimed} = this.state;
     
     writeLog('account', account);
     writeLog('utxos', utxos);
@@ -80,9 +76,11 @@ class Account extends React.Component {
       <tr
         key={`operations-${accountIndex + 1}`}
         onClick={() => setActiveAccount(accountIndex)}
-        className={activeAccount !== null && accountIndex === activeAccount || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
+        className={(activeAccount !== null && accountIndex === activeAccount) || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
         <td>
-          <img src={`coins/${coin}.png`} />
+          <img
+            src={`coins/${coin}.png`}
+            alt={`${coin} icon`} />
           <span className="account-name">{coin} {accountIndex + 1}</span>
         </td>
         <td>
@@ -152,8 +150,7 @@ const Accounts = ({
                 syncData={syncData}
                 coin={activeCoin}
                 activeAccount={activeAccount}
-                setActiveAccount={setActiveAccount}
-                />
+                setActiveAccount={setActiveAccount} />
             ))}
           </tbody>
         </table>
@@ -167,6 +164,7 @@ const Accounts = ({
         {!isElectron &&
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href="https://github.com/pbca26/hw-kmd-wallet/wiki/How-to-use-address-discovery-options-to-claim-airdrop-coins">Unable to find airdrop coins?</a>
         }
       </div>
