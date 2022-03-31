@@ -82,7 +82,7 @@ class Account extends React.Component {
         onClick={() => setActiveAccount(accountIndex)}
         className={activeAccount !== null && accountIndex === activeAccount || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
         <td>
-          <img src={`coins/${coin}.png`} />
+          <img src={`${process.env.PUBLIC_URL}/coins/${coin}.png`} />
           <span className="account-name">{coin} {accountIndex + 1}</span>
         </td>
         <td>

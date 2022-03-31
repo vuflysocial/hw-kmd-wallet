@@ -1,21 +1,16 @@
 import 'babel-polyfill';
 import React from 'react';
 import {hot} from 'react-hot-loader';
-import {isEqual} from 'lodash';
 import Header from './Header';
 import BetaWarning from './BetaWarning';
 import CheckAllBalancesButton from './CheckAllBalancesButton';
 import Accounts from './Accounts';
-import WarnU2fCompatibility from './WarnU2fCompatibility';
 import WarnBrowser from './WarnBrowser';
 import ConnectionError from './ConnectionError';
 import Footer from './Footer';
 import FirmwareCheckModal from './FirmwareCheckModal';
 import SettingsModal from './SettingsModal';
-import {
-  repository,
-  version,
-} from '../package.json';
+import appInfo from '../package.json';
 import './App.scss';
 import hw from './lib/hw';
 import {
@@ -36,7 +31,7 @@ import accountDiscovery from './lib/account-discovery';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
 import apiEndpoints from './lib/coins';
 import getKomodoRewards from './lib/get-komodo-rewards';
-import {isMobile, osName} from 'react-device-detect';
+import {isMobile} from 'react-device-detect';
 import {
   isElectron,
   appData,
@@ -235,7 +230,7 @@ class App extends React.Component {
       });
     }
 
-    document.title = `Komodo Hardware Wallet (v${version})`;
+    document.title = `Komodo Hardware Wallet (v${appInfo.version})`;
     if (!isElectron || (isElectron && !appData.isNspv)) {
       syncDataInterval = setInterval(() => {
         if (!this.state.syncInProgress) {
@@ -687,12 +682,13 @@ class App extends React.Component {
           resetState={this.resetState}
           isClosed={this.state.loginModalClosed}
           isAuth={this.state.isAuth}
-          triggerSidebarSizeChange={this.triggerSidebarSizeChange} />
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange}
+          setVendor={this.setVendor} />
         <Header>
           <div className="navbar-brand">
             <div className="navbar-item">
               <img
-                src="favicon.png"
+                src={`${process.env.PUBLIC_URL}/favicon.png`}
                 className="KmdIcon"
                 alt="Komodo logo" />
             </div>
@@ -734,12 +730,12 @@ class App extends React.Component {
               <div className="vendor-selector-items">
                 <img
                   className="vendor-ledger"
-                  src="ledger-logo.png"
+                  src={`${process.env.PUBLIC_URL}/ledger-logo.png`}
                   alt="Ledger"
                   onClick={() => this.setVendor('ledger')} />
                 <img
                   className="vendor-trezor"
-                  src="trezor-logo.png"
+                  src={`${process.env.PUBLIC_URL}/trezor-logo.png`}
                   alt="Trezor"
                   onClick={() => this.setVendor('trezor')} />
               </div>
@@ -747,10 +743,6 @@ class App extends React.Component {
           </React.Fragment>
         </section>
 
-        {!isElectron &&
-          process.env.HTTPS &&
-          <WarnU2fCompatibility />
-        }
         {!isElectron &&
           <WarnBrowser />
         }
@@ -768,7 +760,7 @@ class App extends React.Component {
             <div className="navbar-brand">
               <div className="navbar-item">
                 <img
-                  src="favicon.png"
+                  src={`${process.env.PUBLIC_URL}/favicon.png`}
                   className="KmdIcon"
                   alt="Komodo logo" />
               </div>
@@ -856,7 +848,7 @@ class App extends React.Component {
                       <HWFirmwareRequirements vendor={this.state.vendor} />
                       <img
                         className="hw-graphic"
-                        src={`${this.state.vendor}-logo.png`}
+                        src={`${process.env.PUBLIC_URL}/${this.state.vendor}-logo.png`}
                         alt={VENDOR[this.state.vendor]} />
                     </div>
                   }

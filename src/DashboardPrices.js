@@ -30,7 +30,7 @@ class DashboardPrices extends React.Component {
                 {coins.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img src={`coins/${item}.png`} />
+                      <img src={`${process.env.PUBLIC_URL}/coins/${item}.png`} />
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>...</td>
@@ -44,7 +44,7 @@ class DashboardPrices extends React.Component {
                 {coinPriceTickers.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img src={`coins/${item}.png`} />
+                      <img src={`${process.env.PUBLIC_URL}/coins/${item}.png`} />
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>{prices[item].price}</td>

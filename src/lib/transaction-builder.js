@@ -110,7 +110,6 @@ const transactionBuilder = (network, value, fee, outputAddress, changeAddress, u
     }
     
     if (outputs[0].value === value + fee) {
-      outputs[0].value === outputs[0].value - fee;
       targets[0].value = targets[0].value - fee;
     }
 

@@ -1,10 +1,7 @@
 import React from 'react';
 import Modal from './Modal';
 import Footer from './Footer';
-import {
-  repository,
-  version,
-} from '../package.json';
+import appInfo from '../package.json';
 import {
   isElectron,
   shell,
@@ -67,9 +64,9 @@ class AboutModal extends React.Component {
             <strong>KMD hardware wallet</strong> by {this.renderLink('https://github.com/atomiclabs', 'Atomic Labs')} and {this.renderLink('https://github.com/komodoplatform', 'Komodo Platform')}.
           </p>
           <p>
-            The {this.renderLink(`https://github.com/${repository}`, 'source code')} is licensed under {this.renderLink(`https://github.com/${repository}/blob/master/LICENSE`, 'MIT')}.
+            The {this.renderLink(`https://github.com/${appInfo.repository}`, 'source code')} is licensed under {this.renderLink(`https://github.com/${appInfo.repository}/blob/master/LICENSE`, 'MIT')}.
             <br />
-            View the {this.renderLink(`https://github.com/${repository}#usage`, 'README')} for usage instructions.
+            View the {this.renderLink(`https://github.com/${appInfo.repository}#usage`, 'README')} for usage instructions.
           </p>
         </Modal>
       </React.Fragment>

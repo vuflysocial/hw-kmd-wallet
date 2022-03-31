@@ -1,5 +1,5 @@
 import {KOMODO} from './../constants';
-import bitcoin from 'bitcoinjs-lib';
+import * as bitcoin from 'bitcoinjs-lib';
 
 const checkPublicAddress = (address) => {
   try {

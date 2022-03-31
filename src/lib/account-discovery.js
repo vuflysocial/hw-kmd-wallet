@@ -1,7 +1,7 @@
 import hw from './hw';
 import blockchain, {blockchainAPI} from './blockchain';
 import getAddress from './get-address';
-import bitcoin from 'bitcoinjs-lib';
+import * as bitcoin from 'bitcoinjs-lib';
 import parseHistory from './history-parser';
 import asyncForEach from './async';
 import {

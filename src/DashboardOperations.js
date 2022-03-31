@@ -18,7 +18,7 @@ class DashboardOperations extends React.Component {
               className="item"
               key={`operations-${item.txid}`}>
               <div className="item-left-pane">
-                <img src={`coins/${item.coin}.png`} />
+                <img src={`${process.env.PUBLIC_URL}/coins/${item.coin}.png`} />
                 <span className="direction">{item.type}</span>
                 <span className="date">{item.date}</span>
               </div>
