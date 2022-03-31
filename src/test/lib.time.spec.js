@@ -57,7 +57,7 @@ test('it should return 2 hours (time - secondsElapsedToString - 2h (plural))', (
 
 test('it should return 1 day (time - secondsElapsedToString - 1d (singular))', () => {
   const timestamp = Date.now() - 24 * 60 * 60 * 1000;
-  expect(secondsElapsedToString()).toBe('1 day');
+  expect(secondsElapsedToString(timestamp)).toBe('1 day');
 });
 
 test('it should return 2 days (time - secondsElapsedToString - 2d (plural))', () => {
