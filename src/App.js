@@ -41,7 +41,7 @@ import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
-import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateRewardData, checkRewardsOverdue, scanCoins} from './app-helpers';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateBalanceData, checkRewardsOverdue, scanCoins} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 let syncDataInterval, autoLogoutTimer;

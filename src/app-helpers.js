@@ -110,12 +110,18 @@ export const emptyAccountState = (accountIndex, xpub) => {
 };
 
 export const calculateRewardData = ({accounts, tiptime}) => accounts.map(account => {
-  account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
   account.rewards = account.utxos.reduce((rewards, utxo) => rewards + getKomodoRewards({tiptime, ...utxo}), 0);
   account.claimableAmount = account.rewards - TX_FEE * 2;
 
   return account;
 });
+
+export const calculateBalanceData = (accounts) => accounts.map(account => {
+  account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
+
+  return account;
+});
+
 
 export const checkRewardsOverdue = (accounts) => {
   for (let i = 0; i < accounts.length; i++) {
@@ -173,6 +179,8 @@ export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverrid
         accounts = checkRewardsOverdue(accounts);            
       }
 
+      accounts = calculateBalanceData(accounts);
+
       let balanceSum = 0;
       let rewardsSum = 0;
 
@@ -183,8 +191,8 @@ export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverrid
 
       balances.push({
         coin,
-        balance: balanceSum,
-        rewards: rewardsSum,
+        balance: balanceSum || 0,
+        rewards: rewardsSum || 0,
         accounts,
       });
     }
