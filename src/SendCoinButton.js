@@ -418,7 +418,7 @@ class SendCoinButton extends React.Component {
   renderSkipBroadcastToggle() {
     return this.state.isDebug ? (
       <label
-        className="switch"
+        className="switch dev"
         onClick={this.setSkipBroadcast}>
         <input
           type="checkbox"

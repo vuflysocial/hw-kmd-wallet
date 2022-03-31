@@ -15,6 +15,14 @@
     top: 1px;
     margin-left: 40px;
   }
+
+  &.dev {
+    margin: 7px 20px 25px 0px;
+
+    .slider-text {
+      margin-left: 60px;
+    }
+  }
 }
 
 /* Hide default HTML checkbox */
