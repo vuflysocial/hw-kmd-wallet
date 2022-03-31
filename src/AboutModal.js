@@ -1,12 +1,10 @@
 import React from 'react';
 import Modal from './Modal';
-import Footer from './Footer';
 import appInfo from '../package.json';
 import {
   isElectron,
   shell,
 } from './Electron';
-//import './AboutModal.scss';
 
 class AboutModal extends React.Component {
   state = this.initialState;
@@ -33,7 +31,9 @@ class AboutModal extends React.Component {
     return (
       <React.Fragment>
         {isElectron &&
-          <a onClick={() => shell.openExternal(href)}>{title}</a>
+          <a
+            href="!#"
+            onClick={() => shell.openExternal(href)}>{title}</a>
         }
         {!isElectron &&
           <a

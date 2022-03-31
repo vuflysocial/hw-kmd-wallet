@@ -45,7 +45,8 @@
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
     "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "postinstall": "cp -R node_modules/bitcoinjs-lib/src/payments node_modules/@trezor/utxo-lib/src"
   },
   "eslintConfig": {
     "extends": [
