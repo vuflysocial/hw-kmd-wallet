@@ -6,7 +6,7 @@ import {writeLog} from './Debug';
 import coins from './lib/coins';
 import {TX_FEE} from './constants';
 
-export const formatUtxos = utxos => {
+export const formatUtxos = (utxos, coin, tiptime) => {
   let formattedUtxos = [];
   
   for (let i = 0; i < utxos.length; i++) {
@@ -90,6 +90,8 @@ export const getAvailableExplorerUrl = async (coin, blockchain) => {
     }
   }
 
+  writeLog('apiEndPointIndex', apiEndPointIndex);
+  
   return coins[coin].api[apiEndPointIndex];
 };
 

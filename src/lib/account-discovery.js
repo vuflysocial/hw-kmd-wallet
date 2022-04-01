@@ -1,8 +1,8 @@
 import hw from './hw';
 import blockchain, {blockchainAPI} from './blockchain';
 import getAddress from './get-address';
+import bip32 from './bip32-wrapper';
 import parseHistory from './history-parser';
-import asyncForEach from './async';
 import {
   isElectron,
   appData,
@@ -82,7 +82,7 @@ const walkDerivationPath = async node => {
 const getAccountAddresses = async (account, vendor, _xpub) => {
   const derivationPath = `${COIN_DERIVATION_PATH}/${account}'`;
   const xpub = _xpub || pubKeysCache[derivationPath] || await hw[vendor].getXpub(derivationPath);
-  const node = bitcoin.bip32.fromBase58(xpub);
+  const node = bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
   const internalNode = node.derive(1);
 
@@ -253,7 +253,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
 };
 
 export const getAccountNode = xpub => {
-  const node = bitcoin.bip32.fromBase58(xpub);
+  const node = bip32.fromBase58(xpub);
   const externalNode = node.derive(0);
   const internalNode = node.derive(1);
 

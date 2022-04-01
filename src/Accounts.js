@@ -1,7 +1,6 @@
 import React from 'react';
 import Transactions from './Transactions';
-import SendCoinButton from './SendCoinButton';
-import {TX_FEE, CACHE_MAX_LIFETIME} from './constants';
+import {CACHE_MAX_LIFETIME} from './constants';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
 import ClaimRewardsButton from './ClaimRewardsButton';
 import CoinSettingsModal from './CoinSettingsModal';
@@ -15,6 +14,7 @@ import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
 import {checkTimestamp} from './lib/time';
+import {getImageUrl} from './app-helpers';
 import './Accounts.scss';
 import './Account.scss';
 
@@ -79,7 +79,7 @@ class Account extends React.Component {
         className={(activeAccount !== null && accountIndex === activeAccount) || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
         <td>
           <img
-            src={`coins/${coin}.png`}
+            src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coin}.png`}
             alt={`${coin} icon`} />
           <span className="account-name">{coin} {accountIndex + 1}</span>
         </td>
@@ -159,7 +159,9 @@ const Accounts = ({
     {coinsList[activeCoin].airdrop &&
       <div className="accounts-airdop-helper-link">
         {isElectron &&
-          <a onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/wiki/How-to-use-address-discovery-options-to-claim-airdrop-coins')}>Unable to find airdrop coins?</a>
+          <a
+            href="!#"
+            onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/wiki/How-to-use-address-discovery-options-to-claim-airdrop-coins')}>Unable to find airdrop coins?</a>
         }
         {!isElectron &&
           <a

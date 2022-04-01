@@ -17,13 +17,15 @@ class CoinSettingsModal extends React.Component {
 
   close() {
     this.setState({
-      isClosed: true
+      isClosed: true,
+      showXpub: {},
     });
   }
 
   open() {
     this.setState({
-      isClosed: false
+      isClosed: false,
+      showXpub: {},
     });
   }
 

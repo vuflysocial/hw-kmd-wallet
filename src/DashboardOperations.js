@@ -1,5 +1,5 @@
 import React from 'react';
-import './DashboardOperations';
+import './DashboardOperations.scss';
 
 class DashboardOperations extends React.Component {
   state = this.initialState;
@@ -20,7 +20,7 @@ class DashboardOperations extends React.Component {
               key={`operations-${item.txid}`}>
               <div className="item-left-pane">
                 <img
-                  src={`coins/${item.coin}.png`}
+                  src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item.coin}.png`}
                   alt={`${item.coin} icon`} />
                 <span className="direction">{item.type}</span>
                 <span className="date">{item.date}</span>

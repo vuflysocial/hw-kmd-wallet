@@ -104,7 +104,9 @@ class FirmwareCheckModal extends React.Component {
           show={this.state.show}>
           <p>Please follow steps below to validate your Ledger device firmware and Komodo app version.</p>
           <p className="text-center fw-check-modal-padding-bottom">
-            <a onClick={this.handleClose}>Skip this step</a>
+            <a
+              href="!#"
+              onClick={this.handleClose}>Skip this step</a>
           </p>
         </ActionListModal>
       );

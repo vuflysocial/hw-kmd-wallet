@@ -1,13 +1,12 @@
 import 'babel-polyfill';
 import React from 'react';
 import {hot} from 'react-hot-loader';
-import Header from './Header';
 import BetaWarning from './BetaWarning';
 import Accounts from './Accounts';
 import WarnBrowser from './WarnBrowser';
 import ConnectionError from './ConnectionError';
 import FirmwareCheckModal from './FirmwareCheckModal';
-import {version} from '../package.json';
+import appInfo from '../package.json';
 import './App.scss';
 import hw from './lib/hw';
 import {
@@ -42,7 +41,7 @@ import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
-import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateRewardData, checkRewardsOverdue, scanCoins} from './app-helpers';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateBalanceData, checkRewardsOverdue, scanCoins} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 let syncDataInterval, autoLogoutTimer;
@@ -144,7 +143,7 @@ class App extends React.Component {
   }
 
   removeCoin(coin) {
-    const lastOperations = removeCoin(coin, this.state.coins);
+    const {lastOperations, coins} = removeCoin(coin, this.state.coins);
 
     this.setState({
       coins,
@@ -163,7 +162,7 @@ class App extends React.Component {
       activeAccount: null,
     });
 
-    writeLog(this.state.coins[activeCoin]);
+    writeLog(activeCoin ? 'none' : this.state.coins[activeCoin]);
   }
 
   setActiveAccount(activeAccount) {
@@ -200,7 +199,7 @@ class App extends React.Component {
       });
     }
 
-    document.title = `Komodo Hardware Wallet (v${version})`;
+    document.title = `Komodo Hardware Wallet (v${appInfo.version})`;
     if (!isElectron || (isElectron && !appData.isNspv)) {
       syncDataInterval = setInterval(() => {
         if (!this.state.syncInProgress) {
@@ -338,7 +337,7 @@ class App extends React.Component {
 
   addAccount(accountIndex, xpub) {
     let coins = JSON.parse(JSON.stringify(this.state.coins));
-    coins[this.state.activeCoin].accounts[accountIndex] = emptyAccountState();
+    coins[this.state.activeCoin].accounts[accountIndex] = emptyAccountState(accountIndex, xpub);
 
     this.setState({
       coins,
@@ -427,7 +426,7 @@ class App extends React.Component {
     
     lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
 
-    tiptime = this.checkTipTime(tiptime);
+    tiptime = checkTipTime(tiptime);
     
     this.setState({
       coins,
@@ -488,7 +487,8 @@ class App extends React.Component {
           resetState={this.resetState}
           isClosed={this.state.loginModalClosed}
           isAuth={this.state.isAuth}
-          triggerSidebarSizeChange={this.triggerSidebarSizeChange}/>
+          triggerSidebarSizeChange={this.triggerSidebarSizeChange}
+          setVendor={this.setVendor} />
         <HeaderNonAuth coin={this.state.coin} />
         <input
           type="text"
@@ -523,7 +523,7 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.vendor) {
+    if (!this.state.isAuth || (this.state.isAuth && !this.state.vendor)) {
       return this.loginStateRender();
     } else {
       return (
@@ -551,7 +551,7 @@ class App extends React.Component {
             triggerSidebarSizeChange={this.triggerSidebarSizeChange}
             updateExplorerEndpoint={this.updateExplorerEndpoint}
             coins={this.state.coins}
-            checkTipTime={this.checkTipTime} />
+            checkTipTime={checkTipTime} />
 
           {this.state.explorerEndpoint === false &&
             <ConnectionError />
@@ -619,7 +619,7 @@ class App extends React.Component {
                     removeCoin={this.removeCoin}
                     enableAccount={this.enableAccount}
                     addAccount={this.addAccount}
-                    checkTipTime={this.checkTipTime} />
+                    checkTipTime={checkTipTime} />
                 }
               </React.Fragment>
             )}

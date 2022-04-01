@@ -1,5 +1,5 @@
 const bs58check = require('bs58check');
-const ow = require('./ow/dist');
+const ow = require('ow');
 const {sha256, ripemd160} = require('./hash.js');
 
 const XPUB = 0x0488B21E;

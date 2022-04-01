@@ -15,7 +15,7 @@ import {
 } from './Electron';
 import {writeLog} from './Debug';
 import {getAvailableExplorerUrl} from './send-coin-helpers';
-import {checkTipTime, calculateRewardData, checkRewardsOverdue} from './app-helpers';
+import {checkTipTime, calculateRewardData, calculateBalanceData, checkRewardsOverdue} from './app-helpers';
 
 const headings = [
   'Coin',
@@ -67,11 +67,18 @@ class CheckAllBalancesButton extends React.Component {
   scanAddresses = async () => {
     const coinTickers = this.props.coins;
     const {vendor} = this.props;
-    let balances = [];
+    let balances = [], currentAction;
     cancel = false;
     
     await asyncForEach(coinTickers, async (coin, index) => {
       if (!cancel) {
+        this.setState({
+          isCheckingRewards: true,
+        });
+        
+        currentAction = 'connect';
+        updateActionState(this, currentAction, 'loading');
+
         const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
         let isExplorerEndpointSet = false;
 
@@ -118,6 +125,8 @@ class CheckAllBalancesButton extends React.Component {
               writeLog('check if any KMD rewards are overdue');
               accounts = checkRewardsOverdue(accounts);            
             }
+
+            accounts = calculateBalanceData(accounts);
 
             let balanceSum = 0;
             let rewardsSum = 0;

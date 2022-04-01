@@ -90,7 +90,9 @@ class TransactionDetailsModal extends React.Component {
               </table>
               <div className="modal-action-block center">
                 {isElectron &&
-                  <a onClick={() => shell.openExternal(`${coins[coin].explorer}tx/${tx.txid}`)}>
+                  <a
+                    href="!#"
+                    onClick={() => shell.openExternal(`${coins[coin].explorer}tx/${tx.txid}`)}>
                     <button className="button is-primary">
                       Open in explorer <i className="fa fa-external-link-alt"></i>
                     </button>

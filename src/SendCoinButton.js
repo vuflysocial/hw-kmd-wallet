@@ -176,7 +176,7 @@ class SendCoinButton extends React.Component {
 
         writeLog('utxos', utxos);
 
-        let formattedUtxos = formatUtxos(utxos);
+        let formattedUtxos = formatUtxos(utxos, coin, tiptime);
                 
         const txDataPreflight = transactionBuilder(
           coin === 'KMD' ? Object.assign({}, KOMODO, {kmdInterest: true}) : KOMODO,
@@ -418,7 +418,7 @@ class SendCoinButton extends React.Component {
   renderSkipBroadcastToggle() {
     return this.state.isDebug ? (
       <label
-        className="switch"
+        className="switch dev"
         onClick={this.setSkipBroadcast}>
         <input
           type="checkbox"
@@ -583,8 +583,13 @@ class SendCoinButton extends React.Component {
 
   render() {
     const {accountIndex} = this.state;
-    const {coin, isClaimRewardsOnly, account, accounts, className, children, sidebarSize} = this.props;
+    const {coin, isClaimRewardsOnly, account, accounts, className, children, sidebarSize, disabled} = this.props;
+    let {balance} = this.props;
     const isNoBalace = isClaimRewardsOnly ? Number(balance) <= 0 : Number(accounts[accountIndex].balance || 0) <= 0;
+    
+    if (!isClaimRewardsOnly) {
+      balance = this.props.accounts[this.state.accountIndex].balance || 0;
+    }
 
     writeLog('send coin button props', this.props);
     writeLog('KMD_REWARDS_MIN_THRESHOLD', KMD_REWARDS_MIN_THRESHOLD);

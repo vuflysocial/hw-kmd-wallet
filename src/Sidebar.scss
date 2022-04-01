@@ -41,8 +41,8 @@
     }
   }
 
-  a,
-  a:hover {
+  > a,
+  > a:hover {
     color: #fff !important;
   }
 
@@ -70,6 +70,7 @@
       display: block;
       padding: 20px 0;
       text-decoration: none;
+      color: #fff !important;
     }
   }
 }

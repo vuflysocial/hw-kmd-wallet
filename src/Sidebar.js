@@ -9,7 +9,7 @@ import {
   shell,
 } from './Electron';
 import {getLocalStorageVar} from './lib/localstorage-util';
-import {version} from '../package.json';
+import appInfo from '../package.json';
 import {CACHE_MAX_LIFETIME} from './constants';
 import {checkTimestamp} from './lib/time';
 import './Sidebar.scss';
@@ -89,7 +89,9 @@ class Sidebar extends React.Component {
           }
           <li className="sidebar-item-no-pad">
             {isElectron &&
-              <a onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/issues/new')}>
+              <a
+                href="!#"
+                onClick={() => shell.openExternal('https://github.com/pbca26/hw-kmd-wallet/issues/new')}>
                 <i className="fa fa-life-ring"></i>
                 {sidebarSize === 'full' &&
                   <span className="sidebar-item-title">Feedback</span>
@@ -119,7 +121,7 @@ class Sidebar extends React.Component {
             </li>
           }
         </ul>
-        <div className="sidebar-app-version">v{version}</div>
+        <div className="sidebar-app-version">v{appInfo.version}</div>
       </div>
     );
   }

@@ -1,11 +1,8 @@
 import {sortTransactions} from './lib/sort';
 import {writeLog} from './Debug';
-import {
-  TX_FEE,
-} from './constants';
+import {TX_FEE} from './constants';
 import getKomodoRewards from './lib/get-komodo-rewards';
 import getRewardEndDate from './lib/get-reward-end-date';
-import apiEndpoints from './lib/coins';
 import asyncForEach from './lib/async';
 import {getAvailableExplorerUrl} from './send-coin-helpers';
 import accountDiscovery from './lib/account-discovery';
@@ -89,10 +86,13 @@ export const removeCoin = (coin, coins) => {
 
   lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
 
-  return lastOperations;
+  return {
+    coins,
+    lastOperations,
+  };
 };
 
-export const emptyAccountState = () => {
+export const emptyAccountState = (accountIndex, xpub) => {
   return {
     xpub,
     balance: 0,
@@ -110,12 +110,18 @@ export const emptyAccountState = () => {
 };
 
 export const calculateRewardData = ({accounts, tiptime}) => accounts.map(account => {
-  account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
   account.rewards = account.utxos.reduce((rewards, utxo) => rewards + getKomodoRewards({tiptime, ...utxo}), 0);
   account.claimableAmount = account.rewards - TX_FEE * 2;
 
   return account;
 });
+
+export const calculateBalanceData = (accounts) => accounts.map(account => {
+  account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
+
+  return account;
+});
+
 
 export const checkRewardsOverdue = (accounts) => {
   for (let i = 0; i < accounts.length; i++) {
@@ -141,7 +147,6 @@ export const checkRewardsOverdue = (accounts) => {
 };
 
 export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverride, vendor, stateCoins) => {
-  const coins = apiEndpoints;
   let balances = [], tiptime;
 
   await asyncForEach(coinTickers, async (coin, index) => {
@@ -174,6 +179,8 @@ export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverrid
         accounts = checkRewardsOverdue(accounts);            
       }
 
+      accounts = calculateBalanceData(accounts);
+
       let balanceSum = 0;
       let rewardsSum = 0;
 
@@ -184,8 +191,8 @@ export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverrid
 
       balances.push({
         coin,
-        balance: balanceSum,
-        rewards: rewardsSum,
+        balance: balanceSum || 0,
+        rewards: rewardsSum || 0,
         accounts,
       });
     }

@@ -101,7 +101,7 @@ class SelectCoinModal extends React.Component {
                   <i className="fa fa-check-circle check-icon"></i>
                 }
                 <img
-                  src={`coins/${coinTicker}.png`}
+                  src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coinTicker}.png`}
                   alt={`${coinTicker} icon`} />
                 <span className="block-coin-icons-tile-name">{coinTicker}</span>
               </div>
