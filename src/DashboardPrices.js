@@ -32,7 +32,7 @@ class DashboardPrices extends React.Component {
                   <tr key={`prices-${item}`}>
                     <td>
                       <img
-                        src={`${process.env.PUBLIC_URL}/coins/${item}.png`}
+                        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item}.png`}
                         alt={`${item} icon`} />
                       <span className="coin-name">{item}</span>
                     </td>
@@ -48,7 +48,7 @@ class DashboardPrices extends React.Component {
                   <tr key={`prices-${item}`}>
                     <td>
                       <img
-                        src={`${process.env.PUBLIC_URL}/coins/${item}.png`}
+                        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item}.png`}
                         alt={`${item} icon`} />
                       <span className="coin-name">{item}</span>
                     </td>

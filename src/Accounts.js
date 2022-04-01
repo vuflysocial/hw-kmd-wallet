@@ -14,6 +14,7 @@ import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
 import {checkTimestamp} from './lib/time';
+import {getImageUrl} from './app-helpers';
 import './Accounts.scss';
 import './Account.scss';
 
@@ -78,7 +79,7 @@ class Account extends React.Component {
         className={(activeAccount !== null && accountIndex === activeAccount) || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
         <td>
           <img
-            src={`${process.env.PUBLIC_URL}/coins/${coin}.png`}
+            src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coin}.png`}
             alt={`${coin} icon`} />
           <span className="account-name">{coin} {accountIndex + 1}</span>
         </td>

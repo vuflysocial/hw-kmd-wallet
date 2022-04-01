@@ -523,7 +523,7 @@ class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isAuth) {
+    if (!this.state.isAuth || (this.state.isAuth && !this.state.vendor)) {
       return this.loginStateRender();
     } else {
       return (

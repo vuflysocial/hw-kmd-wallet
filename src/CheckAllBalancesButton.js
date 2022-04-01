@@ -67,11 +67,18 @@ class CheckAllBalancesButton extends React.Component {
   scanAddresses = async () => {
     const coinTickers = this.props.coins;
     const {vendor} = this.props;
-    let balances = [];
+    let balances = [], currentAction;
     cancel = false;
     
     await asyncForEach(coinTickers, async (coin, index) => {
       if (!cancel) {
+        this.setState({
+          isCheckingRewards: true,
+        });
+        
+        currentAction = 'connect';
+        updateActionState(this, currentAction, 'loading');
+
         const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
         let isExplorerEndpointSet = false;
 

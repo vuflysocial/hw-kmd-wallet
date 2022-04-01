@@ -35,7 +35,7 @@ class CoinsSelector extends React.Component {
               key={`coins-${coinTicker}`}
               onClick={() => this.props.setActiveCoin(coinTicker)}>
               <img
-                src={`${process.env.PUBLIC_URL}/coins/${coinTicker}.png`} 
+                src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coinTicker}.png`} 
                 alt={`${coinTicker} icon`} />
               {coinTicker === 'KMD' &&
                this.checkKMDRewards() > 0 &&

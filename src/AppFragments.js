@@ -24,7 +24,7 @@ export const HeaderNonAuth = ({coin}) => (
     <div className="navbar-brand">
       <div className="navbar-item">
         <img
-          src={`${process.env.PUBLIC_URL}/favicon.png`}
+          src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}favicon.png`}
           className="KmdIcon"
           alt="Komodo logo" />
       </div>
@@ -40,7 +40,7 @@ export const HeaderAuth = ({coin, vendor, syncInProgress}) => (
     <div className="navbar-brand">
       <div className="navbar-item">
         <img
-          src={`${process.env.PUBLIC_URL}/favicon.png`}
+          src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}favicon.png`}
           className="KmdIcon"
           alt="Komodo logo" />
       </div>
@@ -67,12 +67,12 @@ export const VendorSelector = ({setVendor}) => (
     <div className="vendor-selector-items">
       <img
         className="vendor-ledger"
-        src={`${process.env.PUBLIC_URL}/ledger-logo.png`}
+        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}ledger-logo.png`}
         alt="Ledger"
         onClick={() => setVendor('ledger')} />
       <img
         className="vendor-trezor"
-        src={`${process.env.PUBLIC_URL}/trezor-logo.png`}
+        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}trezor-logo.png`}
         alt="Trezor"
         onClick={() => setVendor('trezor')} />
     </div>
@@ -82,6 +82,6 @@ export const VendorSelector = ({setVendor}) => (
 export const VendorImage = ({vendor}) => (
   <img
     className="hw-graphic"
-    src={`${process.env.PUBLIC_URL}/${vendor}-logo.png`}
+    src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}${vendor}-logo.png`}
     alt={VENDOR[vendor]} />
 );
