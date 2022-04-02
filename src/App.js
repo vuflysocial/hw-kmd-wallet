@@ -19,8 +19,6 @@ import {
 import {
   voteCoin,
   testCoins,
-  TX_FEE,
-  VENDOR,
 } from './constants';
 import blockchain, {setBlockchainAPI, blockchainAPI} from './lib/blockchain';
 import {isMobile} from 'react-device-detect';
@@ -32,7 +30,6 @@ import {
 } from './Electron';
 import {writeLog} from './Debug';
 import initSettings from './lib/init-settings';
-import {sortTransactions} from './lib/sort';
 import CoinsSelector from './CoinsSelector';
 import DashboardOperations from './DashboardOperations';
 import DashboardPrices from './DashboardPrices';
@@ -41,7 +38,7 @@ import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
-import {checkTipTime, handleScanData, emptyAccountState, removeCoin, calculateBalanceData, checkRewardsOverdue, scanCoins} from './app-helpers';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, scanCoins} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 let syncDataInterval, autoLogoutTimer;
@@ -384,52 +381,12 @@ class App extends React.Component {
   }
 
   handleScanData = ({coins, tiptime}) => {
-    let newCoins = coins;
-    let lastOperations = [];
-    coins = this.state.coins;
-
-    for (var i = 0; i < newCoins.length; i++) {
-      coins[newCoins[i].coin] = newCoins[i];
-      coins[newCoins[i].coin].lastChecked = Date.now();
-    }
-    
-    for (let coin in coins) {
-      for (let j = 0; j < coins[coin].accounts.length; j++) {
-        for (let a = 0; a < coins[coin].accounts[j].utxos.length; a++) {
-          if (Number(coins[coin].accounts[j].utxos[a].confirmations) < 0) {
-            writeLog(`${coin} utxo data is incorrect for acc ${j}`);
-          }
-        }
-
-        for (let a = 0; a < coins[coin].accounts[j].history.historyParsed.length; a++) {
-          lastOperations.push({
-            coin: coin,
-            type: coins[coin].accounts[j].history.historyParsed[a].type,
-            date: coins[coin].accounts[j].history.historyParsed[a].date,
-            amount: coins[coin].accounts[j].history.historyParsed[a].amount,
-            txid: coins[coin].accounts[j].history.historyParsed[a].txid,
-            timestamp: coins[coin].accounts[j].history.historyParsed[a].timestamp,
-          });
-        }
-      }
-
-      if (coin === 'KMD') {
-        writeLog('check if any KMD rewards are overdue');
-        
-        coins[coin].accounts = checkRewardsOverdue(coins[coin].accounts);
-      }
-    }
-
-    writeLog('lastops', lastOperations);
-    writeLog(newCoins);
-    writeLog(coins);  
-    
-    lastOperations = sortTransactions(lastOperations, 'timestamp').slice(0, 3);
+    const {lastOperations, updatedCoins} = handleScanData(coins, tiptime, this.state.coins);
 
     tiptime = checkTipTime(tiptime);
     
     this.setState({
-      coins,
+      coins: updatedCoins,
       lastOperations,
       tiptime,
       isFirstRun: false,

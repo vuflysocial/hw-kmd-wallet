@@ -3,7 +3,7 @@ import hw from './lib/hw';
 import accountDiscovery, {getAccountXpub} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
-import {TX_FEE, VENDOR} from './constants';
+import {VENDOR} from './constants';
 import ActionListModal from './ActionListModal';
 import {writeLog} from './Debug';
 

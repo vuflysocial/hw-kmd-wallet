@@ -1,13 +1,11 @@
 import React from 'react';
-import getKomodoRewards from './lib/get-komodo-rewards';
 import hw from './lib/hw';
 import accountDiscovery, {clearPubkeysCache} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
-import {TX_FEE, VENDOR} from './constants';
+import {VENDOR} from './constants';
 import ActionListModal from './ActionListModal';
 import asyncForEach from './lib/async';
-import coins from './lib/coins';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
 import {
   isElectron,

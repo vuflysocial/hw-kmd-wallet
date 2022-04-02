@@ -14,7 +14,6 @@ import {writeLog} from './Debug';
 import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
 import {checkTimestamp} from './lib/time';
-import {getImageUrl} from './app-helpers';
 import './Accounts.scss';
 import './Account.scss';
 

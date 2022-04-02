@@ -3,13 +3,11 @@ import ActionListModal from './ActionListModal';
 import Modal from './Modal';
 import hw from './lib/hw';
 import blockchain, {blockchainAPI} from './lib/blockchain';
-import coins from './lib/coins';
 import getAddress from './lib/get-address';
 import transactionBuilder from './lib/transaction-builder';
 import {toSats} from './lib/math';
 import updateActionState from './lib/update-action-state';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
-import getKomodoRewards from './lib/get-komodo-rewards';
 import {getAccountNode} from './lib/account-discovery';
 import {
   TX_FEE,
@@ -42,7 +40,7 @@ class SendCoinButton extends React.Component {
     this.setRecieverFromScan = this.setRecieverFromScan.bind(this);
     
     return {
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools,
+      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || (getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools),
       isClaimingRewards: false,
       error: false,
       success: false,
@@ -255,7 +253,7 @@ class SendCoinButton extends React.Component {
           );
         } else {
           rawtx = await hw[vendor].createTransaction(
-            filteredUtxos, txData.change > 0 || txData.totalInterest && txData.outputAddress !== txData.changeAddress ?
+            filteredUtxos, txData.change > 0 || (txData.totalInterest && txData.outputAddress !== txData.changeAddress) ?
             [{
               address: txData.outputAddress,
               value: txData.value - TX_FEE
@@ -520,8 +518,8 @@ class SendCoinButton extends React.Component {
   }
 
   renderStep2() {
-    const {isClaimingRewards, accountIndex} = this.state;
-    const {coin, isClaimRewardsOnly, accounts, vendor} = this.props;
+    const {isClaimingRewards} = this.state;
+    const {coin, isClaimRewardsOnly, vendor} = this.props;
 
     return this.state.step ? (
       <ActionListModal

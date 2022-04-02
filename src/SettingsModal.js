@@ -402,7 +402,7 @@ class SettingsModal extends React.Component {
             {!this.state.enableImportAppData &&
               <li>
                 <a
-                  href="#"
+                  href="!#"
                   id="saveModalImage"
                   onClick={this.exportAppData}>
                   <button className="button">
