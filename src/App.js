@@ -122,6 +122,8 @@ class App extends React.Component {
     setTimeout(() => {
       this.syncData();
     });
+
+    console.warn('coins', getLocalStorageVar('coins'));
   }
 
   setupAutoLock() {
@@ -325,7 +327,7 @@ class App extends React.Component {
       coins,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', coins, true);
 
     setTimeout(() => {
       writeLog('enableAccount', this.state.coins);
@@ -340,7 +342,7 @@ class App extends React.Component {
       coins,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', coins, true);
 
     setTimeout(() => {
       writeLog('addAccount', this.state.coins);
@@ -393,7 +395,7 @@ class App extends React.Component {
       syncInProgress: false,
     });
 
-    setLocalStorageVar('coins', coins);
+    setLocalStorageVar('coins', updatedCoins, true);
     setLocalStorageVar('lastOperations', lastOperations);
   }
 
@@ -411,7 +413,7 @@ class App extends React.Component {
       coins: currentCoins,
     });
 
-    setLocalStorageVar('coins', currentCoins);
+    setLocalStorageVar('coins', currentCoins, true);
 
     setTimeout(() => {
       writeLog(this.state)
