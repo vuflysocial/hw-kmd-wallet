@@ -2,8 +2,11 @@ import TrezorConnect from 'trezor-connect';
 import {KOMODO} from '../constants';
 import {writeLog} from '../Debug';
 
+let isInitialized = false;
+
 const init = () => {
   // this will work only on localhost
+  isInitialized = true;
   if (window.location.href.indexOf('devmode') > -1) {
     TrezorConnect.init({
       webusb: true,
@@ -24,6 +27,8 @@ const init = () => {
     });
   }
 };
+
+const getInitStatus = () => isInitialized;
 
 const getUniqueInputs = utxos => {
   let uniqueInputs = [];
@@ -177,6 +182,7 @@ const trezor = {
   createTransaction,
   getXpub,
   init,
+  getInitStatus,
 };
 
 export default trezor;

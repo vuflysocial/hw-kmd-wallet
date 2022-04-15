@@ -215,11 +215,13 @@ class App extends React.Component {
       this.setState({
         vendor: 'ledger',
         ledgerDeviceType: 's',
-        ledgerFWVersion: 'webusb',
+        ledgerFWVersion: 'webusb', 
       });
     }
 
-    hw.trezor.init();
+    if (!hw.trezor.getInitStatus()) {
+      hw.trezor.init();
+    }
 
     if (isElectron && appData.blockchainAPI === 'spv'/*&& isElectron.blockchainAPI*/) {
       blockchain[blockchainAPI].setCoin(this.state.coin);
