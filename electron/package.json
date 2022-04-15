@@ -24,7 +24,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "15.3.5",
-    "electron-builder": "22.13.1",
+    "electron-builder": "^22.5.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-rebuild": "3.2.3"
   },
