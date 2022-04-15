@@ -30,6 +30,7 @@ export const handleScanData = (coins, tiptime, stateCoins) => {
 
   for (var i = 0; i < newCoins.length; i++) {
     coins[newCoins[i].coin] = newCoins[i];
+    coins[newCoins[i].coin].lastChecked = Date.now();
   }
   
   for (let coin in coins) {
