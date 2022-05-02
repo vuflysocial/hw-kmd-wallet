@@ -30,6 +30,9 @@ class DashboardOperations extends React.Component {
               </div>
             </div>
           ))}
+          {this.props.lastOperations.length < 1 &&
+            <span>No history</span>
+          }
         </div>
       </div>
     );
