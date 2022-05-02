@@ -1,4 +1,4 @@
-.Modal.send-coin-modal {
+.send-coin-modal {
   .switch {
     margin: 7px 0 25px 0;
 
@@ -22,5 +22,8 @@
     font-size: 20px;
     position: relative;
     top: 2px;
+  }
+  .wb-txid {
+    word-break: break-word;
   }
 }

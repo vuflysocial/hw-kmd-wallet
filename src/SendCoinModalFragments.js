@@ -25,14 +25,14 @@ export class SendCoinTxLink extends React.Component {
     const {coin, txid} = this.props;
 
     return(
-      <React.Fragment>
+      <span className="wb-txid">
         Transaction ID: <TxidLink txid={txid} coin={coin} />
         <button
           className="button is-light copy-btn"
           onClick={() => copyToClipboard(txid)}>
           <i className="fa fa-copy"></i> <span className="copy-btn-text">Copy</span>
         </button>
-      </React.Fragment>
+      </span>
     );
   }
 }
