@@ -6,7 +6,7 @@ import {writeLog} from '../Debug';
 const parse = ([txs, addr, options]) => {
   let txHistory = [];
   let addresses = [];
-  let myOutAddress = false;
+  let myOutAddress = false, myInAddress = false;
 
   if (options && options.hasOwnProperty('debug')) {
     writeLog('parsehistory txs', txs);
@@ -32,6 +32,7 @@ const parse = ([txs, addr, options]) => {
 
       if (addr.indexOf(txs[i].vin[j].addr) > -1) {
         vinSum += Number(txs[i].vin[j].value);
+        //myInAddress = true;
       }
     }
 
@@ -54,7 +55,7 @@ const parse = ([txs, addr, options]) => {
       writeLog(`voutSum: ${voutSum}`);
     }
 
-    const amount = Math.abs(Number(Number(Math.abs(vinSum) - Math.abs(voutSum) - 0.0001).toFixed(8)));
+    const amount = Math.abs(Number(Number(Math.abs(vinSum) - Math.abs(voutSum)).toFixed(8)));
     tx = {
       type: 'sent',
       amount: amount === 0 ? Number(Number(txs[i].vout[0].value).toFixed(8)) : amount,
@@ -65,12 +66,12 @@ const parse = ([txs, addr, options]) => {
       confirmations: txs[i].confirmations || 0,
     };
 
-    // TODO: dectect send to self txs
+    // TODO: detect send to self txs
     if (options &&
         options.coin &&
         options.coin.toUpperCase() === 'KMD' &&
         (Number(txVin - txVout) < 0) &&
-        myOutAddress) {
+        myOutAddress && myInAddress) {
       tx.type = 'rewards';
     } else if (vinSum && !voutSum) {
       tx.type = 'sent';
