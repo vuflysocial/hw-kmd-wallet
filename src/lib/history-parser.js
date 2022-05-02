@@ -54,9 +54,10 @@ const parse = ([txs, addr, options]) => {
       writeLog(`voutSum: ${voutSum}`);
     }
 
+    const amount = Math.abs(Number(Number(Math.abs(vinSum) - Math.abs(voutSum) - 0.0001).toFixed(8)));
     tx = {
       type: 'sent',
-      amount: Math.abs(Number(Number(Math.abs(vinSum) - Math.abs(voutSum) - 0.0001).toFixed(8))),
+      amount: amount === 0 ? Number(Number(txs[i].vout[0].value).toFixed(8)) : amount,
       timestamp: txs[i].height === -1 ? Math.floor(Date.now() / 1000) : txs[i].blocktime || 'pending',
       date: txs[i].blocktime ? secondsToString(txs[i].blocktime) : 'pending',
       txid: txs[i].txid || 'unknown',
