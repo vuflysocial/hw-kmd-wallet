@@ -1,6 +1,6 @@
 import React from 'react';
 import hw from './lib/hw';
-import accountDiscovery, {getAccountXpub} from './lib/account-discovery';
+import {getAccountXpub} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
 import {VENDOR} from './constants';
@@ -102,7 +102,6 @@ class AddAccount extends React.Component {
       </React.Fragment>
     );
   }
-
 }
 
 export default AddAccount;

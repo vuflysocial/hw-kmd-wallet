@@ -38,6 +38,7 @@ class SettingsModal extends React.Component {
       vendor: getLocalStorageVar('settings').vendor,
       sidebarSize: getLocalStorageVar('settings').sidebarSize,
       autolock: getLocalStorageVar('settings').autolock && Number(getLocalStorageVar('settings').autolock),      
+      historyLength: getLocalStorageVar('settings').historyLength && Number(getLocalStorageVar('settings').historyLength),
       resetAppData: false,
       enableImportAppData: false,
       importAppDataStr: null,
@@ -57,7 +58,11 @@ class SettingsModal extends React.Component {
       [e.target.name]: e.target.value,
     });
 
-    setConfigVar(e.target.name, Number(e.target.value));
+    if (name !== 'historyLength') {
+      setConfigVar(e.target.name, Number(e.target.value));
+    } else {
+      setLocalStorageVar('settings', {historyLength: Number(e.target.value)});
+    }
   }
 
   setVendor(e) {
@@ -312,6 +317,22 @@ class SettingsModal extends React.Component {
                     key={`discovery-account-index-${item}`}
                     value={index}>
                     {index === 0 ? index + ' (default)' : index}
+                  </option>
+                ))}
+              </select>
+            </li>
+            <li>
+              Account history max length
+              <select
+                name="historyLength"
+                className="explorer-selector minimal"
+                value={this.state.historyLength}
+                onChange={(event) => this.setDiscoveryConfigVar(event, 'historyLength')}>
+                {[...Array(SETTINGS.HISTORY_LENGTH_LIMIT / 10).keys()].map((item, index) => (
+                  <option
+                    key={`discovery-account-history-length-${index}`}
+                    value={(index + 1) * 10}>
+                    {index === 0 ? (index + 1) * 10 + ' (default)' : (index + 1) * 10}
                   </option>
                 ))}
               </select>

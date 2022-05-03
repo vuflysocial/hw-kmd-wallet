@@ -56,3 +56,19 @@ test('it should truncate transaction history to last 10 items', () => {
 
   expect(parsehistory(txs, ['RDbGxL8QYdEp8sMULaVZS2E6XThcTKT9Jd']).length).toEqual(10);
 });
+
+test('it should truncate transaction history to last 10 items', () => {
+  const txs = [...Array(20).keys()].map(
+    (item, index) => index % 2 === 0 ? fixture.raw.sent : fixture.raw.received
+  );
+
+  expect(parsehistory(txs, ['RDbGxL8QYdEp8sMULaVZS2E6XThcTKT9Jd']).length).toEqual(10);
+});
+
+test('it should truncate transaction history to last 20 items', () => {
+  const txs = [...Array(30).keys()].map(
+    (item, index) => index % 2 === 0 ? fixture.raw.sent : fixture.raw.received
+  );
+
+  expect(parsehistory(txs, ['RDbGxL8QYdEp8sMULaVZS2E6XThcTKT9Jd'], {historyLength: 20}).length).toEqual(20);
+});

@@ -3,6 +3,8 @@ import {sortTransactions} from './sort';
 import compose from './compose';
 import {writeLog} from '../Debug';
 
+let maxTxHistoryLength = 10;
+
 const parse = ([txs, addr, options]) => {
   let txHistory = [];
   let addresses = [];
@@ -97,19 +99,20 @@ const sort = txHistory => {
 
 const limit = txHistory => {
   if (txHistory.length && !txHistory.txid) {
-    txHistory[0] = txHistory[0].slice(0, 10);
+    txHistory[0] = txHistory[0].slice(0, maxTxHistoryLength);
 
     return txHistory;
   }
 
-  if (txHistory.length > 10) {
-    txHistory = txHistory.slice(0, 10);
+  if (txHistory.length > maxTxHistoryLength) {
+    txHistory = txHistory.slice(0, maxTxHistoryLength);
   }
 
   return txHistory;
 };
 
 const parsehistory = (txs, addr, options) => {
+  if (options && options.historyLength) maxTxHistoryLength = options.historyLength;
   return compose(limit, sort, parse)([txs, addr, options]);
 };
 

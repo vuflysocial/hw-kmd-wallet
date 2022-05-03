@@ -14,6 +14,7 @@ import {
 import {writeLog} from './Debug';
 import {getAvailableExplorerUrl} from './send-coin-helpers';
 import {checkTipTime, calculateRewardData, calculateBalanceData, checkRewardsOverdue} from './app-helpers';
+import {getLocalStorageVar} from './lib/localstorage-util';
 
 const headings = [
   'Coin',
@@ -111,7 +112,12 @@ class CheckAllBalancesButton extends React.Component {
             currentAction = 'approve';
             updateActionState(this, currentAction, 'loading');
             let [accounts, tiptime] = await Promise.all([
-              accountDiscovery(vendor, coin),
+              accountDiscovery(
+                vendor,
+                coin,
+                null,
+                getLocalStorageVar('settings') && getLocalStorageVar('settings').historyLength
+              ),
               blockchain[blockchainAPI].getTipTime()
             ]);
 

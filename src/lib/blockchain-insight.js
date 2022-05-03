@@ -31,7 +31,11 @@ const getAddress = address => get(`addr/${address}/?noTxList=1`);
 
 const getAddressHistory = address => get(`/txs?address=${address}`);
 
-const getHistory = addresses => get(`addrs/txs`, {addrs: addresses.join(',')});
+const getHistory = (addresses, historyLength) => get(`addrs/txs`, {
+  addrs: addresses.join(','),
+  from: 0,
+  to: historyLength
+});
 
 const getUtxos = addresses => get(`addrs/utxo`, {addrs: addresses.join(',')});
 

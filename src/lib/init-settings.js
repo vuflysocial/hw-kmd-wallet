@@ -15,6 +15,7 @@ export const defaultSettings = {
   accountIndex: 0,
   sidebarSize: 'full',
   autolock: 0,
+  historyLength: 10,
 };
 
 const initSettings = () => {

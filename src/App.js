@@ -372,7 +372,8 @@ class App extends React.Component {
         blockchain[blockchainAPI],
         this.state.explorerEndpointOverride,
         this.state.vendor,
-        this.state.coins
+        this.state.coins,
+        getLocalStorageVar('settings') && getLocalStorageVar('settings').historyLength
       );
 
       writeLog('coin data sync finished', balances);

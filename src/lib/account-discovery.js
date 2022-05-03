@@ -161,16 +161,16 @@ const getAddressUtxos = async addresses => {
   }));
 };
 
-const getAddressHistory = async (addresses, coin) => {
-  const history = await blockchain[blockchainAPI].getHistory(addresses.map(a => a.address));
+const getAddressHistory = async (addresses, coin, historyLength) => {
+  const history = await blockchain[blockchainAPI].getHistory(addresses.map(a => a.address), historyLength);
   return {
     addresses: addresses,
     allTxs: history.items,
-    historyParsed: parseHistory(history.items, addresses.map(a => a.address), {coin}),
+    historyParsed: parseHistory(history.items, addresses.map(a => a.address), {coin, historyLength}),
   };
 };
 
-const accountDiscovery = async (vendor, coin, _accounts) => {
+const accountDiscovery = async (vendor, coin, _accounts, historyLength) => {
   const accounts = [];
   let accountIndex = config.accountIndex > 0 ? config.accountIndex - 1 : 0;
   
@@ -191,7 +191,7 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
       accounts.push(account);
     } else {
       account.utxos = await getAddressUtxos(account.addresses);
-      account.history = await getAddressHistory(account.addresses, coin); 
+      account.history = await getAddressHistory(account.addresses, coin, historyLength); 
       account.accountIndex = accountIndex;
       account.enabled = true;
     }
@@ -225,14 +225,14 @@ const accountDiscovery = async (vendor, coin, _accounts) => {
             addresses: [],
             allTxs: [],
             historyParsed: [],
-          }; 
+          };
           account.accountIndex = accountIndex;
           account.enabled = _accounts && _accounts[accountIndex] ? _accounts[accountIndex].enabled : true;
           accounts.push(account);
           if (config.accountIndex === 0 && accountIndex >= 2) break;
         } else {
           account.utxos = await getAddressUtxos(account.addresses);
-          account.history = await getAddressHistory(account.addresses, coin); 
+          account.history = await getAddressHistory(account.addresses, coin, historyLength); 
           account.accountIndex = accountIndex;
           account.enabled = _accounts && _accounts[accountIndex] ? _accounts[accountIndex].enabled : true;
           accounts.push(account);
