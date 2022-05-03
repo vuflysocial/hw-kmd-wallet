@@ -7,7 +7,7 @@ import {
 } from './lib/localstorage-util';
 import {SETTINGS, VENDOR} from './constants';
 import apiEndpoints from './lib/coins';
-import {setConfigVar} from './lib/account-discovery';
+import {setConfigVar, clearPubkeysCache} from './lib/account-discovery';
 import {isElectron} from './Electron';
 import {writeLog} from './Debug';
 
@@ -114,6 +114,7 @@ class SettingsModal extends React.Component {
 
   triggerModal() {
     if (this.state.resetAppData) {
+      clearPubkeysCache();
       localStorage.setItem('hw-wallet', null);
       this.props.resetState(true);
     }

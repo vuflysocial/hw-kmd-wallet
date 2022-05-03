@@ -7,6 +7,7 @@ import {
   decodeStoredData,
   resetLocalStorage,
 } from './lib/localstorage-util';
+import {clearPubkeysCache} from './lib/account-discovery';
 //import {writeLog} from './Debug';
 
 class LoginModal extends React.Component {
@@ -70,6 +71,7 @@ class LoginModal extends React.Component {
       error: false,
     });
 
+    clearPubkeysCache();
     resetLocalStorage();
   }
 
