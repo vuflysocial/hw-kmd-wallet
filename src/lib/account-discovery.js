@@ -10,13 +10,13 @@ import {
 } from '../Electron';
 import {writeLog} from '../Debug';
 import bitcoin from '@trezor/utxo-lib';
-import {COIN_DERIVATION_PATH} from '../constants';
+import {COIN_DERIVATION_PATH, SETTINGS} from '../constants';
 
 let pubKeysCache = {};
 let isFirstRun = {};
 let config = {
-  discoveryGapLimit: 20,
-  discoveryAddressConcurrency: 10,
+  discoveryGapLimit: SETTINGS.DISCOVERY_GAP_LIMIT_DEFAULT,
+  discoveryAddressConcurrency: SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY_DEFAULT,
   accountIndex: 0,
 };
 

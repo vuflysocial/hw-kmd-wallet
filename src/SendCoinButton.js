@@ -15,6 +15,7 @@ import {
   KOMODO,
   VENDOR,
   COIN_DERIVATION_PATH,
+  KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT,
 } from './constants';
 import {
   isElectron,
@@ -394,7 +395,7 @@ class SendCoinButton extends React.Component {
                 value="">
                 Unused address (default)
               </option>
-              {account.addresses.slice(0, 10).map((item, index) => (
+              {account.addresses.slice(0, KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT).map((item, index) => (
                 <option
                   key={`rewards-output-address-${index}`}
                   value={item.address}>

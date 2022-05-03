@@ -1,4 +1,5 @@
 import coins from './coins';
+import {PRICE_DEFAULT_COINS} from '../constants';
 let coinPaprikaTickers = [];
 
 for (let key in coins) {
@@ -28,7 +29,7 @@ const getCoinpaprikaPrices = async coin => {
 
 export const getPrices = async userCoinTickers => {
   try {
-    const defaultCoins = ['KMD', 'VRSC', 'TOKEL'];
+    const defaultCoins = PRICE_DEFAULT_COINS;
     let pricePromises = [];
     let prices = {};
 

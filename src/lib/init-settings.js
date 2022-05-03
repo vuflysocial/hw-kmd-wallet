@@ -4,18 +4,19 @@ import {
 } from './localstorage-util';
 import {setConfigVar} from './account-discovery';
 import {writeLog} from '../Debug';
+import {SETTINGS} from '../constants';
 
 export const defaultSettings = {
   theme: 'tdark',
   fwCheck: false,
   vendor: '',
   enableDebugTools: false,
-  discoveryGapLimit: 20,
-  discoveryAddressConcurrency: 10,
+  discoveryGapLimit: SETTINGS.DISCOVERY_GAP_LIMIT_DEFAULT,
+  discoveryAddressConcurrency: SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY_DEFAULT,
   accountIndex: 0,
   sidebarSize: 'full',
   autolock: 0,
-  historyLength: 10,
+  historyLength: SETTINGS.HISTORY_LENGTH_DEFAULT,
 };
 
 const initSettings = () => {

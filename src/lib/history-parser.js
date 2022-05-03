@@ -2,8 +2,10 @@ import {secondsToString} from './time';
 import {sortTransactions} from './sort';
 import compose from './compose';
 import {writeLog} from '../Debug';
+import {SETTINGS, TX_FEE} from '../constants';
+import {fromSats} from './math';
 
-let maxTxHistoryLength = 10;
+let maxTxHistoryLength = SETTINGS.HISTORY_LENGTH_DEFAULT;
 
 const parse = ([txs, addr, options]) => {
   let txHistory = [];
@@ -60,7 +62,7 @@ const parse = ([txs, addr, options]) => {
     const amount = Math.abs(Number(Number(Math.abs(vinSum) - Math.abs(voutSum)).toFixed(8)));
     tx = {
       type: 'sent',
-      amount: Math.abs(amount - 0.0001) === 0 ? Number(Number(txs[i].vout[0].value).toFixed(8)) : amount,
+      amount: Math.abs(amount - fromSats(TX_FEE)) === 0 ? Number(Number(txs[i].vout[0].value).toFixed(8)) : amount,
       timestamp: txs[i].height === -1 ? Math.floor(Date.now() / 1000) : txs[i].blocktime || 'pending',
       date: txs[i].blocktime ? secondsToString(txs[i].blocktime) : 'pending',
       txid: txs[i].txid || 'unknown',
