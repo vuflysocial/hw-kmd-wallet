@@ -9,7 +9,7 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.6.0",
-    "@ledgerhq/hw-app-btc": "^6.24.0",
+    "@ledgerhq/hw-app-btc": "^6.27.1",
     "@ledgerhq/hw-transport": "^6.24.0",
     "@ledgerhq/hw-transport-web-ble": "^6.24.0",
     "@ledgerhq/hw-transport-webhid": "^6.24.0",

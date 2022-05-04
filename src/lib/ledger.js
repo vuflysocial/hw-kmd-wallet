@@ -116,7 +116,7 @@ const createTransaction = async (utxos, outputs, isKMD) => {
   }));
   const associatedKeysets = utxos.map(utxo => utxo.derivationPath);
   const changePath = outputs.length === 2 ? outputs[1].derivationPath : undefined;
-  const outputScript = buildOutputScript(outputs);
+  const outputScriptHex = buildOutputScript(outputs);
   const unixtime = Math.floor(Date.now() / 1000);
   const lockTime = isKMD ? unixtime - 777 : 0;
   const sigHashType = undefined;
@@ -125,18 +125,18 @@ const createTransaction = async (utxos, outputs, isKMD) => {
   const additionals = ['sapling'];
   const expiryHeight = Buffer.from([0x00, 0x00, 0x00, 0x00]);
 
-  const transaction = await ledger.createPaymentTransactionNew(
+  const transaction = await ledger.createPaymentTransactionNew({
     inputs,
     associatedKeysets,
     changePath,
-    outputScript,
+    outputScriptHex,
     lockTime,
     sigHashType,
     segwit,
     initialTimestamp,
     additionals,
     expiryHeight
-  );
+  });
 
   await ledger.close();
 
