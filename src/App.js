@@ -38,7 +38,7 @@ import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
-import {checkTipTime, handleScanData, emptyAccountState, removeCoin, scanCoins} from './app-helpers';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, scanCoins, getAppInitState} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 let syncDataInterval, autoLogoutTimer;
@@ -58,27 +58,7 @@ class App extends React.Component {
     this.triggerSidebarSizeChange = this.triggerSidebarSizeChange.bind(this);
     this.updateExplorerEndpoint = this.updateExplorerEndpoint.bind(this);
 
-    return {
-      accounts: [],
-      tiptime: null,
-      explorerEndpoint: 'default',
-      vendor: null,
-      isFirstRun: true,
-      ledgerDeviceType: null,
-      ledgerFWVersion: 'webusb',
-      coin: 'KMD',
-      activeCoin: null,
-      activeAccount: null,
-      loginModalClosed: false,
-      coins: {},
-      lastOperations: [],
-      prices: {},
-      theme: 'tdark',
-      isAuth: false,
-      sidebarSizeChanged: false,
-      syncInProgress: false,
-      explorerEndpointOverride: {},
-    };
+    return getAppInitState();
   }
 
   triggerSidebarSizeChange() {
@@ -123,7 +103,7 @@ class App extends React.Component {
       this.syncData();
     });
 
-    console.warn('coins', getLocalStorageVar('coins'));
+    writeLog('coins', getLocalStorageVar('coins'));
   }
 
   setupAutoLock() {

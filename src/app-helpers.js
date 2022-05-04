@@ -117,14 +117,14 @@ export const calculateRewardData = ({accounts, tiptime}) => accounts.map(account
   return account;
 });
 
-export const calculateBalanceData = (accounts) => accounts.map(account => {
+export const calculateBalanceData = accounts => accounts.map(account => {
   account.balance = account.utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0);
 
   return account;
 });
 
 
-export const checkRewardsOverdue = (accounts) => {
+export const checkRewardsOverdue = accounts => {
   for (let i = 0; i < accounts.length; i++) {
     //writeLog(accounts[i].utxos);
     for (let j = 0; j < accounts[i].utxos.length; j++) {
@@ -201,5 +201,29 @@ export const scanCoins = async (coinTickers, blockchain, explorerEndpointOverrid
   return {
     balances,
     tiptime,
+  };
+};
+
+export const getAppInitState = () => {
+  return {
+    accounts: [],
+    tiptime: null,
+    explorerEndpoint: 'default',
+    vendor: null,
+    isFirstRun: true,
+    ledgerDeviceType: null,
+    ledgerFWVersion: 'webusb',
+    coin: 'KMD',
+    activeCoin: null,
+    activeAccount: null,
+    loginModalClosed: false,
+    coins: {},
+    lastOperations: [],
+    prices: {},
+    theme: 'tdark',
+    isAuth: false,
+    sidebarSizeChanged: false,
+    syncInProgress: false,
+    explorerEndpointOverride: {},
   };
 };

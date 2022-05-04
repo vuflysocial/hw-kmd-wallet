@@ -10,6 +10,12 @@ let ruid = 0;
 let intervals = {};
 let pendingCalls = {};
 
+const wrapIpcRendererSend = (cmd, payload) => {
+  ruid++;
+  payload.ruid = ruid;
+  ipcRenderer.send(cmd, payload);
+}
+
 // return data only when it was sent over from ipc main proc
 const getData = (ruid, payload) => {
   return new Promise((resolve, reject) => {
@@ -60,11 +66,7 @@ const getDevice = async () => {
   return {
     getWalletPublicKey: derivationPath => {
       writeLog('ledger getWalletPublicKey');
-      ruid++;
-      ipcRenderer.send('getAddress', {
-        derivationPath,
-        ruid
-      });
+      wrapIpcRendererSend('getAddress', {derivationPath});
       
       return new Promise(async(resolve, reject) => {
         const _data = await getData(ruid);
@@ -85,24 +87,20 @@ const getDevice = async () => {
       expiryHeight,
     ) => {
       writeLog('ledger createPaymentTransactionNew');
-      ruid++;
-      ipcRenderer.send('createPaymentTransactionNew', 
-        {
-          txData: {
-            inputs,
-            associatedKeysets,
-            changePath,
-            outputScript,
-            lockTime,
-            sigHashType,
-            segwit,
-            initialTimestamp,
-            additionals,
-            expiryHeight,
-          },
-          ruid
-        }
-      );
+      wrapIpcRendererSend('createPaymentTransactionNew', {
+        txData: {
+          inputs,
+          associatedKeysets,
+          changePath,
+          outputScript,
+          lockTime,
+          sigHashType,
+          segwit,
+          initialTimestamp,
+          additionals,
+          expiryHeight,
+        },
+      });
 
       return new Promise(async (resolve, reject) => {
         const _data = await getData(ruid);
@@ -118,19 +116,16 @@ const getDevice = async () => {
       additionals,
     ) => {
       writeLog('ledger splitTransaction');
-      ruid++;
-      ipcRenderer.send('splitTransaction',
-        {
-          txData: {
-          transactionHex,
-          isSegwitSupported,
-          hasTimestamp,
-          hasExtraData,
-          additionals,
-          },
-          ruid
-        }
-      );
+      wrapIpcRendererSend('splitTransaction', {
+        txData: {
+        transactionHex,
+        isSegwitSupported,
+        hasTimestamp,
+        hasExtraData,
+        additionals,
+        },
+        ruid
+      });
 
       return new Promise(async (resolve, reject) => {
         const _data = await getData(ruid);

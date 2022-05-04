@@ -126,11 +126,7 @@ class SendCoinButton extends React.Component {
     const isUserInputValid = this.props.isClaimRewardsOnly ? false : validate({state: this.state, props: this.props});
     const isClaimRewardsOnly = this.props.isClaimRewardsOnly;
 
-    if (isClaimRewardsOnly) {
-      writeLog('claim kmd rewards button clicked');
-    } else {
-      writeLog('send coin clicked');
-    }
+    writeLog(isClaimRewardsOnly ? 'claim kmd rewards button clicked' : 'send coin clicked');
     
     this.setState({
       step: true,
@@ -174,17 +170,18 @@ class SendCoinButton extends React.Component {
           balance = account.balance;
         } else {
           accountIndex = this.state.accountIndex;
-          utxos = accounts[this.state.accountIndex].utxos;
-          balance = accounts[this.state.accountIndex].balance;
+          utxos = accounts[accountIndex].utxos;
+          balance = accounts[accountIndex].balance;
         }
 
         writeLog('utxos', utxos);
 
         let formattedUtxos = formatUtxos(utxos, coin, tiptime);
-                
+        
+        const txDataPreflightBalanceIn = isClaimRewardsOnly ? balance - TX_FEE * 2 : this.state.amountIn < humanReadableSatoshis(balance) ? toSats(this.state.amountIn) + TX_FEE : toSats(this.state.amountIn);
         const txDataPreflight = transactionBuilder(
           coin === 'KMD' ? Object.assign({}, KOMODO, {kmdInterest: true}) : KOMODO,
-          isClaimRewardsOnly ? balance - TX_FEE * 2 : this.state.amountIn < humanReadableSatoshis(balance) ? toSats(this.state.amountIn) + TX_FEE : toSats(this.state.amountIn),
+          txDataPreflightBalanceIn,
           TX_FEE,
           this.state.sendToIn ? this.state.sendToIn : this.getUnusedAddressChange(),
           this.getUnusedAddressChange(),
@@ -199,8 +196,13 @@ class SendCoinButton extends React.Component {
         
         writeLog('derivationPath', derivationPath);
         
-        if (isClaimRewardsOnly || txDataPreflight.change > 0 || txDataPreflight.totalInterest) {
-          hwUnusedAddress = address.length ? address : await hw[vendor].getAddress(derivationPath, isClaimRewardsOnly && vendor === 'trezor' ? true : false);
+        if (isClaimRewardsOnly ||
+            txDataPreflight.change > 0 ||
+            txDataPreflight.totalInterest) {
+          hwUnusedAddress = address.length ? address : await hw[vendor].getAddress(
+            derivationPath,
+            isClaimRewardsOnly && vendor === 'trezor' ? true : false
+          );
         
           writeLog('hwUnusedAddress', hwUnusedAddress);
           if (hwUnusedAddress !== unusedAddress) {
@@ -212,7 +214,7 @@ class SendCoinButton extends React.Component {
         
         let txData = transactionBuilder(
           coin === 'KMD' ? Object.assign({}, KOMODO, {kmdInterest: true}) : KOMODO,
-          isClaimRewardsOnly ? balance - TX_FEE * 2 : this.state.amountIn < humanReadableSatoshis(balance) ? toSats(this.state.amountIn) + TX_FEE : toSats(this.state.amountIn),
+          txDataPreflightBalanceIn,
           TX_FEE,
           isClaimRewardsOnly ? hwUnusedAddress : this.state.sendToIn,
           isClaimRewardsOnly || txDataPreflight.change > 0 || txDataPreflight.totalInterest ? hwUnusedAddress : 'none',
@@ -243,7 +245,6 @@ class SendCoinButton extends React.Component {
         };
 
         this.setState(txbData);
-
         writeLog('txb data', txbData);
 
         let rawtx;
@@ -274,7 +275,18 @@ class SendCoinButton extends React.Component {
         }
 
         writeLog('tx outputs', txData.change > 0 || txData.totalInterest ?
-        [{address: txData.outputAddress, value: txData.value}, {address: txData.changeAddress, value: txData.change + txData.totalInterest - (isClaimRewardsOnly ? 0 : TX_FEE * 2), derivationPath}] : [{address: txData.outputAddress, value: txData.value}]);
+          [{
+            address: txData.outputAddress,
+            value: txData.value
+            },
+            {
+              address: txData.changeAddress,
+              value: txData.change + txData.totalInterest - (isClaimRewardsOnly ? 0 : TX_FEE * 2),
+              derivationPath
+            }] : [{
+              address: txData.outputAddress,
+              value: txData.value
+            }]);
 
         writeLog('rawtx', rawtx);
         if (!rawtx || typeof rawtx !== 'string') {
@@ -351,8 +363,7 @@ class SendCoinButton extends React.Component {
       e.target.value = e.target.value.replace(/[^0-9.]/g, '');
     }
 
-    writeLog(e.target.name);
-    writeLog(e.target.value);
+    writeLog(e.target.name, e.target.value);
     
     this.setState({
       [e.target.name]: e.target.value,

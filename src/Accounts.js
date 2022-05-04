@@ -140,7 +140,7 @@ const Accounts = ({
             </tr>
           </thead>
           <tbody>
-            {coins[activeCoin].accounts.filter((acc) => acc.enabled).map((account) => (
+            {coins[activeCoin].accounts.filter(acc => acc.enabled).map(account => (
               <Account
                 key={account.accountIndex}
                 account={account}
@@ -197,7 +197,7 @@ const Accounts = ({
       </div>
     }
     <Transactions
-      accounts={coins[activeCoin].accounts.filter((acc) => acc.enabled)}
+      accounts={coins[activeCoin].accounts.filter(acc => acc.enabled)}
       activeAccount={activeAccount}
       coin={activeCoin} />
   </div>

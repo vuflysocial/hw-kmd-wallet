@@ -50,15 +50,11 @@ class AddAccount extends React.Component {
 
       currentAction = 'approve';
       updateActionState(this, currentAction, 'loading');
-
       writeLog('add acc', accounts.length);
 
       const xpub = await getAccountXpub(accounts.length, vendor);
-
       writeLog('xpub', xpub);
-
       updateActionState(this, currentAction, true);
-
       addAccount(accounts.length, xpub);
 
       this.setState({...this.initialState});

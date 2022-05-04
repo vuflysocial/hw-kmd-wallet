@@ -211,7 +211,6 @@ const accountDiscovery = async (vendor, coin, _accounts, historyLength) => {
           (_accounts && _accounts[accountIndex] && _accounts[accountIndex].enabled)) {
         if (_accounts && _accounts[accountIndex])
           writeLog(`${coin} data discovery for account ${accountIndex}`, _accounts[accountIndex]);
-        //const account = await getAccountAddresses(accountIndex, vendor);
         const account = await getAccountAddresses(
           accountIndex,
           vendor,

@@ -16,11 +16,6 @@ import './Sidebar.scss';
 
 class Sidebar extends React.Component {
   state = this.initialState;
-  
-  get initialState() {
-    return {
-    };
-  };
 
   logout() {
     this.props.resetState('logout');
