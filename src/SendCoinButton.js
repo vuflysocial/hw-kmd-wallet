@@ -142,10 +142,15 @@ class SendCoinButton extends React.Component {
       const {coin, vendor, isClaimRewardsOnly, account, accounts} = this.props;
       const {address} = this.state;
       let currentAction = 'connect';
-      let tiptime;
+      let tiptime, explorerIsSet = false;
       
       try {
         if (coin === 'KMD') {
+          const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
+          writeLog(`${coin} set api endpoint to ${explorerUrl}`);
+          blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
+          explorerIsSet = true;
+
           tiptime = await blockchain[blockchainAPI].getTipTime();
           tiptime = this.props.checkTipTime(tiptime);
           if (!tiptime) throw new Error('Unable to get tiptime!');
@@ -288,10 +293,12 @@ class SendCoinButton extends React.Component {
           currentAction = 'broadcastTransaction';
           updateActionState(this, currentAction, 'loading');
 
-          const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
-  
-          writeLog(`${coin} set api endpoint to ${explorerUrl}`);
-          blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
+          if (!explorerIsSet) {
+            const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
+    
+            writeLog(`${coin} set api endpoint to ${explorerUrl}`);
+            blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
+          }
 
           const {txid} = await blockchain[blockchainAPI].broadcast(rawtx);
           if (!txid || txid.length !== 64) {
