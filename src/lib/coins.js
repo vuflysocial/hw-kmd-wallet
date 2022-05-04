@@ -111,7 +111,7 @@ const coins = {
     api: ['https://labs.explorer.dexstats.info/insight-api-komodo/'],
   },
   VOTE2022: {
-    explorer: 'https://vote2022.explorer.dexstats.info/',
+    explorer: 'https://vote.explorer.dexstats.info/',
     api: [
       'https://explorer.komodoplatform.com:10000/vote2022/api/',
       'https://vote.explorer.dexstats.info/insight-api-komodo/',
