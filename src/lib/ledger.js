@@ -125,7 +125,9 @@ const createTransaction = async (utxos, outputs, isKMD) => {
   const additionals = ['sapling'];
   const expiryHeight = Buffer.from([0x00, 0x00, 0x00, 0x00]);
 
-  const transaction = await ledger.createPaymentTransactionNew({
+  // TODO: upgrading ledger BTC app lib to v6.2x leads to incorrect data error
+  //       find a fix
+  const transaction = await ledger.createPaymentTransactionNew(
     inputs,
     associatedKeysets,
     changePath,
@@ -136,7 +138,7 @@ const createTransaction = async (utxos, outputs, isKMD) => {
     initialTimestamp,
     additionals,
     expiryHeight
-  });
+  );
 
   await ledger.close();
 
