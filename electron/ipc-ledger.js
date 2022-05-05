@@ -13,7 +13,6 @@ const setMainWindow = (_mainWindow) => {
 function getAddress(derivationPath, verify) {
   return TransportNodeHid.open('')
     .then(transport => {
-      transport.setDebugMode(true);
       const appBtc = new AppBtc(transport);
       return appBtc.getWalletPublicKey(derivationPath, verify).then(r =>
         transport
@@ -41,7 +40,6 @@ function createPaymentTransactionNew(txData) {
 
   return TransportNodeHid.open('')
     .then(transport => {
-      transport.setDebugMode(true);
       const appBtc = new AppBtc(transport);
       return appBtc.createPaymentTransactionNew({
         inputs,
@@ -75,7 +73,6 @@ function splitTransaction(txData) {
 
   return TransportNodeHid.open('')
     .then(transport => {
-      transport.setDebugMode(true);
       const appBtc = new AppBtc(transport);
       const txSplit = appBtc.splitTransaction(
         transactionHex,
