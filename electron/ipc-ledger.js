@@ -33,11 +33,8 @@ function createPaymentTransactionNew(txData) {
     inputs,
     associatedKeysets,
     changePath,
-    outputScript,
+    outputScriptHex,
     lockTime,
-    sigHashType,
-    segwit,
-    initialTimestamp,
     additionals,
     expiryHeight,
   } = txData;
@@ -46,18 +43,15 @@ function createPaymentTransactionNew(txData) {
     .then(transport => {
       transport.setDebugMode(true);
       const appBtc = new AppBtc(transport);
-      return appBtc.createPaymentTransactionNew(
+      return appBtc.createPaymentTransactionNew({
         inputs,
         associatedKeysets,
         changePath,
-        outputScript,
+        outputScriptHex,
         lockTime,
-        sigHashType,
-        segwit,
-        initialTimestamp,
         additionals,
         expiryHeight,
-      ).then(r =>
+      }).then(r =>
         transport
           .close()
           .catch(e => {})

@@ -119,26 +119,18 @@ const createTransaction = async (utxos, outputs, isKMD) => {
   const outputScriptHex = buildOutputScript(outputs);
   const unixtime = Math.floor(Date.now() / 1000);
   const lockTime = isKMD ? unixtime - 777 : 0;
-  const sigHashType = undefined;
-  const segwit = undefined;
-  const initialTimestamp = undefined;
   const additionals = ['sapling'];
   const expiryHeight = Buffer.from([0x00, 0x00, 0x00, 0x00]);
 
-  // TODO: upgrading ledger BTC app lib to v6.2x leads to incorrect data error
-  //       find a fix
-  const transaction = await ledger.createPaymentTransactionNew(
+  const transaction = await ledger.createPaymentTransactionNew({
     inputs,
     associatedKeysets,
     changePath,
     outputScriptHex,
     lockTime,
-    sigHashType,
-    segwit,
-    initialTimestamp,
     additionals,
     expiryHeight
-  );
+  });
 
   await ledger.close();
 

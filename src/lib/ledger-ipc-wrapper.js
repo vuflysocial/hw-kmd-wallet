@@ -74,29 +74,23 @@ const getDevice = async () => {
         resolve(_data);
       });
     },
-    createPaymentTransactionNew: (
+    createPaymentTransactionNew: ({
       inputs,
       associatedKeysets,
       changePath,
-      outputScript,
+      outputScriptHex,
       lockTime,
-      sigHashType,
-      segwit,
-      initialTimestamp,
       additionals,
       expiryHeight,
-    ) => {
+    }) => {
       writeLog('ledger createPaymentTransactionNew');
       wrapIpcRendererSend('createPaymentTransactionNew', {
         txData: {
           inputs,
           associatedKeysets,
           changePath,
-          outputScript,
+          outputScriptHex,
           lockTime,
-          sigHashType,
-          segwit,
-          initialTimestamp,
           additionals,
           expiryHeight,
         },
