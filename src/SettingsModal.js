@@ -281,11 +281,11 @@ class SettingsModal extends React.Component {
                 className="explorer-selector minimal"
                 value={this.state.discoveryGapLimit}
                 onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
-                {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].map((item, index) => (
+                {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].splice(1, SETTINGS.DISCOVERY_GAP_LIMIT / 5).map((item, index) => (
                   <option
                     key={`discovery-account-index-${index}`}
-                    value={(index + 1) * 5}>
-                    {index === 3 ? (index + 1) * 5 + ' (default)' : (index + 1) * 5}
+                    value={(index + 2) * 5}>
+                    {index === 0 ? (index + 2) * 5 + ' (default)' : (index + 2) * 5}
                   </option>
                 ))}
               </select>
