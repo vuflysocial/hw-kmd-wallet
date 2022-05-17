@@ -60,9 +60,8 @@ class SettingsModal extends React.Component {
 
     if (name !== 'historyLength') {
       setConfigVar(e.target.name, Number(e.target.value));
-    } else {
-      setLocalStorageVar('settings', {historyLength: Number(e.target.value)});
     }
+    setLocalStorageVar('settings', {[e.target.name]: Number(e.target.value)});
   }
 
   setVendor(e) {
