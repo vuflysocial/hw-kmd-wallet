@@ -3,7 +3,7 @@ import Modal from './Modal';
 import CheckAllBalancesButton from './CheckAllBalancesButton';
 import apiEndpoints from './lib/coins';
 import './AddCoinModal.scss';
-import {setConfigVar} from './lib/account-discovery';
+import {SETTINGS} from './constants';
 
 class SelectCoinModal extends React.Component {
   state = this.initialState;
@@ -22,8 +22,6 @@ class SelectCoinModal extends React.Component {
   };
 
   setAirdropDiscovery() {
-    setConfigVar('discoveryGapLimit', !this.state.enableAirdropDiscovery ? 100 : 20);
-
     this.setState({
       enableAirdropDiscovery: !this.state.enableAirdropDiscovery,
     });
@@ -43,7 +41,8 @@ class SelectCoinModal extends React.Component {
     let coinsList = [];
 
     for (let i = 0; i < allAvailableCoins.length; i++) {
-      if (Object.keys(this.props.coins).indexOf(allAvailableCoins[i]) === -1) coinsList.push(allAvailableCoins[i]);
+      if (Object.keys(this.props.coins).indexOf(allAvailableCoins[i]) === -1)
+        coinsList.push(allAvailableCoins[i]);
     }
 
     this.setState({
@@ -96,7 +95,9 @@ class SelectCoinModal extends React.Component {
                 {this.state.selectedCoins.indexOf(coinTicker) > -1 &&
                   <i className="fa fa-check-circle check-icon"></i>
                 }
-                <img src={`coins/${coinTicker}.png`} />
+                <img
+                  src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coinTicker}.png`}
+                  alt={`${coinTicker} icon`} />
                 <span className="block-coin-icons-tile-name">{coinTicker}</span>
               </div>
             ))}
@@ -132,7 +133,8 @@ class SelectCoinModal extends React.Component {
                 vendor={this.props.vendor}
                 explorerEndpoint={this.props.explorerEndpoint}
                 coins={this.state.selectedCoins}
-                closeParent={this.close}>
+                closeParent={this.close}
+                enableAirdropDiscovery={this.state.enableAirdropDiscovery}>
                 Begin scan
               </CheckAllBalancesButton>
             </div>
