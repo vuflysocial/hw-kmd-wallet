@@ -1,9 +1,9 @@
 import React from 'react';
 import hw from './lib/hw';
-import accountDiscovery, {clearPubkeysCache} from './lib/account-discovery';
+import accountDiscovery, {clearPubkeysCache, setConfigVar} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
 import updateActionState from './lib/update-action-state';
-import {VENDOR} from './constants';
+import {VENDOR, SETTINGS} from './constants';
 import ActionListModal from './ActionListModal';
 import asyncForEach from './lib/async';
 import humanReadableSatoshis from './lib/human-readable-satoshis';
@@ -14,7 +14,8 @@ import {
 import {writeLog} from './Debug';
 import {getAvailableExplorerUrl} from './send-coin-helpers';
 import {checkTipTime, calculateRewardData, calculateBalanceData, checkRewardsOverdue} from './app-helpers';
-import {getLocalStorageVar} from './lib/localstorage-util';
+import {getLocalStorageVar, setLocalStorageVar} from './lib/localstorage-util';
+import apiEndpoints from './lib/coins';
 
 const headings = [
   'Coin',
@@ -65,10 +66,16 @@ class CheckAllBalancesButton extends React.Component {
 
   scanAddresses = async () => {
     const coinTickers = this.props.coins;
-    const {vendor} = this.props;
+    const {vendor, enableAirdropDiscovery} = this.props;
     let balances = [], currentAction;
     cancel = false;
     
+
+    if (enableAirdropDiscovery) {
+      setConfigVar('discoveryGapLimit', SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP);
+      setLocalStorageVar('settings', {discoveryGapLimit: SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP});
+    }
+
     await asyncForEach(coinTickers, async (coin, index) => {
       if (!cancel) {
         this.setState({
