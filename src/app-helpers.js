@@ -233,5 +233,6 @@ export const getAppInitState = () => {
     sidebarSizeChanged: false,
     syncInProgress: false,
     explorerEndpointOverride: {},
+    syncRunNum: 0,
   };
 };

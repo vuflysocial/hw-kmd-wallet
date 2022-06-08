@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {sortTransactions} from './lib/sort';
 import TransactionViewModal from './TransactionViewModal';
 import {writeLog} from './Debug';
@@ -48,20 +48,23 @@ const getTransactionsHistory = (accounts, activeAccount) => {
   return lastOperations;
 };
 
-class Transactions extends React.Component {
-  state = {
-    txDetails: null,
+const Transactions = props => {
+  const initialState = {
+    isClosed: true,
+    tiptime: 0,
   };
+  const [state, setState] = useState(initialState);
 
-  openTransactionDetails(txDetails) {
-    this.setState({
+  const openTransactionDetails = txDetails => {
+    setState(prevState => ({
+      ...prevState,
       txDetails,
-    });
+    }));
     document.getElementById('transactionDetailsModal').click();
   }
 
-  render() {
-    const {accounts, coin, activeAccount} = this.props;
+  const render = () => {
+    const {accounts, coin, activeAccount} = props;
 
     return (
       <React.Fragment>
@@ -80,7 +83,7 @@ class Transactions extends React.Component {
                     <tr
                       key={tx.txid}
                       className="utxo"
-                      onClick={() => this.openTransactionDetails(tx)}>
+                      onClick={() => openTransactionDetails(tx)}>
                       <td className="cap--first">
                         <span className="direction">
                           <i className={`fa fa-long-arrow-alt-${tx.type === 'sent' ? 'up' : 'down'}`}></i>
@@ -105,13 +108,15 @@ class Transactions extends React.Component {
             </div>
             <TransactionViewModal
               coin={coin}
-              tx={this.state.txDetails}
+              tx={state.txDetails}
               activeAccount={activeAccount} />
           </div>
         }
       </React.Fragment>
     );
   }
+
+  return render();
 };
 
 export default Transactions;

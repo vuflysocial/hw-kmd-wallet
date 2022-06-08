@@ -95,7 +95,7 @@ export const getAvailableExplorerUrl = async (coin, blockchain) => {
   return coins[coin].api[apiEndPointIndex];
 };
 
-export const getStateActionsInit = (vendor) => {
+export const getStateActionsInit = vendor => {
   return {
     connect: {
       icon: 'fab fa-usb',
