@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Modal from './Modal';
 import './SettingsModal.scss';
 import {
@@ -13,50 +13,40 @@ import {writeLog} from './Debug';
 
 // TODO: individual settings for each coin
 
-class SettingsModal extends React.Component {
-  state = this.initialState;
-  
-  get initialState() {
-    this.triggerModal = this.triggerModal.bind(this);
-    this.setFwCheck = this.setFwCheck.bind(this);
-    this.setEnableDebugTools = this.setEnableDebugTools.bind(this);
-    this.setResetAppData = this.setResetAppData.bind(this);
-    this.exportAppData = this.exportAppData.bind(this);
-    this.setImportAppData = this.setImportAppData.bind(this);
-    this.importAppData = this.importAppData.bind(this);
-    this.updateInput = this.updateInput.bind(this);
-    
-    return {
-      isClosed: true,
-      theme: getLocalStorageVar('settings').theme,
-      discoveryGapLimit: getLocalStorageVar('settings').discoveryGapLimit,
-      discoveryAddressConcurrency: getLocalStorageVar('settings').discoveryAddressConcurrency,
-      accountIndex: getLocalStorageVar('settings').accountIndex,
-      explorerEndpoint: 'default',
-      fwCheck: getLocalStorageVar('settings').fwCheck,
-      enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
-      vendor: getLocalStorageVar('settings').vendor,
-      sidebarSize: getLocalStorageVar('settings').sidebarSize,
-      autolock: getLocalStorageVar('settings').autolock && Number(getLocalStorageVar('settings').autolock),      
-      historyLength: getLocalStorageVar('settings').historyLength && Number(getLocalStorageVar('settings').historyLength),
-      resetAppData: false,
-      enableImportAppData: false,
-      importAppDataStr: null,
-      importAppDataError: false,
-    };
-  }
+const SettingsModal = props => {
+  const initialState = {
+    isClosed: true,
+    theme: getLocalStorageVar('settings').theme,
+    discoveryGapLimit: getLocalStorageVar('settings').discoveryGapLimit,
+    discoveryAddressConcurrency: getLocalStorageVar('settings').discoveryAddressConcurrency,
+    accountIndex: getLocalStorageVar('settings').accountIndex,
+    explorerEndpoint: 'default',
+    fwCheck: getLocalStorageVar('settings').fwCheck,
+    enableDebugTools: getLocalStorageVar('settings').enableDebugTools,
+    vendor: getLocalStorageVar('settings').vendor,
+    sidebarSize: getLocalStorageVar('settings').sidebarSize,
+    autolock: getLocalStorageVar('settings').autolock && Number(getLocalStorageVar('settings').autolock),      
+    historyLength: getLocalStorageVar('settings').historyLength && Number(getLocalStorageVar('settings').historyLength),
+    resetAppData: false,
+    enableImportAppData: false,
+    importAppDataStr: null,
+    importAppDataError: false,
+  };
+  const [state, setState] = useState(initialState);
 
-  setAutoLock(e) {
+  const setAutoLock = e => {
     setLocalStorageVar('settings', {autolock: Number(e.target.value)});
-    this.setState({
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: Number(e.target.value),
-    });
+    }));
   }
 
-  setDiscoveryConfigVar(e, name) {
-    this.setState({
+  const setDiscoveryConfigVar = (e, name) => {
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
 
     if (name !== 'historyLength') {
       setConfigVar(e.target.name, Number(e.target.value));
@@ -64,99 +54,109 @@ class SettingsModal extends React.Component {
     setLocalStorageVar('settings', {[e.target.name]: Number(e.target.value)});
   }
 
-  setVendor(e) {
-    this.setState({
+  const setVendor = e => {
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
 
-    this.props.setVendor(e.target.value);
+    props.setVendor(e.target.value);
   }
 
-  setFwCheck() {
-    setLocalStorageVar('settings', {fwCheck: !this.state.fwCheck});
-    this.setState({
-      fwCheck: !this.state.fwCheck,
-    });
+  const setFwCheck = () => {
+    setLocalStorageVar('settings', {fwCheck: !state.fwCheck});
+    setState(prevState => ({
+      ...prevState,
+      fwCheck: !state.fwCheck,
+    }));
   }
 
-  setEnableDebugTools() {
-    setLocalStorageVar('settings', {enableDebugTools: !this.state.enableDebugTools});
-    this.setState({
-      enableDebugTools: !this.state.enableDebugTools,
-    });
+  const setEnableDebugTools = () => {
+    setLocalStorageVar('settings', {enableDebugTools: !state.enableDebugTools});
+    setState(prevState => ({
+      ...prevState,
+      enableDebugTools: !state.enableDebugTools,
+    }));
   }
 
-  setExplorerEndpoint(e) {
-    this.setState({
+  const setExplorerEndpoint = e => {
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
 
-    this.props.updateExplorerEndpoint(e);
+    props.updateExplorerEndpoint(e);
   }
 
-  setTheme(name) {
+  /*const setTheme = name => {
     document.getElementById('body').className = name;
     setLocalStorageVar('settings', {theme: name});
-    this.setState({
+    setState(prevState => ({
+      ...prevState,
       theme: name,
-    });
-  }
+    }));
+  }*/
 
-  setSidebarSize(e) {
+  const setSidebarSize = e => {
     setLocalStorageVar('settings', {sidebarSize: e.target.value});
-    this.setState({
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
 
-    this.props.triggerSidebarSizeChange();
+    props.triggerSidebarSizeChange();
   }
 
-  triggerModal() {
-    if (this.state.resetAppData) {
+  const triggerModal = () => {
+    if (state.resetAppData) {
       clearPubkeysCache();
       localStorage.setItem('hw-wallet', null);
-      this.props.resetState(true);
+      props.resetState(true);
     }
 
-    this.setState({
-      isClosed: !this.state.isClosed,
-      explorerEndpoint: this.props.explorerEndpoint,
+    setState(prevState => ({
+      ...prevState,
+      isClosed: !state.isClosed,
+      explorerEndpoint: props.explorerEndpoint,
       resetAppData: false,
       enableImportAppData: false,
       importAppDataStr: null,
       importAppDataError: false,
-    });
+    }));
 
-    this.props.triggerSidebarSizeChange();
+    props.triggerSidebarSizeChange();
   }
 
-  setResetAppData() {
-    this.setState({
-      resetAppData: !this.state.resetAppData,
-    });
+  const setResetAppData = () => {
+    setState(prevState => ({
+      ...prevState,
+      resetAppData: !state.resetAppData,
+    }));
   }
 
-  setImportAppData() {
-    this.setState({
-      enableImportAppData: !this.state.enableImportAppData,
-    });
+  const setImportAppData = () => {
+    setState(prevState => ({
+      ...prevState,
+      enableImportAppData: !state.enableImportAppData,
+    }));
   }
 
-  importAppData() {
-    const checkImportFormat = this.state.importAppDataStr.indexOf('$250000$cbc') > -1;
+  const importAppData = () => {
+    const checkImportFormat = state.importAppDataStr.indexOf('$250000$cbc') > -1;
 
-    this.setState({
+    setState(prevState => ({
+      ...prevState,
       importAppDataError: checkImportFormat ? false : true,
-    });
+    }));
 
     if (checkImportFormat) {
-      localStorage.setItem('hw-wallet', this.state.importAppDataStr);
-      this.props.resetState('logout');
-      this.triggerModal();
+      localStorage.setItem('hw-wallet', state.importAppDataStr);
+      props.resetState('logout');
+      triggerModal();
     }
   }
 
-  exportAppData() {
+  const exportAppData = () => {
     const a = document.getElementById('saveModalImage');
     const appData = localStorage.getItem('hw-wallet');
 
@@ -164,30 +164,31 @@ class SettingsModal extends React.Component {
     a.download = 'hw-kmd-wallet-export-app-data';
   }
 
-  updateInput(e) {
-    this.setState({
+  const updateInput = e => {
+    setState(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
   }
 
-  render() {
-    const {coin, isAuth} = this.props;
+  const render = () => {
+    const {coin, isAuth} = props;
     writeLog(coin);
 
     return (
       <React.Fragment>
         <div
           className="settings-modal-trigger-block"
-          onClick={this.triggerModal}>
+          onClick={triggerModal}>
           <i className="fa fa-cogs"></i>
-          {this.props.sidebarSize === 'full' &&
+          {props.sidebarSize === 'full' &&
             <span className="sidebar-item-title">Settings</span>
           }
         </div>
         <Modal
           title="Settings"
-          show={this.state.isClosed === false}
-          handleClose={this.triggerModal}
+          show={state.isClosed === false}
+          handleClose={triggerModal}
           isCloseable={true}
           className="settings-modal">
           <ul>
@@ -197,8 +198,8 @@ class SettingsModal extends React.Component {
                 <select
                   name="sidebarSize"
                   className="explorer-selector minimal"
-                  value={this.state.sidebarSize}
-                  onChange={(event) => this.setSidebarSize(event)}>
+                  value={state.sidebarSize}
+                  onChange={(event) => setSidebarSize(event)}>
                   {Object.keys(SETTINGS.SIDEBAR).map((item, index) => (
                     <option
                       key={`sidebar-size-${item}`}
@@ -215,8 +216,8 @@ class SettingsModal extends React.Component {
                 <select
                   name="autolock"
                   className="explorer-selector minimal"
-                  value={this.state.autolock}
-                  onChange={(event) => this.setAutoLock(event)}>
+                  value={state.autolock}
+                  onChange={(event) => setAutoLock(event)}>
                   {Object.keys(SETTINGS.AUTOLOCK).map((item, index) => (
                     <option
                       key={`autolock-timeout-${item}`}
@@ -234,12 +235,12 @@ class SettingsModal extends React.Component {
                   <input
                     type="checkbox"
                     name="fwCheck"
-                    value={this.state.fwCheck}
-                    checked={this.state.fwCheck}
+                    value={state.fwCheck}
+                    checked={state.fwCheck}
                     readOnly />
                   <span
                     className="slider round"
-                    onClick={this.setFwCheck}></span>
+                    onClick={setFwCheck}></span>
                 </label>
               </li>
             }
@@ -248,8 +249,8 @@ class SettingsModal extends React.Component {
               <select
                 name="vendor"
                 className="explorer-selector minimal"
-                value={this.state.vendor}
-                onChange={(event) => this.setVendor(event)}>
+                value={state.vendor}
+                onChange={(event) => setVendor(event)}>
                 {Object.keys(VENDOR).map((item, index) => (
                   <option
                     key={`vendor-${item}`}
@@ -265,12 +266,12 @@ class SettingsModal extends React.Component {
                 <input
                   type="checkbox"
                   name="enableDebugTools"
-                  value={this.state.enableDebugTools}
-                  checked={this.state.enableDebugTools}
+                  value={state.enableDebugTools}
+                  checked={state.enableDebugTools}
                   readOnly />
                 <span
                   className="slider round"
-                  onClick={this.setEnableDebugTools}></span>
+                  onClick={setEnableDebugTools}></span>
               </label>
             </li>
             <li>
@@ -278,8 +279,8 @@ class SettingsModal extends React.Component {
               <select
                 name="discoveryGapLimit"
                 className="explorer-selector minimal"
-                value={this.state.discoveryGapLimit}
-                onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
+                value={state.discoveryGapLimit}
+                onChange={(event) => setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
                 {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].splice(1, SETTINGS.DISCOVERY_GAP_LIMIT / 5).map((item, index) => (
                   <option
                     key={`discovery-account-index-${index}`}
@@ -294,8 +295,8 @@ class SettingsModal extends React.Component {
               <select
                 name="discoveryAddressConcurrency"
                 className="explorer-selector minimal"
-                value={this.state.discoveryAddressConcurrency}
-                onChange={(event) => this.setDiscoveryConfigVar(event, 'discoveryAddressConcurrency')}>
+                value={state.discoveryAddressConcurrency}
+                onChange={(event) => setDiscoveryConfigVar(event, 'discoveryAddressConcurrency')}>
                 {Object.keys(SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY).map((item, index) => (
                   <option
                     key={`discovery-address-concurrency-${item}`}
@@ -310,8 +311,8 @@ class SettingsModal extends React.Component {
               <select
                 name="accountIndex"
                 className="explorer-selector minimal"
-                value={this.state.accountIndex}
-                onChange={(event) => this.setDiscoveryConfigVar(event, 'accountIndex')}>
+                value={state.accountIndex}
+                onChange={(event) => setDiscoveryConfigVar(event, 'accountIndex')}>
                 {[...Array(SETTINGS.ACCOUNT_INDEX_LIMIT).keys()].map((item, index) => (
                   <option
                     key={`discovery-account-index-${item}`}
@@ -326,8 +327,8 @@ class SettingsModal extends React.Component {
               <select
                 name="historyLength"
                 className="explorer-selector minimal"
-                value={this.state.historyLength}
-                onChange={(event) => this.setDiscoveryConfigVar(event, 'historyLength')}>
+                value={state.historyLength}
+                onChange={(event) => setDiscoveryConfigVar(event, 'historyLength')}>
                 {[...Array(SETTINGS.HISTORY_LENGTH_LIMIT / 10).keys()].map((item, index) => (
                   <option
                     key={`discovery-account-history-length-${index}`}
@@ -343,8 +344,8 @@ class SettingsModal extends React.Component {
                 <select
                   className="explorer-selector minimal"
                   name="explorerEndpoint"
-                  value={this.state.explorerEndpoint}
-                  onChange={(event) => this.setExplorerEndpoint(event)}>
+                  value={state.explorerEndpoint}
+                  onChange={(event) => setExplorerEndpoint(event)}>
                   {apiEndpoints[coin].api.map((val, index) => (
                     <option
                       key={`explorer-selector-${val}`}
@@ -361,14 +362,14 @@ class SettingsModal extends React.Component {
                 <input
                   type="checkbox"
                   name="resetAppData"
-                  value={this.state.resetAppData}
-                  checked={this.state.resetAppData}
+                  value={state.resetAppData}
+                  checked={state.resetAppData}
                   readOnly />
                 <span
                   className="slider round"
-                  onClick={this.setResetAppData}></span>
+                  onClick={setResetAppData}></span>
               </label>
-              {this.state.resetAppData &&
+              {state.resetAppData &&
                 <p>
                   <small>
                     <strong>Warning:</strong> "Reset app data" will delete all cached data so you will have to go through KMD HW Wallet setup again!
@@ -382,14 +383,14 @@ class SettingsModal extends React.Component {
                 <input
                   type="checkbox"
                   name="enableImportAppData"
-                  value={this.state.enableImportAppData}
-                  checked={this.state.enableImportAppData}
+                  value={state.enableImportAppData}
+                  checked={state.enableImportAppData}
                   readOnly />
                 <span
                   className="slider round"
-                  onClick={this.setImportAppData}></span>
+                  onClick={setImportAppData}></span>
               </label>
-              {this.state.enableImportAppData &&
+              {state.enableImportAppData &&
                 <React.Fragment>
                   <textarea
                     className="settings-modal-import-area"
@@ -397,14 +398,14 @@ class SettingsModal extends React.Component {
                     cols="33"
                     name="importAppDataStr"
                     placeholder="Paste import data here"
-                    value={this.state.importAppDataStr}
-                    onChange={this.updateInput}></textarea>
+                    value={state.importAppDataStr}
+                    onChange={updateInput}></textarea>
                   <p>
                     <small>
                       <strong>Warning:</strong> pressing on "Import app data" button will override all cached data!
                     </small>
                   </p>
-                  {this.state.importAppDataError &&
+                  {state.importAppDataError &&
                     <p>
                       <small>
                         <strong>Error:</strong> app data import format is wrong!
@@ -413,19 +414,19 @@ class SettingsModal extends React.Component {
                   }
                   <button
                     className="button"
-                    onClick={this.importAppData}
-                    disabled={!this.state.importAppDataStr}>
+                    onClick={importAppData}
+                    disabled={!state.importAppDataStr}>
                     Import app data
                   </button>
                 </React.Fragment>
               }
             </li>
-            {!this.state.enableImportAppData &&
+            {!state.enableImportAppData &&
               <li>
                 <a
                   href="!#"
                   id="saveModalImage"
-                  onClick={this.exportAppData}>
+                  onClick={exportAppData}>
                   <button className="button">
                     Export app data
                   </button>
@@ -435,7 +436,7 @@ class SettingsModal extends React.Component {
           </ul>
           <div className="modal-action-block right">
             <button
-              onClick={this.triggerModal}
+              onClick={triggerModal}
               className="button is-primary">
               OK
             </button>
@@ -444,6 +445,8 @@ class SettingsModal extends React.Component {
       </React.Fragment>
     );
   }
+
+  return render();
 }
 
 export default SettingsModal;
