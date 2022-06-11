@@ -2,17 +2,10 @@ import React from 'react';
 import './DashboardPrices.scss';
 import {PRICE_DEFAULT_COINS} from './constants';
 
-class DashboardPrices extends React.Component {
-  state = this.initialState;
-  
-  get initialState() {
-    return {
-    };
-  };
-
-  render() {
+const DashboardPrices = props => {
+  const render = () => {
     const coins = PRICE_DEFAULT_COINS;
-    const {prices} = this.props;
+    const {prices} = props;
     const coinPriceTickers = Object.keys(prices);
 
     return (
@@ -64,6 +57,8 @@ class DashboardPrices extends React.Component {
       </div>
     );
   }
+
+  return render();
 }
 
 export default DashboardPrices;

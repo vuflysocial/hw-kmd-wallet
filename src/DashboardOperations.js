@@ -1,20 +1,13 @@
 import React from 'react';
 import './DashboardOperations.scss';
 
-class DashboardOperations extends React.Component {
-  state = this.initialState;
-  
-  get initialState() {
-    return {
-    };
-  };
-
-  render() {
+const DashboardOperations = props => {
+  const render = () => {
     return (
       <div className="recent-operations-block">
         <h4>Recent operations</h4>
         <div className="recent-operations">
-          {this.props.lastOperations.map((item, index) => (
+          {props.lastOperations.map((item, index) => (
             <div
               className="item"
               key={`operations-${item.txid}`}>
@@ -32,13 +25,15 @@ class DashboardOperations extends React.Component {
               </div>
             </div>
           ))}
-          {this.props.lastOperations.length < 1 &&
+          {props.lastOperations.length < 1 &&
             <span>No history</span>
           }
         </div>
       </div>
     );
   }
+
+  return render();
 }
 
 export default DashboardOperations;
