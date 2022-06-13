@@ -7,58 +7,22 @@ import CoinSettingsModal from './CoinSettingsModal';
 import UtxosModal from './UtxosModal';
 import {
   isElectron,
-  appData,
   shell,
 } from './Electron';
 import {writeLog} from './Debug';
-import {getLocalStorageVar} from './lib/localstorage-util';
 import coinsList from './lib/coins';
 import {checkTimestamp} from './lib/time';
 import './Accounts.scss';
 import './Account.scss';
 
-class Account extends React.Component {
-  state = this.initialState;
-
-  get initialState() {
-    this.updateInput = this.updateInput.bind(this);
-
-    return {
-      isClaimed: false,
-      claimTxid: null,
-      address: '',
-      amount: '',
-      sendTo: '',
-      // debug options
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('enable-verify') > -1 || (getLocalStorageVar('settings') && getLocalStorageVar('settings').enableDebugTools),
-    };
-  }
-
-  updateInput(e) {
-    if (e.target.name === 'sendTo') {
-      e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
-    } else if (e.target.name === 'amount') {
-      e.target.value = e.target.value.replace(/[^0-9.]/g, '');
-    }
-
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  }
-
-  setSendToMaxAmount(balance) {
-    this.setState({
-      amount: humanReadableSatoshis(balance),
-    });
-  }
-
-  render() {
+const Account = props => {
+  const render = () => {
     const {
       account,
       coin,
       setActiveAccount,
       activeAccount,
-    } = this.props;
+    } = props;
     const {
       accountIndex,
       utxos,
@@ -90,9 +54,9 @@ class Account extends React.Component {
             <span className="rewards">{balance > 0 && claimableAmount > 0 ? humanReadableSatoshis(claimableAmount) : ''}</span>
             {account.isRewardsOverdue &&
               <span
-               className="kmd-rewards-account-overdue-badge"
-               title="Rewards claim overdue!">
-               <i>!</i>
+                className="kmd-rewards-account-overdue-badge"
+                title="Rewards claim overdue!">
+              <i>!</i>
               </span>
             }
           </td>
@@ -100,6 +64,8 @@ class Account extends React.Component {
       </tr>
     );
   }
+
+  return render();
 }
 
 const Accounts = ({
