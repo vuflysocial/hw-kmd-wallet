@@ -60,7 +60,7 @@ const AboutModal = props => {
           isCloseable={true}
           className="Modal-about">
           <p>
-            <strong>KMD hardware wallet</strong> by {renderLink('https://github.com/atomiclabs', 'Atomic Labs')} and {renderLink('https://github.com/komodoplatform', 'Komodo Platform')}.
+            <strong>Komodo Hardware Wallet App</strong> by {renderLink('https://github.com/atomiclabs', 'Atomic Labs')} and {renderLink('https://github.com/komodoplatform', 'Komodo Platform')}.
           </p>
           <p>
             The {renderLink(`https://github.com/${appInfo.repository}`, 'source code')} is licensed under {renderLink(`https://github.com/${appInfo.repository}/blob/master/LICENSE`, 'MIT')}.

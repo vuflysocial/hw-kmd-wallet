@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import hw from './lib/hw';
 import accountDiscovery, {clearPubkeysCache, setConfigVar} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
@@ -15,62 +15,54 @@ import {writeLog} from './Debug';
 import {getAvailableExplorerUrl} from './send-coin-helpers';
 import {checkTipTime, calculateRewardData, calculateBalanceData, checkRewardsOverdue} from './app-helpers';
 import {getLocalStorageVar, setLocalStorageVar} from './lib/localstorage-util';
-import apiEndpoints from './lib/coins';
 
 const headings = [
   'Coin',
   'Balance',
 ];
 
-let cancel = false;
-
-class CheckAllBalancesButton extends React.Component {
-  state = this.initialState;
-  
-  get initialState() {
-    this.confirm = this.confirm.bind(this);
-
-    return {
-      isCheckingRewards: false,
-      isInProgress: false,
-      error: false,
-      coin: '',
-      balances: [],
-      progress: '',
-      emptyBalances: false,
-      actions: {
-        connect: {
-          icon: 'fab fa-usb',
-          description: this.props.vendor === 'ledger' ? <div>Connect and unlock your Ledger, then open the Komodo app on your device.</div> : <div>Connect and unlock your Trezor.</div>,
-          state: null
-        },
-        approve: {
-          icon: 'fas fa-microchip',
-          description: <div>Approve all public key export requests on your device. <strong>There will be multiple requests</strong>.</div>,
-          state: null
-        },
-        finished: {
-          icon: 'fas fa-check',
-          description: <div>All coins are checked.</div>,
-          state: null
-        },
+const CheckAllBalancesButton = props => {
+  let cancel = false;
+  const initialState = {
+    isCheckingRewards: false,
+    isInProgress: false,
+    error: false,
+    coin: '',
+    balances: [],
+    progress: '',
+    emptyBalances: false,
+    actions: {
+      connect: {
+        icon: 'fab fa-usb',
+        description: props.vendor === 'ledger' ? <div>Connect and unlock your Ledger, then open the Komodo app on your device.</div> : <div>Connect and unlock your Trezor.</div>,
+        state: null
       },
-      isDebug: isElectron ? appData.isDev : window.location.href.indexOf('devmode') > -1,
-    };
-  }
+      approve: {
+        icon: 'fas fa-microchip',
+        description: <div>Approve all public key export requests on your device. <strong>There will be multiple requests</strong>.</div>,
+        state: null
+      },
+      finished: {
+        icon: 'fas fa-check',
+        description: <div>All coins are checked.</div>,
+        state: null
+      },
+    },
+    isDebug: isElectron ? appData.isDev : window.location.href.indexOf('devmode') > -1,
+  };
+  const [state, setState] = useState(initialState);
 
-  resetState = () => {
+  const resetState = () => {
     cancel = true;
-    this.setState(this.initialState);
+    setState(initialState);
   }
 
-  scanAddresses = async () => {
-    const coinTickers = this.props.coins;
-    const {vendor, enableAirdropDiscovery} = this.props;
+  const scanAddresses = async () => {
+    const coinTickers = props.coins;
+    const {vendor, enableAirdropDiscovery} = props;
     let balances = [], currentAction;
     cancel = false;
     
-
     if (enableAirdropDiscovery) {
       setConfigVar('discoveryGapLimit', SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP);
       setLocalStorageVar('settings', {discoveryGapLimit: SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP});
@@ -78,12 +70,13 @@ class CheckAllBalancesButton extends React.Component {
 
     await asyncForEach(coinTickers, async (coin, index) => {
       if (!cancel) {
-        this.setState({
+        setState(prevState => ({
+          ...prevState,
           isCheckingRewards: true,
-        });
+        }));
         
         currentAction = 'connect';
-        updateActionState(this, currentAction, 'loading');
+        updateActionState({setState}, currentAction, 'loading');
 
         const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
         let isExplorerEndpointSet = false;
@@ -92,32 +85,34 @@ class CheckAllBalancesButton extends React.Component {
         blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
         isExplorerEndpointSet = true;
     
-        this.setState({
+        setState(prevState => ({
+          ...prevState,
           explorerEndpoint: explorerUrl,
-        });
+        }));
 
         if (isExplorerEndpointSet) {
-          this.setState({
-            ...this.initialState,
+          setState(prevState => ({
+            ...prevState,
+            ...initialState,
             isCheckingRewards: true,
             coin,
             progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
             balances,
             isInProgress: true,
-          });
+          }));
 
           let currentAction;
           try {
             currentAction = 'connect';
-            updateActionState(this, currentAction, 'loading');
+            updateActionState({setState}, currentAction, 'loading');
             const hwIsAvailable = await hw[vendor].isAvailable();
             if (!hwIsAvailable) {
               throw new Error(`${VENDOR[vendor]} device is unavailable!`);
             }
-            updateActionState(this, currentAction, true);
+            updateActionState({setState}, currentAction, true);
 
             currentAction = 'approve';
-            updateActionState(this, currentAction, 'loading');
+            updateActionState({setState}, currentAction, 'loading');
             let [accounts, tiptime] = await Promise.all([
               accountDiscovery(
                 vendor,
@@ -128,7 +123,7 @@ class CheckAllBalancesButton extends React.Component {
               blockchain[blockchainAPI].getTipTime()
             ]);
 
-            updateActionState(this, currentAction, true);
+            updateActionState({setState}, currentAction, true);
 
             if (coin === 'KMD') {
               tiptime = checkTipTime(tiptime);
@@ -154,51 +149,56 @@ class CheckAllBalancesButton extends React.Component {
               accounts,
             });
 
-            this.setState({
+            setState(prevState => ({
+              ...prevState,
               balances,
               isInProgress: index === coinTickers.length - 1 ? false : true,
-            });
+            }));
           } catch (error) {
             writeLog(error);
-            updateActionState(this, currentAction, false);
-            this.setState({error: error.message});
+            updateActionState({setState}, currentAction, false);
+            setState(prevState => ({
+              ...prevState,
+              error: error.message
+            }));
           }
         }
       }
     });
     
     if (!cancel) {
-      if (!this.state.error ||
-          (this.state.error && this.state.error.indexOf('Failed to fetch') > -1)) {
-        updateActionState(this, 'approve', true);
-        updateActionState(this, 'finished', true);
+      if (!state.error ||
+          (state.error && state.error.indexOf('Failed to fetch') > -1)) {
+        updateActionState({setState}, 'approve', true);
+        updateActionState({setState}, 'finished', true);
       }
 
       clearPubkeysCache();
 
-      this.setState({
+      setState(prevState => ({
+        ...prevState,
         isInProgress: false,
         error: false,
         progress: '',
         coin: '',
         isCheckingRewards: true,
-        emptyBalances: !this.state.balances.length,
-      });
+        emptyBalances: !prevState.balances.length,
+      }));
     }
 
-    writeLog(this.state);
+    writeLog(state);
     
-    blockchain[blockchainAPI].setExplorerUrl(this.props.explorerEndpoint);
+    blockchain[blockchainAPI].setExplorerUrl(props.explorerEndpoint);
   };
 
-  confirm() {
-    this.props.handleScanData({coins: this.state.balances});
-    this.props.closeParent();
-    this.resetState();
+  const confirm = () => {
+    props.handleScanData({coins: state.balances});
+    props.closeParent();
+    resetState();
   } 
 
-  renderCoinBalances() {
-    const balances = this.state.balances;
+  const renderCoinBalances = () => {
+    const balances = state.balances;
     
     return (
       <table className="table is-striped">
@@ -228,7 +228,7 @@ class CheckAllBalancesButton extends React.Component {
     );
   }
 
-  render() {
+  const render = () => {
     const {
       isCheckingRewards,
       isInProgress,
@@ -238,14 +238,14 @@ class CheckAllBalancesButton extends React.Component {
       balances,
       emptyBalances,
       progress,
-    } = this.state;
-    const {vendor, children} = this.props;
+    } = state;
+    const {vendor, children} = props;
 
     return (
       <React.Fragment>
         <button
           className="button is-primary"
-          onClick={this.scanAddresses}>
+          onClick={scanAddresses}>
           {children}
         </button>
         <ActionListModal
@@ -253,14 +253,14 @@ class CheckAllBalancesButton extends React.Component {
           isCloseable={!isInProgress}
           actions={actions}
           error={error}
-          handleClose={this.resetState}
+          handleClose={resetState}
           show={isCheckingRewards}
           className="Scan-balances-modal"
           childrenPosition="bottom"
           topText={`Exporting public keys from your ${VENDOR[vendor]} device, scanning the blockchain for funds, and calculating any claimable rewards. Please approve any public key export requests on your device.`}>
           {balances &&
            balances.length > 0 &&
-            <React.Fragment>{this.renderCoinBalances()}</React.Fragment>
+            <React.Fragment>{renderCoinBalances()}</React.Fragment>
           }
           {emptyBalances &&
             <p>
@@ -271,7 +271,7 @@ class CheckAllBalancesButton extends React.Component {
             balances.length > 0 &&
             <button
               className="button is-primary"
-              onClick={this.confirm}>
+              onClick={confirm}>
               Confirm
             </button>
           }
@@ -279,6 +279,8 @@ class CheckAllBalancesButton extends React.Component {
       </React.Fragment>
     );
   }
+
+  return render();
 }
 
 export default CheckAllBalancesButton;
