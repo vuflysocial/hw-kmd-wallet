@@ -1,4 +1,5 @@
 import React from 'react';
+import formatValue from './lib/format-value';
 import './DashboardOperations.scss';
 
 const DashboardOperations = props => {
@@ -20,7 +21,7 @@ const DashboardOperations = props => {
               </div>
               <div className="item-right-pane">
                 <span className={item.type === 'received' || item.type === 'rewards' ? 'amount-increase' : 'amount-decrease'}>
-                  {item.type === 'received' || item.type === 'rewards' ? '+' + item.amount : '-' + item.amount}
+                  {item.type === 'received' || item.type === 'rewards' ? '+' + formatValue(item.amount) : '-' + formatValue(item.amount)}
                 </span>
               </div>
             </div>

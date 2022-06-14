@@ -18,7 +18,16 @@
 
       .item-right-pane {
         float: right;
-
+        width: 50%;
+        overflow: hidden;
+        height: 30px;
+        text-align: right;
+        word-break: break-all;
+        background: #fff;
+        z-index: 1000;
+        position: relative;
+        padding-bottom: 36px;
+        
         .amount-increase {
           color: #13D0A7;
           font-weight: 500;
