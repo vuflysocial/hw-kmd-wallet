@@ -17,6 +17,7 @@ import './ReceiveCoinModal.scss';
 import {writeLog} from './Debug';
 import copyToClipboard from './lib/copy-to-clipboard';
 import QRGenModal from './QRGenModal';
+import Dropdown from './Dropdown';
 
 const ReceiveCoinButton = props => {
   const initialState = {
@@ -164,6 +165,12 @@ const ReceiveCoinButton = props => {
       success,
     } = state;
     const {coin, vendor, accounts, sidebarSize} = props;
+    const dropdownAccountItems = accounts.map((account, index) => (
+      {
+        value: index,
+        label: `${coin} ${index + 1}`,
+      }
+    ));
 
     writeLog(props);
 
@@ -192,19 +199,12 @@ const ReceiveCoinButton = props => {
               </p>
               <div className={`receive-account-selector-block${error ? ' receive-coin-modal-padding-bottom' : ''}`}>
                 Account
-                <select
-                  className="account-selector minimal"
-                  name="accountIndex"
+                <Dropdown
                   value={state.accountIndex}
-                  onChange={(event) => updateAccountIndex(event)}>
-                  {accounts.map((account, index) => (
-                    <option
-                      key={`account-${account}-${index}`}
-                      value={index}>
-                      {coin} {index + 1}
-                    </option>
-                  ))}
-                </select>
+                  name="accountIndex"
+                  className="account-selector"
+                  items={dropdownAccountItems}
+                  cb={updateAccountIndex} />
                 <button
                   className="button is-primary"
                   onClick={getNewAddress}>

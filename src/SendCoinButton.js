@@ -26,6 +26,7 @@ import {writeLog} from './Debug';
 import {formatUtxos, filterUtxos, validate, getAvailableExplorerUrl, getStateActionsInit} from './send-coin-helpers';
 import QRReaderModal from './QRReaderModal';
 import {SendCoinRawTxRender, SendCoinTxLink} from './SendCoinModalFragments';
+import Dropdown from './Dropdown';
 import './SendCoin.scss';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
@@ -374,6 +375,16 @@ const SendCoinButton = props => {
   const renderChangeAddressDropdown = () => {
     const {accountIndex, address} = state;
     const {isClaimRewardsOnly, account, accounts} = props;
+    const dropdownChangeAddressItems = account && account.addresses ? [{
+      value: '',
+      label: 'Unused address (default)'
+    }]
+    .join(account.addresses.slice(0, KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT).map((item, index) => (
+      {
+        value: item.address,
+        label: item.address,
+      }
+    ))) : [];
     
     return (
       <React.Fragment>
@@ -381,24 +392,12 @@ const SendCoinButton = props => {
           (isClaimRewardsOnly && account.addresses && account.addresses.length > 0)) &&
           <div className={address ? 'send-coin-modal-style4' : 'send-coin-modal-style5'}>
             Send change to
-            <select
-              className="account-index-selector send-coin-modal-style3"
-              name="address"
+            <Dropdown
               value={address}
-              onChange={(event) => updateInput(event)}>
-              <option
-                key="rewards-output-address-default"
-                value="">
-                Unused address (default)
-              </option>
-              {account.addresses.slice(0, KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT).map((item, index) => (
-                <option
-                  key={`rewards-output-address-${index}`}
-                  value={item.address}>
-                  {item.address}
-                </option>
-              ))}
-            </select>
+              name="address"
+              className="account-index-selector send-coin-modal-style3"
+              items={dropdownChangeAddressItems}
+              cb={updateAccountIndex} />
           </div>
         }
         {address &&
@@ -430,6 +429,13 @@ const SendCoinButton = props => {
   const renderStep1 = () => {
     const {isClaimingRewards, accountIndex} = state;
     const {coin, isClaimRewardsOnly, accounts} = props;
+    const dropdownAccountIndexItems = accounts.map((account, index) => (
+      {
+        value: index,
+        label: `${coin} ${index + 1} [${humanReadableSatoshis(accounts[index].balance)}]`,
+        disabled: accounts[index].balance <= 0
+      }
+    ));
     let {balance} = props;
     
     if (!isClaimRewardsOnly) {
@@ -450,20 +456,12 @@ const SendCoinButton = props => {
             </p>
             <div className="receive-account-selector-block">
               Account
-              <select
-                className="account-selector minimal"
-                name="accountIndex"
+              <Dropdown
                 value={accountIndex}
-                onChange={(event) => updateAccountIndex(event)}>
-                {accounts.map((account, index) => (
-                  <option
-                    key={`send-account-${index}`}
-                    value={index}
-                    disabled={accounts[index].balance <= 0}>
-                    {coin} {index + 1} [{humanReadableSatoshis(accounts[index].balance)}]
-                  </option>
-                ))}
-              </select>
+                name="accountIndex"
+                className="account-selector"
+                items={dropdownAccountIndexItems}
+                cb={updateAccountIndex} />
             </div>
           </React.Fragment>
         }

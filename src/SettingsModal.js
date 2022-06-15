@@ -10,6 +10,9 @@ import apiEndpoints from './lib/coins';
 import {setConfigVar, clearPubkeysCache} from './lib/account-discovery';
 import {isElectron} from './Electron';
 import {writeLog} from './Debug';
+import Dropdown from './Dropdown';
+import Toggle from './Toggle';
+import dropdownItems from './SettingsModalHelpers';
 
 // TODO: individual settings for each coin
 
@@ -175,6 +178,13 @@ const SettingsModal = props => {
     const {coin, isAuth} = props;
     writeLog(coin);
 
+    const dropdownExplorerItems = apiEndpoints[coin].api.map((val, index) => (
+      {
+        value: val,
+        label: val,
+      }
+    ));
+
     return (
       <React.Fragment>
         <div
@@ -195,37 +205,23 @@ const SettingsModal = props => {
             {isAuth &&
               <li>
                 Sidebar
-                <select
-                  name="sidebarSize"
-                  className="explorer-selector minimal"
+                <Dropdown
                   value={state.sidebarSize}
-                  onChange={(event) => setSidebarSize(event)}>
-                  {Object.keys(SETTINGS.SIDEBAR).map((item, index) => (
-                    <option
-                      key={`sidebar-size-${item}`}
-                      value={item}>
-                      {SETTINGS.SIDEBAR[item]}
-                    </option>
-                  ))}
-                </select>
+                  name="sidebarSize"
+                  className="explorer-selector"
+                  items={dropdownItems.sidebar}
+                  cb={setSidebarSize} />
               </li>
             }
             {isAuth &&
               <li>
                 Auto-lock
-                <select
-                  name="autolock"
-                  className="explorer-selector minimal"
+                <Dropdown
                   value={state.autolock}
-                  onChange={(event) => setAutoLock(event)}>
-                  {Object.keys(SETTINGS.AUTOLOCK).map((item, index) => (
-                    <option
-                      key={`autolock-timeout-${item}`}
-                      value={item}>
-                      {SETTINGS.AUTOLOCK[item]}
-                    </option>
-                  ))}
-                </select>
+                  name="autolock"
+                  className="explorer-selector"
+                  items={dropdownItems.autolock}
+                  cb={setAutoLock} />
               </li>
             }
             {!isElectron &&
@@ -246,19 +242,12 @@ const SettingsModal = props => {
             }
             <li>
               Vendor
-              <select
-                name="vendor"
-                className="explorer-selector minimal"
+              <Dropdown
                 value={state.vendor}
-                onChange={(event) => setVendor(event)}>
-                {Object.keys(VENDOR).map((item, index) => (
-                  <option
-                    key={`vendor-${item}`}
-                    value={item}>
-                    {VENDOR[item]}
-                  </option>
-                ))}
-              </select>
+                name="vendor"
+                className="explorer-selector"
+                items={dropdownItems.vendor}
+                cb={setVendor} />
             </li>
             <li>
               <span className="slider-text">Enable debug controls (display xpub, raw tx hex)</span>
@@ -276,84 +265,53 @@ const SettingsModal = props => {
             </li>
             <li>
               Address discovery gap limit
-              <select
-                name="discoveryGapLimit"
-                className="explorer-selector minimal"
+              <Dropdown
                 value={state.discoveryGapLimit}
-                onChange={(event) => setDiscoveryConfigVar(event, 'discoveryGapLimit')}>
-                {[...Array(SETTINGS.DISCOVERY_GAP_LIMIT / 5).keys()].splice(1, SETTINGS.DISCOVERY_GAP_LIMIT / 5).map((item, index) => (
-                  <option
-                    key={`discovery-account-index-${index}`}
-                    value={(index + 2) * 5}>
-                    {index === 0 ? (index + 2) * 5 + ' (default)' : (index + 2) * 5}
-                  </option>
-                ))}
-              </select>
+                name="discoveryGapLimit"
+                className="explorer-selector"
+                items={dropdownItems.discoveryGapLimit}
+                cb={setDiscoveryConfigVar}
+                cbArgs="discoveryGapLimit" />
             </li>
             <li>
               Address discovery concurrency limit
-              <select
-                name="discoveryAddressConcurrency"
-                className="explorer-selector minimal"
+              <Dropdown
                 value={state.discoveryAddressConcurrency}
-                onChange={(event) => setDiscoveryConfigVar(event, 'discoveryAddressConcurrency')}>
-                {Object.keys(SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY).map((item, index) => (
-                  <option
-                    key={`discovery-address-concurrency-${item}`}
-                    value={index}>
-                    {SETTINGS.DISCOVERY_ADDRESS_CONCURRENCY[item]}
-                  </option>
-                ))}
-              </select>
+                name="discoveryAddressConcurrency"
+                className="explorer-selector"
+                items={dropdownItems.discoveryAddressConcurrency}
+                cb={setDiscoveryConfigVar}
+                cbArgs="discoveryAddressConcurrency" />
             </li>
             <li>
               Account index
-              <select
-                name="accountIndex"
-                className="explorer-selector minimal"
+              <Dropdown
                 value={state.accountIndex}
-                onChange={(event) => setDiscoveryConfigVar(event, 'accountIndex')}>
-                {[...Array(SETTINGS.ACCOUNT_INDEX_LIMIT).keys()].map((item, index) => (
-                  <option
-                    key={`discovery-account-index-${item}`}
-                    value={index}>
-                    {index === 0 ? index + ' (default)' : index}
-                  </option>
-                ))}
-              </select>
+                name="accountIndex"
+                className="explorer-selector"
+                items={dropdownItems.accountIndex}
+                cb={setDiscoveryConfigVar}
+                cbArgs="accountIndex" />
             </li>
             <li>
               Account history max length
-              <select
-                name="historyLength"
-                className="explorer-selector minimal"
+              <Dropdown
                 value={state.historyLength}
-                onChange={(event) => setDiscoveryConfigVar(event, 'historyLength')}>
-                {[...Array(SETTINGS.HISTORY_LENGTH_LIMIT / 10).keys()].map((item, index) => (
-                  <option
-                    key={`discovery-account-history-length-${index}`}
-                    value={(index + 1) * 10}>
-                    {index === 0 ? (index + 1) * 10 + ' (default)' : (index + 1) * 10}
-                  </option>
-                ))}
-              </select>
+                name="historyLength"
+                className="explorer-selector"
+                items={dropdownItems.historyLength}
+                cb={setDiscoveryConfigVar}
+                cbArgs="historyLength" />
             </li>
             {apiEndpoints[coin].api.length > 1 &&
               <li>
                 Explorer API end point
-                <select
-                  className="explorer-selector minimal"
-                  name="explorerEndpoint"
+                <Dropdown
                   value={state.explorerEndpoint}
-                  onChange={(event) => setExplorerEndpoint(event)}>
-                  {apiEndpoints[coin].api.map((val, index) => (
-                    <option
-                      key={`explorer-selector-${val}`}
-                      value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
+                  name="explorerEndpoint"
+                  className="explorer-selector"
+                  items={dropdownExplorerItems}
+                  cb={setExplorerEndpoint} />
               </li>
             }
             <li>
@@ -372,7 +330,7 @@ const SettingsModal = props => {
               {state.resetAppData &&
                 <p>
                   <small>
-                    <strong>Warning:</strong> "Reset app data" will delete all cached data so you will have to go through KMD HW Wallet setup again!
+                    <strong>Warning:</strong> "Reset app data" will delete all cached data so you will have to go through setup process again!
                   </small>
                 </p>
               }
@@ -427,9 +385,7 @@ const SettingsModal = props => {
                   href="!#"
                   id="saveModalImage"
                   onClick={exportAppData}>
-                  <button className="button">
-                    Export app data
-                  </button>
+                  <button className="button">Export app data</button>
                 </a>
               </li>
             }
