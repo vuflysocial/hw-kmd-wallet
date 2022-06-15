@@ -5,7 +5,6 @@ import {
   getLocalStorageVar,
   setLocalStorageVar,
 } from './lib/localstorage-util';
-import {SETTINGS, VENDOR} from './constants';
 import apiEndpoints from './lib/coins';
 import {setConfigVar, clearPubkeysCache} from './lib/account-discovery';
 import {isElectron} from './Electron';
@@ -230,7 +229,7 @@ const SettingsModal = props => {
                   label="Always check firmware version"
                   name="fwCheck"
                   value={state.fwCheck}
-                  cb={setEnableDebugTools} />
+                  cb={setFwCheck} />
               </li>
             }
             <li>
