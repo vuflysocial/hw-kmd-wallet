@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Modal from './Modal';
 import CheckAllBalancesButton from './CheckAllBalancesButton';
 import apiEndpoints from './lib/coins';
+import Toggle from './Toggle';
 import './AddCoinModal.scss';
 
 const SelectCoinModal = props => {
@@ -102,18 +103,13 @@ const SelectCoinModal = props => {
             <div className="modal-action-block center">
               {isAirdropCoins() &&
                 <div className="select-coin-airdrop-settings">
-                  <span className="slider-text">Enable airdrop funds discovery</span>
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                      name="enableAirdropDiscovery"
-                      value={state.enableAirdropDiscovery}
-                      checked={state.enableAirdropDiscovery}
-                      readOnly />
-                    <span
-                      className="slider round"
-                      onClick={setAirdropDiscovery}></span>
-                  </label>
+                  <Toggle
+                    label="Enable airdrop funds discovery"
+                    name="enableAirdropDiscovery"
+                    value={state.enableAirdropDiscovery}
+                    cb={setAirdropDiscovery}
+                    className="switch"
+                    style={{'paddingRight': '20px'}} />
                   {state.enableAirdropDiscovery &&
                     <p>
                       <small>

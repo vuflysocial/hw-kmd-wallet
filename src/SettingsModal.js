@@ -226,18 +226,11 @@ const SettingsModal = props => {
             }
             {!isElectron &&
               <li>
-                <span className="slider-text">Always check firmware version</span>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    name="fwCheck"
-                    value={state.fwCheck}
-                    checked={state.fwCheck}
-                    readOnly />
-                  <span
-                    className="slider round"
-                    onClick={setFwCheck}></span>
-                </label>
+                <Toggle
+                  label="Always check firmware version"
+                  name="fwCheck"
+                  value={state.fwCheck}
+                  cb={setEnableDebugTools} />
               </li>
             }
             <li>
@@ -250,18 +243,11 @@ const SettingsModal = props => {
                 cb={setVendor} />
             </li>
             <li>
-              <span className="slider-text">Enable debug controls (display xpub, raw tx hex)</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  name="enableDebugTools"
-                  value={state.enableDebugTools}
-                  checked={state.enableDebugTools}
-                  readOnly />
-                <span
-                  className="slider round"
-                  onClick={setEnableDebugTools}></span>
-              </label>
+              <Toggle
+                label="Enable debug controls (display xpub, raw tx hex)"
+                name="enableDebugTools"
+                value={state.enableDebugTools}
+                cb={setEnableDebugTools} />
             </li>
             <li>
               Address discovery gap limit
@@ -315,39 +301,27 @@ const SettingsModal = props => {
               </li>
             }
             <li>
-              <span className="slider-text" style={{'paddingRight': '20px'}}>Reset app data</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  name="resetAppData"
-                  value={state.resetAppData}
-                  checked={state.resetAppData}
-                  readOnly />
-                <span
-                  className="slider round"
-                  onClick={setResetAppData}></span>
-              </label>
-              {state.resetAppData &&
-                <p>
-                  <small>
-                    <strong>Warning:</strong> "Reset app data" will delete all cached data so you will have to go through setup process again!
-                  </small>
-                </p>
-              }
+              <Toggle
+                style={{'paddingRight': '20px'}}
+                label="Reset app data"
+                name="resetAppData"
+                value={state.resetAppData}
+                cb={setResetAppData} />
+                {state.resetAppData &&
+                  <p>
+                    <small>
+                      <strong>Warning:</strong> "Reset app data" will delete all cached data so you will have to go through setup process again!
+                    </small>
+                  </p>
+                }
             </li>
             <li>
-              <span className="slider-text" style={{'paddingRight': '20px'}}>Import app data</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  name="enableImportAppData"
-                  value={state.enableImportAppData}
-                  checked={state.enableImportAppData}
-                  readOnly />
-                <span
-                  className="slider round"
-                  onClick={setImportAppData}></span>
-              </label>
+              <Toggle
+                style={{'paddingRight': '20px'}}
+                label="Import app data"
+                name="enableImportAppData"
+                value={state.enableImportAppData}
+                cb={setImportAppData} />
               {state.enableImportAppData &&
                 <React.Fragment>
                   <textarea

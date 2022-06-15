@@ -11,7 +11,7 @@ import coinEndpoits from './lib/coins';
 
 const MAX_TIP_TIME_DIFF = 3600 * 24;
 
-export const checkTipTime = (tiptime) => {
+export const checkTipTime = tiptime => {
   if (!tiptime || Number(tiptime) <= 0) return tiptime;
 
   const currentTimestamp = Date.now() / 1000;

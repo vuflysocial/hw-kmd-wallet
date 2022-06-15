@@ -27,6 +27,7 @@ import {formatUtxos, filterUtxos, validate, getAvailableExplorerUrl, getStateAct
 import QRReaderModal from './QRReaderModal';
 import {SendCoinRawTxRender, SendCoinTxLink} from './SendCoinModalFragments';
 import Dropdown from './Dropdown';
+import Toggle from './Toggle';
 import './SendCoin.scss';
 
 // TODO: refactor transaction builder, make math more easier to understand and read
@@ -411,18 +412,13 @@ const SendCoinButton = props => {
 
   const renderSkipBroadcastToggle = () => {
     return state.isDebug ? (
-      <label
+      <Toggle
+        label="Don't broadcast transaction"
+        name="skipBroadcast"
+        value={state.skipBroadcast}
+        cb={setSkipBroadcast}
         className="switch dev"
-        onClick={setSkipBroadcast}>
-        <input
-          type="checkbox"
-          name="skipBroadcast"
-          value={state.skipBroadcast}
-          checked={state.skipBroadcast}
-          readOnly />
-        <span className="slider round"></span>
-        <span className="slider-text">Don't broadcast transaction</span>
-      </label>
+        style={{'paddingRight': '20px'}} />
     ) : null;
   }
 
