@@ -38,7 +38,7 @@ import Sidebar from './Sidebar';
 import LoginModal from './LoginModal';
 import {DesktopDownloadButton, HeaderNonAuth, HeaderAuth, VendorSelector, VendorImage} from './AppFragments';
 import {getPrices} from './lib/prices';
-import {checkTipTime, handleScanData, emptyAccountState, removeCoin, scanCoins, getAppInitState} from './app-helpers';
+import {checkTipTime, handleScanData, emptyAccountState, removeCoin, scanCoins, getAppInitState, filterEnabledCoins} from './app-helpers';
 
 // TODO: receive modal, tos modal, move api end point conn test to blockchain module
 let syncDataInterval, autoLogoutTimer;
@@ -138,7 +138,7 @@ const App = props => {
     setState(prevState => ({
       ...prevState,
       isAuth: true,
-      coins: getLocalStorageVar('coins') ? getLocalStorageVar('coins') : {},
+      coins: getLocalStorageVar('coins') ? filterEnabledCoins(getLocalStorageVar('coins')) : {},
       lastOperations: getLocalStorageVar('lastOperations') && Array.isArray(getLocalStorageVar('lastOperations')) ? getLocalStorageVar('lastOperations') : [],
       theme: getLocalStorageVar('settings') && getLocalStorageVar('settings').theme ? getLocalStorageVar('settings').theme : 'tdark',
       vendor: getLocalStorageVar('settings') && getLocalStorageVar('settings').vendor ? getLocalStorageVar('settings').vendor : null,

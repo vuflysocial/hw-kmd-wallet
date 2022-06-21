@@ -236,3 +236,16 @@ export const getAppInitState = () => {
     syncRunNum: 0,
   };
 };
+
+export const filterEnabledCoins = coins => {
+  writeLog('check wallet coins availability');
+
+  for (let coin in coins) {
+    if (!coinEndpoits[coin] || (coinEndpoits[coin] && !coinEndpoits[coin].enabled)) {
+      writeLog(`wallet coin ${coin} is disabled, remove`);
+      delete coins[coin];
+    }
+  }
+
+  return coins;
+};
