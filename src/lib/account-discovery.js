@@ -27,6 +27,8 @@ export const setConfigVar = (name, val) => {
 };
 
 const searchCache = async(txid, cacheData) => {
+  if (!cacheData) return blockchain[blockchainAPI].getRawTransaction(txid);
+
   for (let i = 0; i < cacheData.utxos.length; i++) {
     if (cacheData.utxos[i].txid === txid)
       writeLog('get raw tx from cache', txid);
@@ -239,7 +241,7 @@ const accountDiscovery = async (vendor, coin, _accounts, historyLength) => {
           accounts.push(account);
           if (config.accountIndex === 0 && accountIndex >= 2) break;
         } else {
-          account.utxos = await getAddressUtxos(account.addresses, _accounts[accountIndex]);
+          account.utxos = await getAddressUtxos(account.addresses, _accounts && _accounts[accountIndex]);
           account.history = await getAddressHistory(account.addresses, coin, historyLength); 
           account.accountIndex = accountIndex;
           account.enabled = _accounts && _accounts[accountIndex] ? _accounts[accountIndex].enabled : true;
