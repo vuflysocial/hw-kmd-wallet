@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {sortTransactions} from './lib/sort';
 import TransactionViewModal from './TransactionViewModal';
 import {writeLog} from './Debug';
+import useScrollPosition from './scrollPosHook';
 
 const headings = {
   many: [
@@ -49,6 +50,7 @@ const getTransactionsHistory = (accounts, activeAccount) => {
 };
 
 const Transactions = props => {
+  const scrollPosition = useScrollPosition();
   const initialState = {
     isClosed: true,
     tiptime: 0,
@@ -62,6 +64,13 @@ const Transactions = props => {
     }));
     document.getElementById('transactionDetailsModal').click();
   }
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
 
   const render = () => {
     const {accounts, coin, activeAccount} = props;
@@ -110,6 +119,11 @@ const Transactions = props => {
               coin={coin}
               tx={state.txDetails}
               activeAccount={activeAccount} />
+            <div
+              className={`back-to-top-button ${scrollPosition < 600 ? 'invisible': ''}`}
+              onClick={scrollToTop}>
+              <i className="fa fa-chevron-up"></i>
+            </div>
           </div>
         }
       </React.Fragment>
