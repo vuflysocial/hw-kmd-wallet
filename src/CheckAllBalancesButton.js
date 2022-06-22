@@ -73,6 +73,8 @@ const CheckAllBalancesButton = props => {
         setState(prevState => ({
           ...prevState,
           isCheckingRewards: true,
+          coin,
+          progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
         }));
         
         currentAction = 'connect';
@@ -81,14 +83,16 @@ const CheckAllBalancesButton = props => {
         const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
         let isExplorerEndpointSet = false;
 
-        writeLog(`${coin} set api endpoint to ${explorerUrl}`);
-        blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
-        isExplorerEndpointSet = true;
-    
-        setState(prevState => ({
-          ...prevState,
-          explorerEndpoint: explorerUrl,
-        }));
+        if (explorerUrl) {
+          writeLog(`${coin} set api endpoint to ${explorerUrl}`);
+          blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
+          isExplorerEndpointSet = true;
+      
+          setState(prevState => ({
+            ...prevState,
+            explorerEndpoint: explorerUrl,
+          }));
+        }
 
         if (isExplorerEndpointSet) {
           setState(prevState => ({
@@ -162,6 +166,12 @@ const CheckAllBalancesButton = props => {
               error: error.message
             }));
           }
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            balances,
+            isInProgress: index === coinTickers.length - 1 ? false : true,
+          }));
         }
       }
     });
@@ -169,6 +179,7 @@ const CheckAllBalancesButton = props => {
     if (!cancel) {
       if (!state.error ||
           (state.error && state.error.indexOf('Failed to fetch') > -1)) {
+        updateActionState({setState}, 'connect', true);
         updateActionState({setState}, 'approve', true);
         updateActionState({setState}, 'finished', true);
       }

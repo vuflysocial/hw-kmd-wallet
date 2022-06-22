@@ -72,10 +72,11 @@ export const validate = data => {
 
 export const getAvailableExplorerUrl = async (coin, blockchain) => {
   const getInfoRes = await Promise.all(coins[coin].api.map((value, index) => {
+    blockchain.setExplorerUrl(value);
     return blockchain.getInfo(value);
   }));
   let longestBlockHeight = 0;
-  let apiEndPointIndex = 0;
+  let apiEndPointIndex = null;
 
   writeLog('checkExplorerEndpoints', getInfoRes);
   
@@ -92,7 +93,7 @@ export const getAvailableExplorerUrl = async (coin, blockchain) => {
 
   writeLog('apiEndPointIndex', apiEndPointIndex);
   
-  return coins[coin].api[apiEndPointIndex];
+  return apiEndPointIndex !== null ? coins[coin].api[apiEndPointIndex] : null;
 };
 
 export const getStateActionsInit = vendor => {
