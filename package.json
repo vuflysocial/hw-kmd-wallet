@@ -47,7 +47,8 @@
     "deploy": "gh-pages -d build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
-    "postinstall": "cp -R node_modules/bitcoinjs-lib/src/payments node_modules/@trezor/utxo-lib/src"
+    "make-coin-sprites": "node make-coin-icons-sprites.js",
+    "postinstall": "npm run make-coin-sprites && cp -R node_modules/bitcoinjs-lib/src/payments node_modules/@trezor/utxo-lib/src"
   },
   "eslintConfig": {
     "extends": [
@@ -84,6 +85,7 @@
     "react-app-rewire-hot-loader": "^2.0.1",
     "react-app-rewired": "^2.2.1",
     "react-hot-loader": "^4.13.0",
+    "spritesmith": "^3.4.0",
     "stream-browserify": "^3.0.0",
     "web-vitals": "^2.1.4"
   }
