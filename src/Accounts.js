@@ -41,9 +41,13 @@ const Account = props => {
         onClick={() => setActiveAccount(accountIndex)}
         className={(activeAccount !== null && accountIndex === activeAccount) || activeAccount === null ? (activeAccount === null ? '' : 'no-hover') : 'hidden'}>
         <td>
-          <img
-            src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coin}.png`}
-            alt={`${coin} icon`} />
+          <div className="coin-icons-wrapper-container">
+            <div className={`coin-icons-wrapper ${coin}-icon-size-sm`}>
+              <div
+                className={`coin-icons ${coin}`}
+                style={{backgroundImage: `url('${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coin-icons.png')`}}></div>
+            </div>
+          </div>
           <span className="account-name">{coin} {accountIndex + 1}</span>
         </td>
         <td>
@@ -99,7 +103,7 @@ const Accounts = ({
           <thead>
             <tr>
               <th>{activeAccount !== null ? '' : 'Account'}</th>
-              <th>Amount</th>
+              <th>Balance</th>
               {activeCoin === 'KMD' &&
                 <th>Rewards</th>
               }

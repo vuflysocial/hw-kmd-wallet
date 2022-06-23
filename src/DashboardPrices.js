@@ -25,9 +25,13 @@ const DashboardPrices = props => {
                 {coins.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img
-                        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item}.png`}
-                        alt={`${item} icon`} />
+                      <div className="coin-icons-wrapper-container">
+                        <div className={`coin-icons-wrapper ${item}-icon-size-sm`}>
+                          <div
+                            className={`coin-icons ${item}`}
+                            style={{backgroundImage: `url('${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coin-icons.png')`}}></div>
+                        </div>
+                      </div>
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>...</td>
@@ -41,9 +45,13 @@ const DashboardPrices = props => {
                 {coinPriceTickers.map((item, index) => (
                   <tr key={`prices-${item}`}>
                     <td>
-                      <img
-                        src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item}.png`}
-                        alt={`${item} icon`} />
+                      <div className="coin-icons-wrapper-container">
+                        <div className={`coin-icons-wrapper ${item}-icon-size-sm`}>
+                          <div
+                            className={`coin-icons ${item}`}
+                            style={{backgroundImage: `url('${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coin-icons.png')`}}></div>
+                        </div>
+                      </div>
                       <span className="coin-name">{item}</span>
                     </td>
                     <td>{prices[item].price}</td>

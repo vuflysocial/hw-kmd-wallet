@@ -107,7 +107,10 @@
 .ActionListModal.send-coin-modal .Modal {
   text-align: left;
 
-  .panel-heading, .panel-tabs, .panel-block, .panel-block.is-active {
+  .panel-heading,
+  .panel-tabs,
+  .panel-block,
+  .panel-block.is-active {
     border-bottom: 1px solid #dbdbdb;
     border-left: 1px solid #dbdbdb;
     border-right: 1px solid #dbdbdb;
@@ -313,4 +316,14 @@ input[type="text"] {
     top: 8px;
     left: 12px;
   }
+}
+
+.coin-icons-wrapper-container {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  display: inline-block;
+}
+.coin-icons-wrapper {
+  position: absolute;
 }

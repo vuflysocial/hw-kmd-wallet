@@ -13,9 +13,13 @@ const DashboardOperations = props => {
               className="item"
               key={`operations-${item.txid}`}>
               <div className="item-left-pane">
-                <img
-                  src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${item.coin}.png`}
-                  alt={`${item.coin} icon`} />
+                <div className="coin-icons-wrapper-container">
+                  <div className={`coin-icons-wrapper ${item.coin}-icon-size-sm`}>
+                    <div
+                      className={`coin-icons ${item.coin}`}
+                      style={{backgroundImage: `url('${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coin-icons.png')`}}></div>
+                  </div>
+                </div>
                 <span className="direction">{item.type}</span>
                 <span className="date">{item.date}</span>
               </div>

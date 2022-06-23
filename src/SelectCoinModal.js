@@ -4,6 +4,9 @@ import CheckAllBalancesButton from './CheckAllBalancesButton';
 import apiEndpoints from './lib/coins';
 import Toggle from './Toggle';
 import './AddCoinModal.scss';
+import {sortObject} from './lib/sort';
+
+const apiEndpointsSorted = sortObject(apiEndpoints);
 
 const SelectCoinModal = props => {
   const initialState = {
@@ -32,11 +35,12 @@ const SelectCoinModal = props => {
   }
 
   const open = () => {
-    const allAvailableCoins = Object.keys(apiEndpoints);
+    const allAvailableCoins = Object.keys(apiEndpointsSorted);
     let coinsList = [];
 
     for (let i = 0; i < allAvailableCoins.length; i++) {
-      if (Object.keys(props.coins).indexOf(allAvailableCoins[i]) === -1)
+      if (Object.keys(props.coins).indexOf(allAvailableCoins[i]) === -1 &&
+          apiEndpointsSorted[allAvailableCoins[i]].enabled)
         coinsList.push(allAvailableCoins[i]);
     }
 
@@ -64,7 +68,7 @@ const SelectCoinModal = props => {
     const selectCoins = state.selectedCoins;
 
     for (let i = 0; i < selectCoins.length; i++) {
-      if (apiEndpoints[selectCoins[i]].airdrop) return true;
+      if (apiEndpointsSorted[selectCoins[i]].airdrop) return true;
     }
   }
 

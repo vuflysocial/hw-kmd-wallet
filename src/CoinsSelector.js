@@ -27,9 +27,13 @@ const CoinsSelector = props => {
               className="inline-coin-icons-tile"
               key={`coins-${coinTicker}`}
               onClick={() => props.setActiveCoin(coinTicker)}>
-              <img
-                src={`${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coins/${coinTicker}.png`} 
-                alt={`${coinTicker} icon`} />
+              <div className="coin-icons-wrapper-container">
+                <div className={`coin-icons-wrapper ${coinTicker}-icon-size-md`}>
+                  <div
+                    className={`coin-icons ${coinTicker}`}
+                    style={{backgroundImage: `url('${process.env.NODE_ENV === 'development' ? process.env.PUBLIC_URL + '/' : ''}coin-icons.png')`}}></div>
+                </div>
+              </div>
               {coinTicker === 'KMD' &&
                checkKMDRewards() > 0 &&
                <div
