@@ -30,9 +30,10 @@ const searchCache = async(txid, cacheData) => {
   if (!cacheData) return blockchain[blockchainAPI].getRawTransaction(txid);
 
   for (let i = 0; i < cacheData.utxos.length; i++) {
-    if (cacheData.utxos[i].txid === txid)
+    if (cacheData.utxos[i].txid === txid) {
       writeLog('get raw tx from cache', txid);
       return {rawtx: cacheData.utxos[i].rawtx};
+    }
   }
 
   return blockchain[blockchainAPI].getRawTransaction(txid);
