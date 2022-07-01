@@ -208,7 +208,7 @@ const App = props => {
       activeAccount,
     }));
 
-    if (activeAccount) writeLog(state.coins[state.activeCoin][activeAccount])
+    if (activeAccount !== null) writeLog(state.coins[state.activeCoin].accounts[activeAccount])
   }
 
   const onMount = () => {
