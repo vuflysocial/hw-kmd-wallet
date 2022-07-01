@@ -380,7 +380,7 @@ const SendCoinButton = props => {
       value: '',
       label: 'Unused address (default)'
     }]
-    .join(account.addresses.slice(0, KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT).map((item, index) => (
+    .concat(account.addresses.slice(0, KMD_REWARDS_CLAIM_ACCOUNT_OVERRIDE_LIMIT).map((item, index) => (
       {
         value: item.address,
         label: item.address,
@@ -398,7 +398,7 @@ const SendCoinButton = props => {
               name="address"
               className="account-index-selector send-coin-modal-style3"
               items={dropdownChangeAddressItems}
-              cb={updateAccountIndex} />
+            cb={updateAccountIndex} />
           </div>
         }
         {address &&
@@ -425,17 +425,18 @@ const SendCoinButton = props => {
   const renderStep1 = () => {
     const {isClaimingRewards, accountIndex} = state;
     const {coin, isClaimRewardsOnly, accounts} = props;
-    const dropdownAccountIndexItems = accounts.map((account, index) => (
-      {
-        value: index,
-        label: `${coin} ${index + 1} [${humanReadableSatoshis(accounts[index].balance)}]`,
-        disabled: accounts[index].balance <= 0
-      }
-    ));
+    let dropdownAccountIndexItems;
     let {balance} = props;
     
     if (!isClaimRewardsOnly) {
       balance = accounts[accountIndex].balance || 0;
+      dropdownAccountIndexItems = accounts.map((account, index) => (
+        {
+          value: index,
+          label: `${coin} ${index + 1} [${humanReadableSatoshis(accounts[index].balance)}]`,
+          disabled: accounts[index].balance <= 0
+        }
+      ));
     }
 
     return !state.step ? (
@@ -446,6 +447,7 @@ const SendCoinButton = props => {
         isCloseable={true}
         className="send-coin-modal">
         {accounts &&
+        !isClaimRewardsOnly &&
           <React.Fragment>
             <p>
               Select an account to debit.
