@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import hw from './lib/hw';
 import accountDiscovery, {clearPubkeysCache, setConfigVar} from './lib/account-discovery';
 import blockchain, {blockchainAPI} from './lib/blockchain';
@@ -55,6 +55,39 @@ const CheckAllBalancesButton = props => {
   const resetState = () => {
     cancel = true;
     setState(initialState);
+  }
+
+  useEffect(() => {
+    if (state.error || cancel) processCancelAction();
+  }, [state.error, cancel]);
+
+  const processCancelAction = () => {
+    if (!cancel) {
+      if (!state.error ||
+          (state.error && state.error.indexOf('Failed to fetch') > -1)) {
+        updateActionState({setState}, 'connect', true);
+        updateActionState({setState}, 'approve', true);
+        updateActionState({setState}, 'finished', true);
+
+        clearPubkeysCache();
+
+        setState(prevState => ({
+          ...prevState,
+          isInProgress: false,
+          error: false,
+          progress: '',
+          coin: '',
+          isCheckingRewards: true,
+          emptyBalances: !prevState.balances.length,
+        }));
+      } else {
+        setState(prevState => ({
+          ...prevState,
+          isInProgress: false,
+          isCheckingRewards: true,
+        }));
+      }
+    }
   }
 
   const scanAddresses = async () => {
@@ -158,6 +191,10 @@ const CheckAllBalancesButton = props => {
               balances,
               isInProgress: index === coinTickers.length - 1 ? false : true,
             }));
+
+            if (index === coinTickers.length - 1) {
+              updateActionState({setState}, 'finished', true);
+            }
           } catch (error) {
             writeLog(error);
             updateActionState({setState}, currentAction, false);
@@ -176,27 +213,6 @@ const CheckAllBalancesButton = props => {
       }
     });
     
-    if (!cancel) {
-      if (!state.error ||
-          (state.error && state.error.indexOf('Failed to fetch') > -1)) {
-        updateActionState({setState}, 'connect', true);
-        updateActionState({setState}, 'approve', true);
-        updateActionState({setState}, 'finished', true);
-      }
-
-      clearPubkeysCache();
-
-      setState(prevState => ({
-        ...prevState,
-        isInProgress: false,
-        error: false,
-        progress: '',
-        coin: '',
-        isCheckingRewards: true,
-        emptyBalances: !prevState.balances.length,
-      }));
-    }
-
     writeLog(state);
     
     blockchain[blockchainAPI].setExplorerUrl(props.explorerEndpoint);
@@ -260,8 +276,8 @@ const CheckAllBalancesButton = props => {
           {children}
         </button>
         <ActionListModal
-          title={`Scanning Blockchain ${coin}${progress}`}
-          isCloseable={!isInProgress}
+          title={`${isInProgress ? 'Scanning Blockchain' : 'Scan complete'} ${isInProgress ? coin : ''}${isInProgress ? progress : ''}`}
+          isCloseable={!isInProgress || error}
           actions={actions}
           error={error}
           handleClose={resetState}
