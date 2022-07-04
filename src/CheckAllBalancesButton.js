@@ -27,6 +27,8 @@ const CheckAllBalancesButton = props => {
     isCheckingRewards: false,
     isInProgress: false,
     error: false,
+    index: null,
+    total: 0,
     coin: '',
     balances: [],
     progress: '',
@@ -54,7 +56,17 @@ const CheckAllBalancesButton = props => {
 
   const resetState = () => {
     cancel = true;
-    setState(initialState);
+    if (state.isInProgress) {
+      setState(prevState => ({
+        ...initialState,
+        index: props.coins.length,
+        total: props.coins.length,
+        isCheckingRewards: false,
+        isInProgress: false,
+      }));
+    } else {
+      setState(initialState);
+    }
   }
 
   useEffect(() => {
@@ -90,10 +102,22 @@ const CheckAllBalancesButton = props => {
     }
   }
 
+  const startScan = () => {
+    setState(prevState => ({
+      ...initialState,
+      index: 0,
+      total: props.coins.length,
+    }));
+  }
+
+  useEffect(() => {
+    if (state.index !== null) scanAddresses();
+  }, [state.index]);
+
   const scanAddresses = async () => {
     const coinTickers = props.coins;
     const {vendor, enableAirdropDiscovery} = props;
-    let balances = [], currentAction;
+    let balances = state.balances, currentAction;
     cancel = false;
     
     if (enableAirdropDiscovery) {
@@ -101,117 +125,128 @@ const CheckAllBalancesButton = props => {
       setLocalStorageVar('settings', {discoveryGapLimit: SETTINGS.DISCOVERY_GAP_LIMIT_AIRDROP});
     }
 
-    await asyncForEach(coinTickers, async (coin, index) => {
-      if (!cancel) {
+    if (state.index < props.coins.length) {
+      const index = state.index;
+      const coin = coinTickers[index];
+
+      setState(prevState => ({
+        ...prevState,
+        isCheckingRewards: true,
+        coin,
+        progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
+      }));
+      
+      currentAction = 'connect';
+      updateActionState({setState}, currentAction, 'loading');
+
+      const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
+      let isExplorerEndpointSet = false;
+
+      if (explorerUrl) {
+        writeLog(`${coin} set api endpoint to ${explorerUrl}`);
+        blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
+        isExplorerEndpointSet = true;
+    
+        setState(prevState => ({
+          ...prevState,
+          explorerEndpoint: explorerUrl,
+        }));
+      }
+
+      if (isExplorerEndpointSet) {
         setState(prevState => ({
           ...prevState,
           isCheckingRewards: true,
           coin,
           progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
+          balances,
+          isInProgress: true,
         }));
-        
-        currentAction = 'connect';
-        updateActionState({setState}, currentAction, 'loading');
 
-        const explorerUrl = await getAvailableExplorerUrl(coin, blockchain[blockchainAPI]);
-        let isExplorerEndpointSet = false;
+        let currentAction;
+        try {
+          currentAction = 'connect';
+          updateActionState({setState}, currentAction, 'loading');
+          const hwIsAvailable = await hw[vendor].isAvailable();
+          if (!hwIsAvailable) {
+            throw new Error(`${VENDOR[vendor]} device is unavailable!`);
+          }
+          updateActionState({setState}, currentAction, true);
 
-        if (explorerUrl) {
-          writeLog(`${coin} set api endpoint to ${explorerUrl}`);
-          blockchain[blockchainAPI].setExplorerUrl(explorerUrl);
-          isExplorerEndpointSet = true;
-      
-          setState(prevState => ({
-            ...prevState,
-            explorerEndpoint: explorerUrl,
-          }));
-        }
-
-        if (isExplorerEndpointSet) {
-          setState(prevState => ({
-            ...prevState,
-            ...initialState,
-            isCheckingRewards: true,
-            coin,
-            progress: coinTickers.length > 1 ? ` (${index + 1}/${coinTickers.length})` : '',
-            balances,
-            isInProgress: true,
-          }));
-
-          let currentAction;
-          try {
-            currentAction = 'connect';
-            updateActionState({setState}, currentAction, 'loading');
-            const hwIsAvailable = await hw[vendor].isAvailable();
-            if (!hwIsAvailable) {
-              throw new Error(`${VENDOR[vendor]} device is unavailable!`);
-            }
-            updateActionState({setState}, currentAction, true);
-
-            currentAction = 'approve';
-            updateActionState({setState}, currentAction, 'loading');
-            let [accounts, tiptime] = await Promise.all([
-              accountDiscovery(
-                vendor,
-                coin,
-                null,
-                getLocalStorageVar('settings') && getLocalStorageVar('settings').historyLength
-              ),
-              blockchain[blockchainAPI].getTipTime()
-            ]);
-
-            updateActionState({setState}, currentAction, true);
-
-            if (coin === 'KMD') {
-              tiptime = checkTipTime(tiptime);
-              accounts = calculateRewardData({accounts, tiptime});
-              writeLog('check if any KMD rewards are overdue');
-              accounts = checkRewardsOverdue(accounts);            
-            }
-
-            accounts = calculateBalanceData(accounts);
-
-            let balanceSum = 0;
-            let rewardsSum = 0;
-
-            for (let i = 0; i < accounts.length; i++) {
-              balanceSum += accounts[i].balance;
-              rewardsSum += accounts[i].rewards;
-            }
-
-            balances.push({
+          currentAction = 'approve';
+          updateActionState({setState}, currentAction, 'loading');
+          let [accounts, tiptime] = await Promise.all([
+            accountDiscovery(
+              vendor,
               coin,
-              balance: balanceSum,
-              rewards: rewardsSum,
-              accounts,
-            });
+              null,
+              getLocalStorageVar('settings') && getLocalStorageVar('settings').historyLength
+            ),
+            blockchain[blockchainAPI].getTipTime()
+          ]);
 
+          updateActionState({setState}, currentAction, true);
+
+          if (coin === 'KMD') {
+            tiptime = checkTipTime(tiptime);
+            accounts = calculateRewardData({accounts, tiptime});
+            writeLog('check if any KMD rewards are overdue');
+            accounts = checkRewardsOverdue(accounts);            
+          }
+
+          accounts = calculateBalanceData(accounts);
+
+          let balanceSum = 0;
+          let rewardsSum = 0;
+
+          for (let i = 0; i < accounts.length; i++) {
+            balanceSum += accounts[i].balance;
+            rewardsSum += accounts[i].rewards;
+          }
+
+          balances.push({
+            coin,
+            balance: balanceSum,
+            rewards: rewardsSum,
+            accounts,
+          });
+
+          if (index === coinTickers.length - 1) {
+            updateActionState({setState}, 'finished', true);
             setState(prevState => ({
               ...prevState,
               balances,
               isInProgress: index === coinTickers.length - 1 ? false : true,
             }));
-
-            if (index === coinTickers.length - 1) {
-              updateActionState({setState}, 'finished', true);
-            }
-          } catch (error) {
-            writeLog(error);
-            updateActionState({setState}, currentAction, false);
+          } else {
             setState(prevState => ({
               ...prevState,
-              error: error.message
+              balances,
+              isInProgress: index === coinTickers.length - 1 ? false : true,
+              index: prevState.index + 1,
             }));
           }
+        } catch (error) {
+          writeLog(error);
+          updateActionState({setState}, currentAction, false);
+          setState(prevState => ({
+            ...prevState,
+            error: error.message
+          }));
+        }
+      } else {
+        if (index === coinTickers.length - 1) {
+          processCancelAction();
         } else {
           setState(prevState => ({
             ...prevState,
             balances,
+            index: prevState.index + 1,
             isInProgress: index === coinTickers.length - 1 ? false : true,
           }));
         }
       }
-    });
+    }
     
     writeLog(state);
     
@@ -272,12 +307,12 @@ const CheckAllBalancesButton = props => {
       <React.Fragment>
         <button
           className="button is-primary"
-          onClick={scanAddresses}>
+          onClick={startScan}>
           {children}
         </button>
         <ActionListModal
           title={`${isInProgress ? 'Scanning Blockchain' : 'Scan complete'} ${isInProgress ? coin : ''}${isInProgress ? progress : ''}`}
-          isCloseable={!isInProgress || error}
+          isCloseable={true}
           actions={actions}
           error={error}
           handleClose={resetState}
