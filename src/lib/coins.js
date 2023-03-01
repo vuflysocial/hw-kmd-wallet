@@ -2,7 +2,7 @@ const coins = {
   KMD: {
     explorer: 'https://kmd.explorer.dexstats.info/',
     api: [
-      'https://explorer.komodoplatform.com:10000/kmd/api/',
+ //     'https://explorer.komodoplatform.com:10000/kmd/api/',
       'https://kmd.explorer.dexstats.info/insight-api-komodo/',
     ],
     prices: {
@@ -139,6 +139,15 @@ const coins = {
       'https://explorer.komodoplatform.com:10000/vote2022/api/',
       'https://vote.explorer.dexstats.info/insight-api-komodo/',
       'https://vote.kmdexplorer.io/insight-api-komodo/',
+    ],
+    airdrop: true,
+    enabled: true,
+  },
+  KIP0001: {
+    explorer: 'https://kip0001.explorer.kmd.io/',
+    api: [
+      'https://kip0001.explorer.dexstats.info/insight-api-komodo/',
+      'https://kip0001.explorer.kmd.io/insight-api-komodo/',
     ],
     airdrop: true,
     enabled: true,

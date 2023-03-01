@@ -1,5 +1,7 @@
 # Hardware Komodo wallet
 
+## Node version v14.19.0
+
 > Claim your KMD rewards on your hardware wallet device - [https://pbca26.github.io/hw-kmd-wallet/](https://pbca26.github.io/hw-kmd-wallet/)
 
 [![](/screenshot.png)](https://pbca26.github.io/hw-kmd-wallet/)
