@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "hw-kmd-wallet-electron",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Komodo Hardware Wallet Electron App",
   "main": "main.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "dist-win": "electron-builder --publish=never  --win",
     "postinstall": "rm -rf node_modules/bitgo-utxo-lib/node_modules/create-hash && electron-rebuild"
   },
-  "repository": "https://github.com/pbca26/hw-kmd-wallet",
+  "repository": "https://github.com/KomodoPlatform/hw-kmd-wallet",
   "keywords": [
     "Komodo",
     "Ledger",
