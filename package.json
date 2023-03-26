@@ -39,9 +39,9 @@
     "trezor-connect": "^8.2.7"
   },
   "scripts": {
-    "start": "HTTPS=true react-app-rewired start",
+    "start":  "react-app-rewired start",
     "start-electron": "react-app-rewired start",
-    "build": "PUBLIC_URL=https://wallet.kmd.io react-app-rewired build",
+    "build": "react-app-rewired build",
     "build-electron": "react-app-rewired build && node ./electron-post-build",
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build",
